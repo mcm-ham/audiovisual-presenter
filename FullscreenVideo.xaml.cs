@@ -10,10 +10,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Presenter.App_Code;
+using SongPresenter.App_Code;
 using Screen = System.Windows.Forms.Screen;
 
-namespace Presenter
+namespace SongPresenter
 {
     public partial class FullscreenVideo : Window
     {

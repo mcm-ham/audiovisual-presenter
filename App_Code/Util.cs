@@ -8,7 +8,7 @@ using System.IO;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
-namespace Presenter.App_Code
+namespace SongPresenter.App_Code
 {
     public static class Util
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Configuration;
 using System.Windows;
-using Presenter.App_Code;
-using Presenter.Resources;
+using SongPresenter.App_Code;
+using SongPresenter.Resources;
 using Screen = System.Windows.Forms.Screen;
 
-namespace Presenter
+namespace SongPresenter
 {
     public partial class OptionsDialog : Window
     {

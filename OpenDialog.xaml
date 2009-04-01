@@ -1,8 +1,8 @@
-﻿<Window x:Class="Presenter.OpenDialog"
+﻿<Window x:Class="SongPresenter.OpenDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:dc="clr-namespace:Microsoft.Samples.DateControls"
-    xmlns:Loc="clr-namespace:Presenter.Resources"
+    xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
     Title="{x:Static Loc:Labels.OpenWindowTitle}" Height="360" Width="560" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
     <Grid>

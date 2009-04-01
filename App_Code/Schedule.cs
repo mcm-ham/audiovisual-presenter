@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace Presenter.App_Code
+namespace SongPresenter.App_Code
 {
     public partial class Schedule
     {

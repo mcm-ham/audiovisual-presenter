@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Runtime.InteropServices;
 
-namespace Presenter.App_Code
+namespace SongPresenter.App_Code
 {
     public class Slide
     {

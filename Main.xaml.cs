@@ -10,11 +10,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using Presenter.App_Code;
-using Presenter.Resources;
+using SongPresenter.App_Code;
+using SongPresenter.Resources;
 
 //icon from http://www.iconspedia.com/search/projector/
-namespace Presenter
+namespace SongPresenter
 {
     public partial class Main : Window
     {

@@ -8,10 +8,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Data;
-using Presenter.App_Code;
+using SongPresenter.App_Code;
 using System.Windows.Threading;
 
-namespace Presenter
+namespace SongPresenter
 {
     public class SlideListView : ListView
     {
