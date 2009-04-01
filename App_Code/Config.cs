@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
-namespace Presenter.App_Code
+namespace SongPresenter.App_Code
 {
     public class Config : DependencyObject
     {

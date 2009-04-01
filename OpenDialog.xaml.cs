@@ -11,10 +11,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.Samples.DateControls;
-using Presenter.App_Code;
-using Presenter.Resources;
+using SongPresenter.App_Code;
+using SongPresenter.Resources;
 
-namespace Presenter
+namespace SongPresenter
 {
     public partial class OpenDialog : Window
     {

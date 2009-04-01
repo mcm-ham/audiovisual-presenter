@@ -7,7 +7,7 @@ using System.Text;
 using Core = Microsoft.Office.Core;
 using PP = Microsoft.Office.Interop.PowerPoint;
 
-namespace Presenter.App_Code
+namespace SongPresenter.App_Code
 {
     public class SlideShow
     {

@@ -1,9 +1,9 @@
-﻿<Window x:Class="Presenter.Main"
+﻿<Window x:Class="SongPresenter.Main"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Presenter="clr-namespace:Presenter"
-    xmlns:Presenter2="clr-namespace:Presenter.App_Code"
-    xmlns:Loc="clr-namespace:Presenter.Resources"
+    xmlns:Presenter="clr-namespace:SongPresenter"
+    xmlns:Presenter2="clr-namespace:SongPresenter.App_Code"
+    xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
     Title="{x:Static Loc:Labels.MainWindowTitle}" Height="768" Width="1024" WindowState="Maximized" KeyDown="Window_KeyDown" Closed="Main_Closed" FlowDirection="LeftToRight">
     <Window.Resources>

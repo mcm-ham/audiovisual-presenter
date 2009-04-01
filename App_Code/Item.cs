@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Presenter.App_Code
+namespace SongPresenter.App_Code
 {
     public partial class Item
     {
