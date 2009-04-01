@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AboutDesc" xml:space="preserve">
+    <value>For queries, suggestions or bug fixes please contact us at:</value>
+  </data>
+  <data name="AboutEmailTitle" xml:space="preserve">
+    <value>Email:</value>
+  </data>
+  <data name="AboutForumTitle" xml:space="preserve">
+    <value>Forum:</value>
+  </data>
+  <data name="AboutHeader" xml:space="preserve">
+    <value>Presenter</value>
+  </data>
+  <data name="AboutVersionTitle" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="AboutWebsiteTitle" xml:space="preserve">
+    <value>Website:</value>
+  </data>
+  <data name="AboutWindowTitle" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AppError" xml:space="preserve">
+    <value>An error has occurred and been logged</value>
+  </data>
+  <data name="AppRequiresSql" xml:space="preserve">
+    <value>This program requires Microsoft SQL Server Compact 3.5 Service Pack 1.</value>
+  </data>
+  <data name="ColorPickerHex" xml:space="preserve">
+    <value>Hexadecimal Notation</value>
+  </data>
+  <data name="ColorPickerSelectedColor" xml:space="preserve">
+    <value>Selected Color</value>
+  </data>
+  <data name="ColorPickerWindowTitle" xml:space="preserve">
+    <value>Select a Color</value>
+  </data>
+  <data name="FullscreenVideoClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="GenericCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="GenericOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="MainBtnMoveDown" xml:space="preserve">
+    <value>Move Down</value>
+  </data>
+  <data name="MainBtnMoveUp" xml:space="preserve">
+    <value>Move Up</value>
+  </data>
+  <data name="MainBtnNext" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="MainBtnPrev" xml:space="preserve">
+    <value>Prev</value>
+  </data>
+  <data name="MainBtnRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="MainBtnStart" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="MainBtnStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="MainBtnTimer" xml:space="preserve">
+    <value>Timer</value>
+  </data>
+  <data name="MainBtnVideoPause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="MainBtnVideoPlay" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="MainBtnVideoSeek" xml:space="preserve">
+    <value>Seek To</value>
+  </data>
+  <data name="MainBtnVideoStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="MainBtnVideoVolume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="MainContextLibraryAdd" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="MainContextLibraryOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="MainContextScheduleOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="MainContextScheduleRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="MainDescRemote" xml:space="preserve">
+    <value>Press CTRL+R to end remote mode.</value>
+  </data>
+  <data name="MainHeaderLibrary" xml:space="preserve">
+    <value>Library</value>
+  </data>
+  <data name="MainHeaderOrder" xml:space="preserve">
+    <value>Presentation Order</value>
+  </data>
+  <data name="MainLabelLiveJump" xml:space="preserve">
+    <value>Jump</value>
+  </data>
+  <data name="MainLabelLiveNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="MainLabelLiveSlide" xml:space="preserve">
+    <value>Slide</value>
+  </data>
+  <data name="MainLabelLiveText" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="MainLabelLocation" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="MainLabelSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="MainMenuAbout" xml:space="preserve">
+    <value>_About</value>
+  </data>
+  <data name="MainMenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MainMenuFileNew" xml:space="preserve">
+    <value>_New</value>
+  </data>
+  <data name="MainMenuFileOpen" xml:space="preserve">
+    <value>_Open</value>
+  </data>
+  <data name="MainMenuTools" xml:space="preserve">
+    <value>_Tools</value>
+  </data>
+  <data name="MainMenuToolsOptions" xml:space="preserve">
+    <value>_Options</value>
+  </data>
+  <data name="MainMenuToolsRemote" xml:space="preserve">
+    <value>_Remote Control</value>
+  </data>
+  <data name="MainNoAddedItems" xml:space="preserve">
+    <value>Please add items to the presentation list first.</value>
+  </data>
+  <data name="MainRemoteNotStart" xml:space="preserve">
+    <value>Remote control mode can only be enabled once a presentation is started.</value>
+  </data>
+  <data name="MainWindowTitle" xml:space="preserve">
+    <value>Presenter</value>
+  </data>
+  <data name="OpenBtnDel" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="OpenBtnNew" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="OpenBtnOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="OpenDelConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete '{0}'?</value>
+    <comment>{0} will get replaced by the name of the selected schedule</comment>
+  </data>
+  <data name="OpenHeaderNew" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="OpenHeaderOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="OpenItemNotSelected" xml:space="preserve">
+    <value>No item has been selected.</value>
+  </data>
+  <data name="OpenMissingDate" xml:space="preserve">
+    <value>Please select a date.</value>
+  </data>
+  <data name="OpenMissingDesc" xml:space="preserve">
+    <value>Please enter a description.</value>
+  </data>
+  <data name="OpenWindowTitle" xml:space="preserve">
+    <value>Planner</value>
+  </data>
+  <data name="OptionsBackColor" xml:space="preserve">
+    <value>Background Color Picker</value>
+  </data>
+  <data name="OptionsBtnBrowse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="OptionsLibraryPath" xml:space="preserve">
+    <value>Presenter Library Path</value>
+  </data>
+  <data name="OptionsMonitorPrimary" xml:space="preserve">
+    <value>Primary</value>
+  </data>
+  <data name="OptionsMonitorSetting" xml:space="preserve">
+    <value>Show presentation and video on:</value>
+  </data>
+  <data name="OptionsMonitorTitle" xml:space="preserve">
+    <value>Monitor</value>
+  </data>
+  <data name="OptionsSlideDelay" xml:space="preserve">
+    <value>Slide Preview Popup Delay (sec)</value>
+  </data>
+  <data name="OptionsSlideSize" xml:space="preserve">
+    <value>Slide Preview Size</value>
+  </data>
+  <data name="OptionsWindowTitle" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="OptionsWndCust" xml:space="preserve">
+    <value>Window Customization</value>
+  </data>
+</root>
