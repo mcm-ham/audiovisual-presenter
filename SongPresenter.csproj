@@ -151,7 +151,9 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Model1.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="base.pot" />
+    <None Include="base.pot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="error.log" />
     <None Include="Library\Music\Amazing Grace.ppt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -192,7 +194,7 @@
     <Content Include="Bin\Microsoft.Office.Interop.PowerPoint.dll" />
     <Content Include="Bin\office.dll" />
     <Content Include="Database.sdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Projector.ico" />
   </ItemGroup>
@@ -234,6 +236,16 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Library\Sermon Notes\" />
