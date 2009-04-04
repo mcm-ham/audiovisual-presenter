@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -19,6 +18,7 @@ namespace SongPresenter
     public partial class Main : Window
     {
         DispatcherTimer timer = new DispatcherTimer();
+        DispatcherTimer selectionDelay = new DispatcherTimer();
 
         public Main()
         {
@@ -28,6 +28,8 @@ namespace SongPresenter
             ScheduleList.IsEnabled = false;
             BindLocationList();
             timer.Tick += new EventHandler(timer_Tick);
+            selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
+            selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
         }
 
         #region menu
@@ -441,20 +443,21 @@ namespace SongPresenter
             int interval = Util.Parse<int?>(Interval.Text) ?? 8;
             timer.Interval = TimeSpan.FromSeconds(interval);
         }
-
+        
         protected void LiveList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //The timer is necessary to allow the selection event to complete first, otherwise if changing slide
             //takes a while (e.g. animation delay) and the mouse is moved it will automatically select
             //new index even though the mouse wasn't clicked.
-            Timer tim = new Timer((sen) =>
-            {
-                Dispatcher.Invoke(new Action(() =>
-                {
-                    Presentation.GoTo(LiveList.SelectedItem as Slide);
-                    Presentation_SlideIndexChanged(Presentation, new SlideShowEventArgs(LiveList.SelectedIndex + 1, LiveList.SelectedIndex + 1));
-                }));
-            }, null, 100, Timeout.Infinite);
+            selectionDelay.Start();
+        }
+
+        protected void selectionDelay_Tick(object sender, EventArgs e)
+        {
+            selectionDelay.Stop();
+
+            Presentation.GoTo(LiveList.SelectedItem as Slide);
+            Presentation_SlideIndexChanged(Presentation, new SlideShowEventArgs(LiveList.SelectedIndex + 1, LiveList.SelectedIndex + 1));
         }
 
         private void Expander1_Click(object sender, RoutedEventArgs e)
