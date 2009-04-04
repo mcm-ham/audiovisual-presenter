@@ -220,7 +220,7 @@ namespace SongPresenter.App_Code
                 }
                 else
                     pres = app.Presentations.Open(scheduleItem.Filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
-                
+
                 PasteSlidesWithFormatting(running, pres);
                 pres.Close();
             }
@@ -278,6 +278,11 @@ namespace SongPresenter.App_Code
                 slide.Copy();
                 PP.SlideRange range = dest.Slides.Paste(dest.Slides.Count + 1);
                 AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count));
+
+                //fix weird bug where font size is not kept on some text frames
+                for (int i = 1; i <= range.Shapes.Count; i++)
+                    if (range.Shapes[i].HasTextFrame == Core.MsoTriState.msoTrue)
+                        range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
 
                 //slide master
                 if (!designs.ContainsKey(slide.Design))
