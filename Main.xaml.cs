@@ -27,6 +27,7 @@ namespace SongPresenter
             
             ScheduleList.IsEnabled = false;
             BindLocationList();
+
             timer.Tick += new EventHandler(timer_Tick);
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
             selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -64,6 +65,49 @@ namespace SongPresenter
             AboutDialog dialog = new AboutDialog();
             dialog.Owner = this;
             dialog.ShowDialog();
+        }
+
+        protected void ReportsList_Click(object sender, RoutedEventArgs e)
+        {
+            ReportsListDialog dialog = new ReportsListDialog();
+            dialog.Owner = this;
+            dialog.ShowDialog();
+        }
+
+        protected void ReportsUsage_Click(object sender, RoutedEventArgs e)
+        {
+            ReportsUsageDialog dialog = new ReportsUsageDialog();
+            dialog.Owner = this;
+            dialog.ShowDialog();
+        }
+
+        protected void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            bool ctrl = (e.KeyboardDevice.IsKeyDown(Key.RightCtrl) || e.KeyboardDevice.IsKeyDown(Key.LeftCtrl));
+            bool ctrlr = (e.KeyboardDevice.IsKeyDown(Key.R) && ctrl);
+            bool ctrlo = (e.KeyboardDevice.IsKeyDown(Key.O) && ctrl);
+            bool ctrlm = (e.KeyboardDevice.IsKeyDown(Key.M) && ctrl);
+            bool esc = e.Key == Key.Escape;
+
+            //remote control
+            if (ctrlr && RemotePanel.Visibility == Visibility.Hidden)
+                RemoteMode_Click(null, null);
+            else if ((ctrlr || esc) && RemotePanel.Visibility == Visibility.Visible)
+            {
+                RemotePanel.Visibility = Visibility.Hidden;
+                ReleaseCursor();
+            }
+
+            //messenger
+            if (ctrlm)
+            {
+                ShowMessageMenuItem.IsChecked = !ShowMessageMenuItem.IsChecked;
+                ShowMessage(null, null);
+            }
+
+            //options
+            if (ctrlo)
+                Options_Click(null, null);
         }
         #endregion
 
@@ -127,9 +171,8 @@ namespace SongPresenter
             if (LocationList.SelectedIndex == -1)
                 return;
 
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
-            p.StartInfo.FileName = Config.LibraryPath + LocationList.SelectedValue + "\\" + FileList.SelectedValue;
-            p.Start();
+            string filename = Config.LibraryPath + LocationList.SelectedValue + "\\" + FileList.SelectedValue; ;
+            System.Diagnostics.Process.Start(filename);
         }
 
         protected void FileList_KeyUp(object sender, KeyEventArgs e)
@@ -244,9 +287,7 @@ namespace SongPresenter
                 return;
 
             //check that file exists and if not show friendly message box
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
-            p.StartInfo.FileName = ((Item)ScheduleList.SelectedItem).Filename;
-            p.Start();
+            System.Diagnostics.Process.Start(((Item)ScheduleList.SelectedItem).Filename);
         }
 
         protected void RemoveFile(object sender, RoutedEventArgs e)
@@ -340,7 +381,7 @@ namespace SongPresenter
             Expander1.Visibility = Visibility.Visible;
             ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Hidden);
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Visible);
-            LiveList.SelectedIndex = -1;
+            LiveList.SelectedIndex = 0;
             PrevBtn.Content = Labels.MainBtnPrev;
             NextBtn.Content = Labels.MainBtnNext;
             RefreshBtn.Visibility = Visibility.Hidden;
@@ -361,7 +402,7 @@ namespace SongPresenter
                 Presentation.SlideAdded += new EventHandler<SlideAddedEventArgs>(Presentation_SlideAdded);
             }
 
-            Action prepare = new Action(() => Presentation.Start(SelectedSchedule.Items.OrderBy(i => i.Ordinal)));
+            Action prepare = new Action(() => Presentation.Start(SelectedSchedule));
             prepare.BeginInvoke(null, null);
         }
 
@@ -487,22 +528,94 @@ namespace SongPresenter
         }
         #endregion
 
-        #region remote_ctrl
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        #region message_box
+        protected void ShowMessage(object sender, RoutedEventArgs e)
         {
-            bool ctrlr = (e.KeyboardDevice.IsKeyDown(Key.R) && (e.KeyboardDevice.IsKeyDown(Key.RightCtrl) || e.KeyboardDevice.IsKeyDown(Key.LeftCtrl)));
-            bool esc = e.Key == Key.Escape;
-
-            if (ctrlr && RemotePanel.Visibility == Visibility.Hidden)
-                RemoteMode_Click(null, null);
-            else if ((ctrlr || esc) && RemotePanel.Visibility == Visibility.Visible)
+            if (!ShowMessageMenuItem.IsChecked)
             {
-                RemotePanel.Visibility = Visibility.Hidden;
-                ReleaseCursor();
+                if (messageBox != null)
+                {
+                    messageBox.Close();
+                    messageBox = null;
+                }
+                return;
             }
+
+            ShowMessageMenuItem.IsChecked = false;
+            Button showBtn = new Button() { Width = 100, Height = 25, Content = Labels.ShowMessageButton, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(10) };
+            showBtn.Click += new RoutedEventHandler(showBtn_Click);
+            TextBox txtBx = new TextBox() { Name = "MessageValue", Width = 500, Height = 25, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(10) };
+            Grid grid = new Grid();
+            grid.Children.Add(txtBx);
+            grid.Children.Add(showBtn);
+            Window prompt = new Window();
+            prompt.Title = Labels.ShowMessageWindowTitle;
+            prompt.Content = grid;
+            prompt.ShowInTaskbar = false;
+            prompt.Owner = this;
+            prompt.Width = 650;
+            prompt.Height = 100;
+            prompt.ResizeMode = ResizeMode.NoResize;
+            prompt.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            prompt.Loaded += (sen, args) => { txtBx.Focus(); };
+            prompt.KeyDown += (sen, args) => { if (args.KeyboardDevice.IsKeyDown(Key.Enter)) showBtn_Click(showBtn, null); };
+            prompt.ShowDialog();
         }
 
-        private void RemoteMode_Click(object sender, RoutedEventArgs e)
+        Window messageBox = null;
+        protected void showBtn_Click(object sender, RoutedEventArgs e)
+        {
+            string message = (((sender as Button).Parent as Grid).Children[0] as TextBox).Text;
+            (((sender as Button).Parent as Grid).Parent as Window).Close();
+            if (message == "")
+                return;
+
+            ShowMessageMenuItem.IsChecked = true;
+            var projector = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Config.ProjectorScreen) ?? System.Windows.Forms.Screen.PrimaryScreen;
+
+            Grid grid = new Grid();
+            grid.Children.Add(new Label() { Content = message, Foreground = new SolidColorBrush(Config.MessengerFontColour), FontSize = Config.MessengerFontSize, FontFamily = Config.MessengerFontFamily });
+            messageBox = new Window();
+            messageBox.Content = grid;
+            messageBox.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            messageBox.WindowStyle = WindowStyle.None;
+            messageBox.SizeToContent = SizeToContent.WidthAndHeight;
+            messageBox.Topmost = true;
+            messageBox.ResizeMode = ResizeMode.NoResize;
+            messageBox.ShowInTaskbar = false;
+            messageBox.Show();
+            this.Focus();
+
+            switch (Config.MessengerVerticalPosition)
+            {
+                case VerticalAlignment.Top:
+                    messageBox.Top = projector.WorkingArea.Top;
+                    break;
+                case VerticalAlignment.Bottom:
+                    messageBox.Top = projector.WorkingArea.Bottom - messageBox.ActualHeight;
+                    break;
+                default:
+                    messageBox.Top = (projector.WorkingArea.Height - messageBox.ActualHeight) / 2 + projector.WorkingArea.Top;
+                    break;
+            }
+
+            switch (Config.MessengerHorizontalPosition)
+            {
+                case HorizontalAlignment.Left:
+                    messageBox.Left = projector.WorkingArea.Left;
+                    break;
+                case HorizontalAlignment.Right:
+                    messageBox.Left = projector.WorkingArea.Right - messageBox.ActualWidth;
+                    break;
+                default:
+                    messageBox.Left = (projector.WorkingArea.Width - messageBox.ActualWidth) / 2 + projector.WorkingArea.Left;
+                    break;
+            }
+        }
+        #endregion
+
+        #region remote_ctrl
+         private void RemoteMode_Click(object sender, RoutedEventArgs e)
         {
             if (Presentation == null || !Presentation.IsRunning)
             {

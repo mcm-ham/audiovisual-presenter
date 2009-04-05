@@ -20,17 +20,17 @@ namespace SongPresenter.App_Code
 
         public static string[] ImageFormats
         {
-            get { return ConfigurationManager.AppSettings["ImageFormats"].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim()).ToArray(); }
+            get { return ConfigurationManager.AppSettings["ImageFormats"].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
         }
 
         public static string[] VideoFormats
         {
-            get { return ConfigurationManager.AppSettings["VideoFormats"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim()).ToArray(); }
+            get { return ConfigurationManager.AppSettings["VideoFormats"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
         }
 
         public static string[] AudioFormats
         {
-            get { return ConfigurationManager.AppSettings["AudioFormats"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim()).ToArray(); }
+            get { return ConfigurationManager.AppSettings["AudioFormats"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
         }
 
         private static string _path;
@@ -106,6 +106,55 @@ namespace SongPresenter.App_Code
                     Directory.CreateDirectory(temp);
                 return temp;
             }
+        }
+
+        public static bool KeepPresentations
+        {
+            get { return Util.Parse<bool>(ConfigurationManager.AppSettings["KeepPresentations"]); }
+        }
+
+        public static string PresentationPath
+        {
+            get
+            {
+                string path = ConfigurationManager.AppSettings["PresentationPath"];
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                return Path.GetFullPath(path);
+            }
+        }
+
+        public static Color MessengerFontColour
+        {
+            get
+            {
+                try { return (Color)ColorConverter.ConvertFromString(ConfigurationManager.AppSettings["MessengerFont"].Split(' ')[2]); }
+                catch (Exception) { return Color.FromRgb(255, 255, 255); }
+            }
+        }
+
+        public static double MessengerFontSize
+        {
+            get { return Util.Parse<double?>(ConfigurationManager.AppSettings["MessengerFont"].Split(' ')[0]) ?? 25; }
+        }
+
+        public static FontFamily MessengerFontFamily
+        {
+            get
+            {
+                try { return new FontFamily(ConfigurationManager.AppSettings["MessengerFont"].Split(' ')[1]); }
+                catch (Exception) { return new FontFamily("Arial"); }
+            }
+        }
+
+        public static VerticalAlignment MessengerVerticalPosition
+        {
+            get { return Util.Parse<VerticalAlignment?>(ConfigurationManager.AppSettings["MessengerPosition"].Split(' ')[0].ToFirstUpper()) ?? VerticalAlignment.Bottom; }
+        }
+
+        public static HorizontalAlignment MessengerHorizontalPosition
+        {
+            get { return Util.Parse<HorizontalAlignment?>(ConfigurationManager.AppSettings["MessengerPosition"].Split(' ')[1].ToFirstUpper()) ?? HorizontalAlignment.Left; }
         }
     }
 }

@@ -24,6 +24,28 @@ namespace SongPresenter.App_Code
                 action.Invoke(elm);
         }
 
+        /// <summary>
+        /// Makes the first letter of the word upper case and the rest of the letters lower case.
+        /// </summary>
+        public static string ToFirstUpper(this string value)
+        {
+            if (String.IsNullOrEmpty(value))
+                return String.Empty;
+
+            value = value.Trim();
+            StringBuilder res = new StringBuilder(char.ToUpper(value[0]).ToString());
+
+            for (int i = 1; i < value.Length; i++)
+            {
+                if (value[i] == ' ')
+                    res.Append(" " + char.ToUpper(value[++i]));
+                else
+                    res.Append(char.ToLower(value[i]));
+            }
+
+            return res.ToString();
+        }
+
         public static Image ToImage(this byte[] data)
         {
             MemoryStream stream = new MemoryStream(data.Length);
