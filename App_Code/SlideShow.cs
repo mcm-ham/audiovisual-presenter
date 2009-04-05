@@ -27,10 +27,15 @@ namespace SongPresenter.App_Code
                     _cpath = Config.TempPath + "current.ppt";
                 return _cpath;
             }
+            set { _cpath = value; }
         }
 
-        public void Start(IEnumerable<Item> items)
+        public void Start(Schedule schedule)
         {
+            if (Config.KeepPresentations)
+                CPath = Config.PresentationPath + schedule.DisplayName + ".ppt";
+            
+            IEnumerable<Item> items = schedule.Items.OrderBy(i => i.Ordinal);
             IsRunning = true;
 
             //if (app == null)
@@ -43,7 +48,7 @@ namespace SongPresenter.App_Code
             app.WindowState = PP.PpWindowState.ppWindowMinimized;
             Core.MsoTriState showWindow = Core.MsoTriState.msoTrue;
 
-            if (!File.Exists(CPath))
+            //if (!File.Exists(CPath))
             {
                 _slides.Clear();
                 if (SlideAdded != null)
@@ -62,15 +67,15 @@ namespace SongPresenter.App_Code
 
                 running.SaveAs(CPath, (PP.PpSaveAsFileType)filetype, Core.MsoTriState.msoFalse);
             }
-            else
-            {
-                running = app.Presentations.Open(CPath, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
+            //else
+            //{
+            //    running = app.Presentations.Open(CPath, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
 
-                for (int i = 1; i <= Math.Min(Slides.Length, running.Slides.Count); i++)
-                    Slides[i - 1].PSlide = running.Slides._Index(i);
+            //    for (int i = 1; i <= Math.Min(Slides.Length, running.Slides.Count); i++)
+            //        Slides[i - 1].PSlide = running.Slides._Index(i);
 
-                running.SlideShowSettings.Run();
-            }
+            //    running.SlideShowSettings.Run();
+            //}
 
             //close master slide view
             PP.DocumentWindow wnd = ((PP.DocumentWindow)app.Windows._Index(1));
@@ -277,7 +282,6 @@ namespace SongPresenter.App_Code
             {
                 slide.Copy();
                 PP.SlideRange range = dest.Slides.Paste(dest.Slides.Count + 1);
-                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count));
 
                 //fix weird bug where font size is not kept on some text frames
                 for (int i = 1; i <= range.Shapes.Count; i++)
@@ -302,6 +306,10 @@ namespace SongPresenter.App_Code
                 else
                     range.ColorScheme = (PP.ColorScheme)dest.ColorSchemes._Index(schemes[slide.ColorScheme]);
 
+                //place this code after assigning master slide because if mouse happens to be hovering over the
+                //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
+                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count));
+                
                 if (slide.FollowMasterBackground == Core.MsoTriState.msoTrue)
                     continue;
 

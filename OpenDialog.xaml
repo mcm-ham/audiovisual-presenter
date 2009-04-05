@@ -4,7 +4,7 @@
     xmlns:dc="clr-namespace:Microsoft.Samples.DateControls"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.OpenWindowTitle}" Height="360" Width="560" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+    Title="{x:Static Loc:Labels.OpenWindowTitle}" Height="360" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
     <Grid>
         
         <GroupBox Name="groupBox1" Header="{x:Static Loc:Labels.OpenHeaderNew}" Width="260" Margin="10" Padding="5" HorizontalAlignment="Left">

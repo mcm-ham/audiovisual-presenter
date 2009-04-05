@@ -1,0 +1,31 @@
+﻿<Window x:Class="SongPresenter.ReportsListDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Loc="clr-namespace:SongPresenter.Resources"
+    xml:lang="en-US"
+    Title="{x:Static Loc:Labels.ReportsListWindowTitle}" Width="560" SizeToContent="Height" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+    <Grid>
+
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="540" Margin="10">
+            <TextBlock Text="{x:Static Loc:Labels.ReportsListSelectionDesc}" Margin="0,0,0,10"/>
+            
+            <ListBox Name="LibraryList" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding}" Margin="2" Click="CheckBox_Click" Loaded="CheckBox_Loaded" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="3" IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,20,0">
+                <Button Height="23" HorizontalAlignment="Right" Margin="0,0,10,0" Name="button1" VerticalAlignment="Bottom" Width="75" Click="Ok_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+                <Button Height="23" HorizontalAlignment="Right" Name="button2" VerticalAlignment="Bottom" Width="75" Click="Cancel_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
