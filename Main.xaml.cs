@@ -610,6 +610,10 @@ namespace SongPresenter
                     messageBox.Left = (Config.ProjectorScreen.WorkingArea.Width - messageBox.ActualWidth) / 2 + Config.ProjectorScreen.WorkingArea.Left;
                     break;
             }
+
+            Point dpi = Util.GetResolution(messageBox);
+            messageBox.Top /= (dpi.Y / 96);
+            messageBox.Left /= (dpi.X / 96);
         }
         #endregion
 
