@@ -7,6 +7,8 @@ using System.Drawing;
 using System.IO;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Windows;
+using Point = System.Windows.Point;
 
 namespace SongPresenter.App_Code
 {
@@ -114,6 +116,27 @@ namespace SongPresenter.App_Code
                 resizedImage.SetPropertyItem(item);
 
             return resizedImage;
+        }
+
+        public static Point GetResolution(Visual visual)
+        {
+            Point dpi = new Point(96, 96);
+
+            PresentationSource source = PresentationSource.FromVisual(visual);
+            if (source == null)
+                return dpi;
+
+            MatrixTransform t = new MatrixTransform(source.CompositionTarget.TransformToDevice);
+
+            Point pt1 = new Point(0, 0);
+            pt1 = t.Transform(pt1);
+
+            Point pt2 = new Point(96, 96);
+            pt2 = t.Transform(pt2);
+
+            dpi.X = pt2.X - pt1.X;
+            dpi.Y = pt2.Y - pt1.Y;
+            return dpi;
         }
     }
 }
