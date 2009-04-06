@@ -119,7 +119,8 @@ namespace SongPresenter.App_Code
             //call this code leading to an eternal loop
             IsRunning = false;
 
-            running.Close();
+            try { running.Close(); }
+            catch (InvalidCastException) { }
             running = null;
         }
 
@@ -140,6 +141,11 @@ namespace SongPresenter.App_Code
             {
                 if (!ex.Message.Contains("There is currently no slide show"))
                     throw ex;
+            }
+            catch (InvalidCastException)
+            {
+                //the presentation has exited and the presentation reference (running) is now old
+                app_SlideShowEnd(null);
             }
         }
 

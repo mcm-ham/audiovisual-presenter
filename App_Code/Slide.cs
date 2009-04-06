@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Runtime.InteropServices;
+using PP = Microsoft.Office.Interop.PowerPoint;
 
 namespace SongPresenter.App_Code
 {
@@ -25,7 +26,7 @@ namespace SongPresenter.App_Code
             {
                 if (_preview == null)
                 {
-                    if (Config.ThumbHeight == 0 || Config.ThumbWidth == 0 || PSlide == null)
+                    if (Config.ThumbHeight == 0 || Config.ThumbWidth == 0 || PSlide as PP.Slide == null)
                         return null;
                     
                     _preview = SlideShow.ExportToImage(PSlide, SlideIndex, "-preview", Config.ThumbWidth, Config.ThumbHeight);

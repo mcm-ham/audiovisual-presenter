@@ -529,6 +529,7 @@ namespace SongPresenter
         #endregion
 
         #region message_box
+        Window messageBox = null;
         protected void ShowMessage(object sender, RoutedEventArgs e)
         {
             if (!ShowMessageMenuItem.IsChecked)
@@ -541,79 +542,12 @@ namespace SongPresenter
                 return;
             }
 
-            ShowMessageMenuItem.IsChecked = false;
-            Button showBtn = new Button() { Width = 100, Height = 25, Content = Labels.ShowMessageButton, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(10) };
-            showBtn.Click += new RoutedEventHandler(showBtn_Click);
-            TextBox txtBx = new TextBox() { Name = "MessageValue", Width = 500, Height = 25, HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(10) };
-            Grid grid = new Grid();
-            grid.Children.Add(txtBx);
-            grid.Children.Add(showBtn);
-            Window prompt = new Window();
-            prompt.Title = Labels.ShowMessageWindowTitle;
-            prompt.Content = grid;
-            prompt.ShowInTaskbar = false;
+            ScreenMessage prompt = new ScreenMessage();
             prompt.Owner = this;
-            prompt.Width = 650;
-            prompt.Height = 100;
-            prompt.ResizeMode = ResizeMode.NoResize;
-            prompt.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            prompt.Loaded += (sen, args) => { txtBx.Focus(); };
-            prompt.KeyDown += (sen, args) => { if (args.KeyboardDevice.IsKeyDown(Key.Enter)) showBtn_Click(showBtn, null); };
+            prompt.ShowInTaskbar = false;
+            prompt.Closed += (sen, args) => { ShowMessageMenuItem.IsChecked = ((sen as ScreenMessage).MessageBox != null); };
             prompt.ShowDialog();
-        }
-
-        Window messageBox = null;
-        protected void showBtn_Click(object sender, RoutedEventArgs e)
-        {
-            string message = (((sender as Button).Parent as Grid).Children[0] as TextBox).Text;
-            (((sender as Button).Parent as Grid).Parent as Window).Close();
-            if (message == "")
-                return;
-
-            ShowMessageMenuItem.IsChecked = true;
-
-            Grid grid = new Grid();
-            grid.Children.Add(new Label() { Content = message, Foreground = new SolidColorBrush(Config.MessengerFontColour), FontSize = Config.MessengerFontSize, FontFamily = Config.MessengerFontFamily });
-            messageBox = new Window();
-            messageBox.Content = grid;
-            messageBox.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-            messageBox.WindowStyle = WindowStyle.None;
-            messageBox.SizeToContent = SizeToContent.WidthAndHeight;
-            messageBox.Topmost = true;
-            messageBox.ResizeMode = ResizeMode.NoResize;
-            messageBox.ShowInTaskbar = false;
-            messageBox.Show();
-            this.Focus();
-
-            switch (Config.MessengerVerticalPosition)
-            {
-                case VerticalAlignment.Top:
-                    messageBox.Top = Config.ProjectorScreen.WorkingArea.Top;
-                    break;
-                case VerticalAlignment.Bottom:
-                    messageBox.Top = Config.ProjectorScreen.WorkingArea.Bottom - messageBox.ActualHeight;
-                    break;
-                default:
-                    messageBox.Top = (Config.ProjectorScreen.WorkingArea.Height - messageBox.ActualHeight) / 2 + Config.ProjectorScreen.WorkingArea.Top;
-                    break;
-            }
-
-            switch (Config.MessengerHorizontalPosition)
-            {
-                case HorizontalAlignment.Left:
-                    messageBox.Left = Config.ProjectorScreen.WorkingArea.Left;
-                    break;
-                case HorizontalAlignment.Right:
-                    messageBox.Left = Config.ProjectorScreen.WorkingArea.Right - messageBox.ActualWidth;
-                    break;
-                default:
-                    messageBox.Left = (Config.ProjectorScreen.WorkingArea.Width - messageBox.ActualWidth) / 2 + Config.ProjectorScreen.WorkingArea.Left;
-                    break;
-            }
-
-            Point dpi = Util.GetResolution(messageBox);
-            messageBox.Top /= (dpi.Y / 96);
-            messageBox.Left /= (dpi.X / 96);
+            messageBox = prompt.MessageBox;
         }
         #endregion
 
