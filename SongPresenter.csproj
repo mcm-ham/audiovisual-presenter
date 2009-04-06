@@ -136,6 +136,9 @@
     <Compile Include="Main.xaml.cs">
       <DependentUpon>Main.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ScreenMessage.xaml.cs">
+      <DependentUpon>ScreenMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="OpenDialog.xaml.cs">
       <DependentUpon>OpenDialog.xaml</DependentUpon>
     </Compile>
@@ -191,6 +194,10 @@
     <Page Include="Main.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ScreenMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="OpenDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

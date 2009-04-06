@@ -138,5 +138,17 @@ namespace SongPresenter.App_Code
             dpi.Y = pt2.Y - pt1.Y;
             return dpi;
         }
+
+        public static string FormatTimeSpan(this TimeSpan span, bool showSign)
+        {
+            string sign = String.Empty;
+            if (showSign && (span > TimeSpan.Zero))
+                sign = "+";
+
+            return sign +
+                   (span.Hours > 0 ? span.Hours.ToString("00") + ":" : "") +
+                   span.Minutes.ToString("00") + ":" +
+                   span.Seconds.ToString("00");
+        }
     }
 }

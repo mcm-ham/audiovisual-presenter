@@ -80,8 +80,8 @@ namespace SongPresenter.App_Code
             {
                 if (_screen == null)
                 {
-                    string key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", false).GetValue("DisplayMonitor") as string ?? System.Windows.Forms.Screen.PrimaryScreen.DeviceName;
-                    _screen = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => s.DeviceName.StartsWith(key));
+                    string key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", false).GetValue("DisplayMonitor") as string;
+                    _screen = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => s.DeviceName.StartsWith(key)) ?? System.Windows.Forms.Screen.PrimaryScreen;
                 }
                 return _screen;
             }

@@ -361,8 +361,29 @@
   <data name="ReportsUsageWindowTitle" xml:space="preserve">
     <value>Usage Reports</value>
   </data>
+  <data name="ShowMessageAddTimerDown" xml:space="preserve">
+    <value>down</value>
+  </data>
+  <data name="ShowMessageAddTimerEnd" xml:space="preserve">
+    <value>sec.</value>
+  </data>
+  <data name="ShowMessageAddTimerMiddle1" xml:space="preserve">
+    <value>timer starting at</value>
+  </data>
+  <data name="ShowMessageAddTimerMiddle2" xml:space="preserve">
+    <value>timer finishing at</value>
+  </data>
+  <data name="ShowMessageAddTimerStart" xml:space="preserve">
+    <value>Add a count</value>
+  </data>
+  <data name="ShowMessageAddTimerUp" xml:space="preserve">
+    <value>up</value>
+  </data>
   <data name="ShowMessageButton" xml:space="preserve">
     <value>Show</value>
+  </data>
+  <data name="ShowMessageDesc" xml:space="preserve">
+    <value>Enter message:</value>
   </data>
   <data name="ShowMessageWindowTitle" xml:space="preserve">
     <value>Message Box</value>
