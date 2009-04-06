@@ -22,7 +22,7 @@ namespace SongPresenter
             {
                 MonitorSelection.Items.Add(Labels.OptionsMonitorTitle + " " + (i + 1) + (Screen.AllScreens[i].Primary ? " [" + Labels.OptionsMonitorPrimary + "]" : ""));
 
-                if (Screen.AllScreens[i].DeviceName == Config.ProjectorScreen)
+                if (Screen.AllScreens[i] == Config.ProjectorScreen)
                     MonitorSelection.SelectedIndex = i;
             }
             
@@ -42,7 +42,7 @@ namespace SongPresenter
             Config.SlidePreviewPopupDelay = Util.Parse<double>(PreviewDelay.Text);
 
             if (MonitorSelection.SelectedIndex != -1)
-                Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex].DeviceName;
+                Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex];
 
             (Owner as Main).BindLocationList();
             this.Close();

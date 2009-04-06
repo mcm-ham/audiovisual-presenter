@@ -22,9 +22,8 @@ namespace SongPresenter
             InitializeComponent();
             VideoDisplay.Player = player;
 
-            Screen projector = Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Config.ProjectorScreen) ?? Screen.PrimaryScreen;
-            this.Left = projector.WorkingArea.Left;
-            this.Top = projector.WorkingArea.Top;
+            this.Left = Config.ProjectorScreen.WorkingArea.Left;
+            this.Top = Config.ProjectorScreen.WorkingArea.Top;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

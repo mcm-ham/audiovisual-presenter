@@ -73,10 +73,23 @@ namespace SongPresenter.App_Code
             set { SaveSetting("SlidePreviewPopupDelay", value.ToString()); }
         }
 
-        public static string ProjectorScreen
+        private static System.Windows.Forms.Screen _screen;
+        public static System.Windows.Forms.Screen ProjectorScreen
         {
-            get { return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", false).GetValue("DisplayMonitor") as string ?? System.Windows.Forms.Screen.PrimaryScreen.DeviceName; }
-            set { Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", true).SetValue("DisplayMonitor", value); }
+            get
+            {
+                if (_screen == null)
+                {
+                    string key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", false).GetValue("DisplayMonitor") as string ?? System.Windows.Forms.Screen.PrimaryScreen.DeviceName;
+                    _screen = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => s.DeviceName.StartsWith(key));
+                }
+                return _screen;
+            }
+            set
+            {
+                _screen = value;
+                Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", true).SetValue("DisplayMonitor", value.DeviceName);
+            }
         }
 
         public static string PowerpointVersion

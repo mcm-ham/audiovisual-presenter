@@ -571,7 +571,6 @@ namespace SongPresenter
                 return;
 
             ShowMessageMenuItem.IsChecked = true;
-            var projector = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Config.ProjectorScreen) ?? System.Windows.Forms.Screen.PrimaryScreen;
 
             Grid grid = new Grid();
             grid.Children.Add(new Label() { Content = message, Foreground = new SolidColorBrush(Config.MessengerFontColour), FontSize = Config.MessengerFontSize, FontFamily = Config.MessengerFontFamily });
@@ -589,26 +588,26 @@ namespace SongPresenter
             switch (Config.MessengerVerticalPosition)
             {
                 case VerticalAlignment.Top:
-                    messageBox.Top = projector.WorkingArea.Top;
+                    messageBox.Top = Config.ProjectorScreen.WorkingArea.Top;
                     break;
                 case VerticalAlignment.Bottom:
-                    messageBox.Top = projector.WorkingArea.Bottom - messageBox.ActualHeight;
+                    messageBox.Top = Config.ProjectorScreen.WorkingArea.Bottom - messageBox.ActualHeight;
                     break;
                 default:
-                    messageBox.Top = (projector.WorkingArea.Height - messageBox.ActualHeight) / 2 + projector.WorkingArea.Top;
+                    messageBox.Top = (Config.ProjectorScreen.WorkingArea.Height - messageBox.ActualHeight) / 2 + Config.ProjectorScreen.WorkingArea.Top;
                     break;
             }
 
             switch (Config.MessengerHorizontalPosition)
             {
                 case HorizontalAlignment.Left:
-                    messageBox.Left = projector.WorkingArea.Left;
+                    messageBox.Left = Config.ProjectorScreen.WorkingArea.Left;
                     break;
                 case HorizontalAlignment.Right:
-                    messageBox.Left = projector.WorkingArea.Right - messageBox.ActualWidth;
+                    messageBox.Left = Config.ProjectorScreen.WorkingArea.Right - messageBox.ActualWidth;
                     break;
                 default:
-                    messageBox.Left = (projector.WorkingArea.Width - messageBox.ActualWidth) / 2 + projector.WorkingArea.Left;
+                    messageBox.Left = (Config.ProjectorScreen.WorkingArea.Width - messageBox.ActualWidth) / 2 + Config.ProjectorScreen.WorkingArea.Left;
                     break;
             }
         }
