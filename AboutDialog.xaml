@@ -7,9 +7,9 @@
     <Grid>
         <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="174" Margin="25,14,0,0" Padding="0" FontSize="20" Text="{x:Static Loc:Labels.AboutHeader}" />
         <TextBlock Margin="25,54,25,50" TextWrapping="Wrap" Text="{x:Static Loc:Labels.AboutDesc}" />
-        <TextBlock Margin="25,85,25,0" Text="{x:Static Loc:Labels.AboutEmailTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="mailto:info@softministry.com" RequestNavigate="Hyperlink_RequestNavigate">info@softministry.com</Hyperlink></TextBlock>
-        <TextBlock Margin="25,100,25,0" Text="{x:Static Loc:Labels.AboutWebsiteTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.softministry.com/" RequestNavigate="Hyperlink_RequestNavigate">www.softministry.com</Hyperlink></TextBlock>
-        <!--<TextBlock Margin="25,115,25,0" Text="{x:Static Loc:Labels.AboutForumTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.softministry.com/forum/" RequestNavigate="Hyperlink_RequestNavigate">www.softministry.com/forum</Hyperlink></TextBlock>-->
+        <TextBlock Margin="25,85,25,0" Text="{x:Static Loc:Labels.AboutEmailTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="mailto:info@ministrysoft.com" RequestNavigate="Hyperlink_RequestNavigate">info@ministrysoft.com</Hyperlink></TextBlock>
+        <TextBlock Margin="25,100,25,0" Text="{x:Static Loc:Labels.AboutWebsiteTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.ministrysoft.com/" RequestNavigate="Hyperlink_RequestNavigate">www.ministrysoft.com</Hyperlink></TextBlock>
+        <!--<TextBlock Margin="25,115,25,0" Text="{x:Static Loc:Labels.AboutForumTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.ministrysoft.com/forum/" RequestNavigate="Hyperlink_RequestNavigate">www.ministrysoft.com/forum</Hyperlink></TextBlock>-->
         <TextBlock Margin="25,130,25,0" Text="{x:Static Loc:Labels.AboutVersionTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text=" " />0.9.2 Beta</TextBlock>
         <Button Height="23" HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Width="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
     </Grid>
