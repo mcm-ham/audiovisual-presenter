@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +9,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Microsoft.Samples.DateControls;
 using SongPresenter.App_Code;
 using SongPresenter.Resources;
 
@@ -44,15 +42,15 @@ namespace SongPresenter
             ScheduleList.ItemsSource = Schedule.LoadSchedules(_mth);
         }
 
-        protected void monthCalendar_VisibleMonthChanged(object sender, RoutedPropertyChangedEventArgs<DateTime> e)
-        {
-            _mth = e.NewValue;
-            BindScheduleList();
-        }
-
-        protected void monthCalendar_DateSelectionChanged(object sender, DateSelectionChangedEventArgs e)
+        private void monthCalendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
             DatePreview.Text = monthCalendar.SelectedDate.HasValue ? monthCalendar.SelectedDate.Value.ToLongDateString() : "";
+        }
+
+        private void monthCalendar_DisplayDateChanged(object sender, Microsoft.Windows.Controls.CalendarDateChangedEventArgs e)
+        {
+            _mth = e.AddedDate ?? DateTime.Now;
+            BindScheduleList();
         }
 
         protected void ScheduleList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -88,7 +86,11 @@ namespace SongPresenter
 
             ScheduleName.Text = "";
             BindScheduleList();
+
+            //note since ADO.NET is being used the object instance below is the same as what
+            //BindScheduleList retrieved therefore the line below works
             ScheduleList.SelectedValue = schedule;
+            
             Open_Click(null, null);
         }
 

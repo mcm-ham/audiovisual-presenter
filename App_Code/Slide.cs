@@ -25,12 +25,7 @@ namespace SongPresenter.App_Code
             get
             {
                 if (_preview == null)
-                {
-                    if (Config.ThumbHeight == 0 || Config.ThumbWidth == 0 || PSlide as PP.Slide == null)
-                        return null;
-                    
-                    _preview = SlideShow.ExportToImage(PSlide, SlideIndex, "-preview", Config.ThumbWidth, Config.ThumbHeight);
-                }
+                    _preview = SlideShow.ExportToImage(PSlide, SlideIndex, "-preview", 333, 250);
                 return _preview;
             }
         }

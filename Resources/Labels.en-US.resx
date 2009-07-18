@@ -162,6 +162,9 @@
   <data name="GenericOk" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="MainBtnAdd" xml:space="preserve">
+    <value>Add</value>
+  </data>
   <data name="MainBtnMoveDown" xml:space="preserve">
     <value>Move Down</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="MainBtnRefresh" xml:space="preserve">
     <value>Refresh</value>
+  </data>
+  <data name="MainBtnRemove" xml:space="preserve">
+    <value>Remove</value>
   </data>
   <data name="MainBtnStart" xml:space="preserve">
     <value>Start</value>
@@ -357,6 +363,25 @@
   </data>
   <data name="ReportsListWindowTitle" xml:space="preserve">
     <value>Library List Report</value>
+  </data>
+  <data name="ReportsUsageDocFilename" xml:space="preserve">
+    <value>Presenter Usage Report</value>
+  </data>
+  <data name="ReportsUsageDocTitle" xml:space="preserve">
+    <value>Presenter usage report from {0} to {1}</value>
+    <comment>{0} &amp; {1} will get replaced by the from and to dates by Presenter</comment>
+  </data>
+  <data name="ReportsUsageDownloadBtn" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="ReportsUsageGenerateBtn" xml:space="preserve">
+    <value>Generate</value>
+  </data>
+  <data name="ReportsUsageLabelFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="ReportsUsageLabelTo" xml:space="preserve">
+    <value>To</value>
   </data>
   <data name="ReportsUsageWindowTitle" xml:space="preserve">
     <value>Usage Reports</value>

@@ -14,9 +14,6 @@ namespace SongPresenter
             InitializeComponent();
 
             LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"];
-            ThumbHeight.Text = Config.ThumbHeight.ToString();
-            ThumbWidth.Text = Config.ThumbWidth.ToString();
-            PreviewDelay.Text = Config.SlidePreviewPopupDelay.ToString();
 
             for (int i = 0; i < Screen.AllScreens.Length; i++)
             {
@@ -37,9 +34,6 @@ namespace SongPresenter
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             Config.LibraryPath = LibraryPath.Text;
-            Config.ThumbHeight = Util.Parse<int>(ThumbHeight.Text);
-            Config.ThumbWidth = Util.Parse<int>(ThumbWidth.Text);
-            Config.SlidePreviewPopupDelay = Util.Parse<double>(PreviewDelay.Text);
 
             if (MonitorSelection.SelectedIndex != -1)
                 Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex];

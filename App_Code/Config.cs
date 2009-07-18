@@ -52,27 +52,6 @@ namespace SongPresenter.App_Code
             }
         }
 
-        public static int ThumbWidth
-        {
-            get { return Util.Parse<int>(ConfigurationManager.AppSettings["ThumbWidth"]); }
-            set { SaveSetting("ThumbWidth", value.ToString()); }
-        }
-
-        public static int ThumbHeight
-        {
-            get { return Util.Parse<int>(ConfigurationManager.AppSettings["ThumbHeight"]); }
-            set { SaveSetting("ThumbHeight", value.ToString()); }
-        }
-
-        /// <summary>
-        /// The delay in seconds before the slide preview popup should show
-        /// </summary>
-        public static double SlidePreviewPopupDelay
-        {
-            get { return Util.Parse<double>(ConfigurationManager.AppSettings["SlidePreviewPopupDelay"]); }
-            set { SaveSetting("SlidePreviewPopupDelay", value.ToString()); }
-        }
-
         private static System.Windows.Forms.Screen _screen;
         public static System.Windows.Forms.Screen ProjectorScreen
         {
