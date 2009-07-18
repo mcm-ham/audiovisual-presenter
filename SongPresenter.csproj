@@ -113,7 +113,6 @@
     <Compile Include="App_Code\Schedule.cs" />
     <Compile Include="App_Code\Slide.cs" />
     <Compile Include="App_Code\SlideShow.cs" />
-    <Compile Include="App_Code\SupportingClasses.cs" />
     <Compile Include="App_Code\Util.cs" />
     <Compile Include="FullscreenVideo.xaml.cs">
       <DependentUpon>FullscreenVideo.xaml</DependentUpon>
@@ -199,10 +198,6 @@
     <Page Include="ReportsUsageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
