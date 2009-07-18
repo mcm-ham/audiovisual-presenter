@@ -32,6 +32,19 @@ namespace SongPresenter
             timer.Tick += new EventHandler(timer_Tick);
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
             selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
+
+            //listviewitem on winxp does not highlight on hover by default so we add a hover colour below
+            if (Environment.OSVersion.Version.Major < 6)
+            {
+                Setter setter = new Setter();
+                setter.Property = ListViewItem.BackgroundProperty;
+                setter.Value = new SolidColorBrush(new Color() { A = 255, R = 180, G = 230, B = 253});
+                Trigger trigger = new Trigger();
+                trigger.Property = ListViewItem.IsMouseOverProperty;
+                trigger.Value = true;
+                trigger.Setters.Add(setter);
+                LiveList.ItemContainerStyle.Triggers.Add(trigger);
+            }
         }
 
         #region menu
@@ -414,8 +427,7 @@ namespace SongPresenter
                 Presentation.SlideAdded += new EventHandler<SlideAddedEventArgs>(Presentation_SlideAdded);
             }
 
-            Action<object> prepare = new Action<object>((object p) => Presentation.Start(SelectedSchedule) );
-            prepare.BeginInvoke(null, null, null);
+            new Action(() => Presentation.Start(SelectedSchedule) ).BeginInvoke(null, null);
         }
 
         protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -456,7 +468,7 @@ namespace SongPresenter
         protected void Presentation_SlideShowEnd(object sender, EventArgs e)
         {
             if (Presentation != null && Presentation.IsRunning)
-                Dispatcher.Invoke(new Action<object>((object p) => Stop_Click(null, null)));
+                Dispatcher.Invoke(new Action(() => Stop_Click(null, null)));
         }
 
         private int previdx = 0;
@@ -476,7 +488,8 @@ namespace SongPresenter
                 if (idx == -1)
                     return;
                 
-                CurrentImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(Presentation.Slides[idx].Preview)));
+                if (!String.IsNullOrEmpty(Presentation.Slides[idx].Preview))
+                    CurrentImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(Presentation.Slides[idx].Preview)));
 
                 //autoscroll
                 if (idx > previdx)
