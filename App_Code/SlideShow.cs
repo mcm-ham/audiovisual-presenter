@@ -122,6 +122,7 @@ namespace SongPresenter.App_Code
 
             try { running.Close(); }
             catch (InvalidCastException) { }
+            catch (COMException) { }
             running = null;
         }
 
@@ -433,7 +434,7 @@ namespace SongPresenter.App_Code
         /// <returns>The file path to the created image of slide</returns>
         public static string ExportToImage(object slide, int idx, string suffix, int width, int height)
         {
-            if (slide == null)
+            if (slide as PP.Slide == null)
                 return "";
 
             string temp;
@@ -453,6 +454,7 @@ namespace SongPresenter.App_Code
                     break;
             }
 
+            //if powerpoint closed, will throw error
             (slide as PP.Slide).Export(temp, "PNG", width, height);
 
             return temp;
