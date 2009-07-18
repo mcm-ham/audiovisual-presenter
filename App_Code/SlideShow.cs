@@ -34,8 +34,8 @@ namespace SongPresenter.App_Code
         {
             if (Config.KeepPresentations)
                 CPath = Config.PresentationPath + schedule.DisplayName + ".ppt";
-            
-            IEnumerable<Item> items = schedule.Items.OrderBy(i => i.Ordinal);
+
+            Item[] items = schedule.Items.OrderBy(i => i.Ordinal).ToArray();
             IsRunning = true;
 
             //if (app == null)
@@ -50,6 +50,7 @@ namespace SongPresenter.App_Code
 
             //if (!File.Exists(CPath))
             {
+                previousDesigns.Clear();
                 _slides.Clear();
                 if (SlideAdded != null)
                     SlideAdded(this, new SlideAddedEventArgs(null));
@@ -60,12 +61,12 @@ namespace SongPresenter.App_Code
                 foreach (Item item in items)
                     AddSlides(item);
 
-                running.SlideShowSettings.Run();
-
                 //ppSaveAsPresentation = 1, ppSaveAsOpenXMLPresentation = 24
                 PP.PpSaveAsFileType filetype = (PP.PpSaveAsFileType)(Util.Parse<double>(app.Version) >= 12 ? 24 : 1);
 
                 running.SaveAs(CPath, (PP.PpSaveAsFileType)filetype, Core.MsoTriState.msoFalse);
+
+                running.SlideShowSettings.Run();
             }
             //else
             //{
@@ -202,7 +203,7 @@ namespace SongPresenter.App_Code
                 else
                 {
                     string path = UniqueFilename(Config.TempPath + (running.Slides.Count + 1) + "-background.jpg");
-                    byte[] data = File.ReadAllBytes(scheduleItem.Filename).ToImage().Resize((int)slide.Design.SlideMaster.Width, (int)slide.Design.SlideMaster.Height, System.Drawing.Color.Black).ToByteArray();
+                    byte[] data = Util.ToByteArray(Util.Resize(Util.ToImage(File.ReadAllBytes(scheduleItem.Filename)), (int)slide.Design.SlideMaster.Width, (int)slide.Design.SlideMaster.Height, System.Drawing.Color.Black));
                     using (FileStream stream = File.Open(path, FileMode.Create))
                         data.ForEach(b => stream.WriteByte(b));
                     shape = slide.Shapes.AddPicture(path, Core.MsoTriState.msoTrue, Core.MsoTriState.msoFalse, -1f, -1f, -1f, -1f);
@@ -279,6 +280,7 @@ namespace SongPresenter.App_Code
             return text.Trim();
         }
 
+        Dictionary<string, int> previousDesigns = new Dictionary<string, int>();
         private void PasteSlidesWithFormatting(PP.Presentation dest, PP.Presentation source)
         {
             Dictionary<PP.Design, int> designs = new Dictionary<PP.Design, int>();
@@ -295,10 +297,23 @@ namespace SongPresenter.App_Code
                         range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
 
                 //slide master
+                //reuse the same design otherwise, if we copy the design for every slide we end up with a very big file
                 if (!designs.ContainsKey(slide.Design))
                 {
                     range.Design = slide.Design;
-                    designs.Add(slide.Design, dest.Designs.Count);
+
+                    //If presentation is listed twice, the Design is not copied across since it already exists (even though
+                    //it doesn't when the same design is used in the same presentation) and therefore we need the index when
+                    //it was first added not the current index. Can't persist the designs dictionary between presentations
+                    //because even though the Master slide may be the same it's a different instation of the object.
+                    string key = source.FullName + slide.Design.Index;
+                    if (!previousDesigns.ContainsKey(key))
+                    {
+                        designs.Add(slide.Design, dest.Designs.Count);
+                        previousDesigns.Add(key, dest.Designs.Count);
+                    }
+                    else
+                        designs.Add(slide.Design, previousDesigns[key]);
                 }
                 else
                     range.Design = (PP.Design)dest.Designs._Index(designs[slide.Design]);

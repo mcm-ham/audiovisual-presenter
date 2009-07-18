@@ -9,16 +9,8 @@
         <TextBox Height="23" Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" /> 
         <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" Width="75" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" />
         
-        <TextBlock Height="28" HorizontalAlignment="Left" Margin="25,90,0,0" Name="label2" Padding="0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsSlideSize}" />
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="25,113,0,0" Name="label3" VerticalAlignment="Top" Width="16" Padding="2" Text="W" />
-        <TextBox Height="23" Margin="47,112,0,0" Name="ThumbWidth" VerticalAlignment="Top" HorizontalAlignment="Left" Width="95" />
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="178,112,0,0" Name="label4" Padding="2" VerticalAlignment="Top" Width="16" Text="H" />
-        <TextBox Height="23" Margin="200,113,243,0" Name="ThumbHeight" VerticalAlignment="Top" />
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="348,90,0,0" Padding="2" VerticalAlignment="Top" Width="180" Text="{x:Static Loc:Labels.OptionsSlideDelay}" />
-        <TextBox Height="23" Margin="348,113,43,0" Name="PreviewDelay" VerticalAlignment="Top" />
-        
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="22,155,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
-        <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,180,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="22,90,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
+        <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,115,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
         <Button Height="23" HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" Width="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
         <Button Height="23" HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" Width="75" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
     </Grid>

@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using SongPresenter.App_Code;
 using SongPresenter.Resources;
+using System.Collections.Generic;
 
 //icon from http://www.iconspedia.com/search/projector/
 namespace SongPresenter
@@ -27,7 +28,7 @@ namespace SongPresenter
             
             ScheduleList.IsEnabled = false;
             BindLocationList();
-
+            
             timer.Tick += new EventHandler(timer_Tick);
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
             selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -162,7 +163,7 @@ namespace SongPresenter
 
             if (running)
             {
-                Presentation.AddSlides(SelectedSchedule.Items.Last());
+                Presentation.AddSlides(SelectedSchedule.Items.OrderBy(i => i.Ordinal).Last());
             }
         }
 
@@ -179,6 +180,12 @@ namespace SongPresenter
         {
             if (e.Key == Key.Enter)
                 FileSelected();
+        }
+
+        protected void FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            bool enabled = (FileList.SelectedIndex != -1);
+            AddBtn.IsEnabled = enabled;
         }
 
         protected void AddSelected(object sender, EventArgs e)
@@ -247,7 +254,7 @@ namespace SongPresenter
                 }
 
                 if (parent.Name == "LiveList")
-                    SelectedSchedule.Items.Skip(SelectedSchedule.Items.Count - added).ForEach(i => Presentation.AddSlides(i));
+                    SelectedSchedule.Items.OrderBy(i => i.Ordinal).Skip(SelectedSchedule.Items.Count - added).ForEach(i => Presentation.AddSlides(i));
             }
             else //removing
             {
@@ -355,6 +362,7 @@ namespace SongPresenter
             bool enabled = (ScheduleList.SelectedIndex != -1);
             PrevBtn.IsEnabled = enabled;
             NextBtn.IsEnabled = enabled;
+            RemoveBtn.IsEnabled = enabled;
         }
         #endregion
 
@@ -379,13 +387,17 @@ namespace SongPresenter
             Interval.Visibility = Visibility.Visible;
             TimerBtn.Visibility = Visibility.Visible;
             Expander1.Visibility = Visibility.Visible;
+            PreviewPanel.Visibility = Visibility.Visible;
             ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Hidden);
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Visible);
             LiveList.SelectedIndex = 0;
             PrevBtn.Content = Labels.MainBtnPrev;
             NextBtn.Content = Labels.MainBtnNext;
             RefreshBtn.Visibility = Visibility.Hidden;
+            RemoveBtn.Visibility = Visibility.Hidden;
             LocationList.Margin = new Thickness(81, 62, 17, 0);
+            PrevBtn.IsEnabled = true;
+            NextBtn.IsEnabled = true;
 
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
@@ -402,8 +414,15 @@ namespace SongPresenter
                 Presentation.SlideAdded += new EventHandler<SlideAddedEventArgs>(Presentation_SlideAdded);
             }
 
-            Action prepare = new Action(() => Presentation.Start(SelectedSchedule));
-            prepare.BeginInvoke(null, null);
+            Action<object> prepare = new Action<object>((object p) => Presentation.Start(SelectedSchedule) );
+            prepare.BeginInvoke(null, null, null);
+        }
+
+        protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            var sl = ((sender as ListViewItem).DataContext as Slide);
+            if (System.IO.File.Exists(sl.Preview))
+                PreviewImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(sl.Preview)));
         }
 
         protected void Stop_Click(object sender, RoutedEventArgs e)
@@ -413,6 +432,7 @@ namespace SongPresenter
             Interval.Visibility = Visibility.Hidden;
             TimerBtn.Visibility = Visibility.Hidden;
             Expander1.Visibility = Visibility.Hidden;
+            PreviewPanel.Visibility = Visibility.Hidden;
             LibraryGrid.Visibility = Visibility.Visible;
             Expander1.Content = "<";
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength((this.ActualWidth - 20) / 2, GridUnitType.Pixel));
@@ -421,6 +441,7 @@ namespace SongPresenter
             PrevBtn.Content = Labels.MainBtnMoveUp;
             NextBtn.Content = Labels.MainBtnMoveDown;
             RefreshBtn.Visibility = Visibility.Visible;
+            RemoveBtn.Visibility = Visibility.Visible;
             LocationList.Margin = new Thickness(81, 62, 80, 0);
             HideMedia();
             if (Presentation != null)
@@ -435,9 +456,10 @@ namespace SongPresenter
         protected void Presentation_SlideShowEnd(object sender, EventArgs e)
         {
             if (Presentation != null && Presentation.IsRunning)
-                Dispatcher.Invoke(new Action(() => Stop_Click(null, null)));
+                Dispatcher.Invoke(new Action<object>((object p) => Stop_Click(null, null)));
         }
 
+        private int previdx = 0;
         protected void Presentation_SlideIndexChanged(object sender, SlideShowEventArgs e)
         {
             int idx = e.NewIndex - 1;
@@ -448,7 +470,36 @@ namespace SongPresenter
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
                 ShowMedia(Presentation.Slides[idx].Filename);
             else
+            {
                 HideMedia();
+
+                if (idx == -1)
+                    return;
+                
+                CurrentImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(Presentation.Slides[idx].Preview)));
+
+                //autoscroll
+                if (idx > previdx)
+                    LiveList.ScrollIntoView(LiveList.Items[Math.Min(LiveList.Items.Count - 1, idx + 5)]);
+                else
+                    LiveList.ScrollIntoView(LiveList.Items[Math.Max(0, idx - 5)]);
+                previdx = idx;
+            }
+        }
+
+        protected void LiveList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                Presentation.Next();
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.Up)
+            {
+                Presentation.Previous();
+                e.Handled = true;
+            }
         }
 
         protected void TimerStart_Click(object sender, RoutedEventArgs e)
@@ -606,6 +657,7 @@ namespace SongPresenter
         protected void ShowMedia(string path)
         {
             HideMedia();
+            CurrentImage.Visibility = Visibility.Collapsed;
             VideoPanel.Visibility = Visibility.Visible;
             mediaPosTimer = new DispatcherTimer();
             mediaPosTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -616,10 +668,10 @@ namespace SongPresenter
 
         protected void HideMedia()
         {
-            if (VideoPanel.Visibility != Visibility.Hidden)
+            if (VideoPanel.Visibility != Visibility.Collapsed)
             {
-                LiveList.Margin = new Thickness(12, 96, 12, 46);
-                VideoPanel.Visibility = Visibility.Hidden;
+                CurrentImage.Visibility = Visibility.Visible;
+                VideoPanel.Visibility = Visibility.Collapsed;
                 VideoDisplay.Visibility = Visibility.Hidden;
                 StopMedia(null, null);
                 VideoPlayer.Close();
@@ -673,11 +725,8 @@ namespace SongPresenter
                     fullscreen = new FullscreenVideo(VideoPlayer);
 
                 VideoDisplay.Visibility = Visibility.Visible;
-                LiveList.Margin = new Thickness(12, 96, 12, 346);
-                VideoPanel.Height = 280;
 
-                double ratio = Math.Min(250d / VideoPlayer.NaturalVideoHeight, 450d / VideoPlayer.NaturalVideoWidth);
-                VideoDisplay.Height = VideoPlayer.NaturalVideoHeight * ratio;
+                double ratio = 220d / VideoPlayer.NaturalVideoHeight;
                 VideoDisplay.Width = VideoPlayer.NaturalVideoWidth * ratio;
 
                 fullscreen.Show();
@@ -688,9 +737,7 @@ namespace SongPresenter
             }
             else
             {
-                VideoDisplay.Height = 0;
-                VideoPanel.Height = 30;
-                LiveList.Margin = new Thickness(12, 96, 12, 86);
+                VideoDisplay.Visibility = Visibility.Hidden;
             }
         }
 

@@ -58,7 +58,12 @@ namespace SongPresenter
             output.Append((char)0);
             
             string desktop = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            string filename = desktop + "\\" + Labels.ReportsListDocFilename + " - " + DateTime.Today.ToLongDateString() + ".rtf";
+            string origFilename = desktop + "\\" + Labels.ReportsListDocFilename + " - " + DateTime.Today.ToLongDateString() + ".rtf";
+            string filename = origFilename;
+
+            for (int i = 1; File.Exists(filename); i++)
+                filename = origFilename.Insert(origFilename.LastIndexOf('.'), " (" + i + ")");
+            
             StreamWriter report = new StreamWriter(File.OpenWrite(filename));
             report.Write(output.ToString());
             report.Close();

@@ -26,7 +26,7 @@
             </MenuItem>
             <MenuItem Header="{x:Static Loc:Labels.MainMenuReports}">
                 <MenuItem Header="{x:Static Loc:Labels.MainMenuReportsLibrary}" Click="ReportsList_Click" />
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuReportsUsage}" Click="ReportsUsage_Click" Visibility="Collapsed" />
+                <MenuItem Header="{x:Static Loc:Labels.MainMenuReportsUsage}" Click="ReportsUsage_Click" />
             </MenuItem>
             <MenuItem Header="{x:Static Loc:Labels.MainMenuAbout}" Click="About_Click" />
         </Menu>
@@ -38,7 +38,7 @@
             <Button Name="RefreshBtn" Width="52" Height="23" Margin="0,62,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
             <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,96,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
             <TextBox Name="SearchTerms" Height="23" Margin="81,96,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
-            <ListBox Name="FileList" Margin="12,136,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="AddSelected" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
+            <ListBox Name="FileList" Margin="12,136,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="AddSelected" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -53,6 +53,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <Button Name="AddBtn" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" Content="{x:Static Loc:Labels.MainBtnAdd}" VerticalAlignment="Bottom" Width="75" Click="AddSelected" IsEnabled="False" />
         </Grid>
         <Button Name="Expander1" Click="Expander1_Click" Width="15" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="Collapsed">&lt;</Button>
 
@@ -77,20 +78,17 @@
         <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="Stop_Click" Visibility="Hidden" />
         <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="TimerStart_Click" Visibility="Hidden" />
         <TextBox Name="Interval" Grid.Column="1" Text="8" Height="23" HorizontalAlignment="Left" Margin="186,0,0,12" VerticalAlignment="Bottom" Width="35" Visibility="Hidden" TextChanged="Interval_TextChanged" />
+        <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,171,12" VerticalAlignment="Bottom" Width="70" Click="RemoveFile" IsEnabled="False" />
         <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,91,12" VerticalAlignment="Bottom" Width="70" Click="Up_Click" IsEnabled="False" />
         <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" VerticalAlignment="Bottom" Width="70" Click="Down_Click" IsEnabled="False" />
 
-        <Presenter:SlideListView x:Name="LiveList" Grid.Column="1" Margin="12,96,12,46" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler">
-            <Presenter:SlideListView.ItemContainerStyle>
-                <Style TargetType="Presenter:SlideListViewItem">
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="IsPopupOpen" Value="True"/>
-                        </Trigger>
-                    </Style.Triggers>
+        <ListView x:Name="LiveList" Grid.Column="1" Margin="12,96,12,316" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <EventSetter Event="MouseEnter" Handler="SlideListViewItem_MouseEnter" />
                 </Style>
-            </Presenter:SlideListView.ItemContainerStyle>
-            <Presenter:SlideListView.View>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
                 <GridView>
                     <GridViewColumn x:Uid="MainLabelLiveSlide" Header="{x:Static Loc:Labels.MainLabelLiveSlide}" DisplayMemberBinding="{Binding SlideIndex}" />
                     <GridViewColumn x:Uid="MainLabelLiveText" Header="{x:Static Loc:Labels.MainLabelLiveText}" DisplayMemberBinding="{Binding Text}" />
@@ -103,36 +101,40 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </GridView>
-            </Presenter:SlideListView.View>
-        </Presenter:SlideListView>
+            </ListView.View>
+        </ListView>
+        
+        <StackPanel Name="PreviewPanel" Grid.Column="1" Height="250" Margin="12 0 0 45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
+            <Image Name="PreviewImage" Width="333" Height="250" Margin="0 0 40 0" />
+            <Image Name="CurrentImage" Width="333" Height="250" />
 
-        <StackPanel Name="VideoPanel" Grid.Column="1" VerticalAlignment="Bottom" Margin="0 0 0 45" Visibility="Hidden">
+            <StackPanel Name="VideoPanel" Visibility="Collapsed">
+                <Rectangle Name="VideoDisplay" Height="220" Visibility="Hidden">
+                    <Rectangle.Fill>
+                        <DrawingBrush>
+                            <DrawingBrush.Drawing>
+                                <VideoDrawing>
+                                    <VideoDrawing.Player>
+                                        <MediaPlayer x:Name="VideoPlayer" MediaOpened="Element_MediaOpened" MediaEnded="StopMedia" Balance="0" Clock="{x:Null}" IsMuted="False" Position="00:00:00" ScrubbingEnabled="False" SpeedRatio="1" Volume="0.5" />
+                                    </VideoDrawing.Player>
+                                    <VideoDrawing.Rect>
+                                        <Rect Width="333" Height="220" />
+                                    </VideoDrawing.Rect>
+                                </VideoDrawing>
+                            </DrawingBrush.Drawing>
+                        </DrawingBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="5" />
+                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="5" />
 
-            <Rectangle Name="VideoDisplay" Width="450" Height="250" Visibility="Collapsed">
-                <Rectangle.Fill>
-                    <DrawingBrush>
-                        <DrawingBrush.Drawing>
-                            <VideoDrawing>
-                                <VideoDrawing.Player>
-                                    <MediaPlayer x:Name="VideoPlayer" MediaOpened="Element_MediaOpened" MediaEnded="StopMedia" Balance="0" Clock="{x:Null}" IsMuted="False" Position="00:00:00" ScrubbingEnabled="False" SpeedRatio="1" Volume="0.5" />
-                                </VideoDrawing.Player>
-                                <VideoDrawing.Rect>
-                                    <Rect Width="450" Height="250" />
-                                </VideoDrawing.Rect>
-                            </VideoDrawing>
-                        </DrawingBrush.Drawing>
-                    </DrawingBrush>
-                </Rectangle.Fill>
-            </Rectangle>
-            <StackPanel HorizontalAlignment="Center" Width="450" Orientation="Horizontal">
-                <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="5" />
-                <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="5" />
+                    <TextBlock VerticalAlignment="Center" Margin="5" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" />
+                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="120"/>
 
-                <TextBlock VerticalAlignment="Center" Margin="5" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" />
-                <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="120"/>
-
-                <TextBlock Margin="5" VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
-                <Slider Name="timelineSlider" Margin="5" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="120" />
+                    <TextBlock Margin="5" VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
+                    <Slider Name="timelineSlider" Margin="5" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="120" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
 
@@ -140,6 +142,5 @@
             <Rectangle Fill="White" Stroke="Black" StrokeDashCap="Square" StrokeThickness="2" />
             <TextBlock Text="{x:Static Loc:Labels.MainDescRemote}" Padding="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" />
         </Grid>
-
     </Grid>
 </Window>
