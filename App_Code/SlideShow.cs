@@ -291,10 +291,20 @@ namespace SongPresenter.App_Code
                 slide.Copy();
                 PP.SlideRange range = dest.Slides.Paste(dest.Slides.Count + 1);
 
-                //fix weird bug where font size is not kept on some text frames
+                //fix bugs
                 for (int i = 1; i <= range.Shapes.Count; i++)
-                    if (range.Shapes[i].HasTextFrame == Core.MsoTriState.msoTrue)
+                {
+                    if (range.Shapes[i].HasTextFrame != Core.MsoTriState.msoTrue)
+                        continue;
+
+                    //fix font sizes not being kept
+                    //check that source font size is greater than 0 i.e. "The Grace (7pm only)" on Office XP
+                    if (slide.Shapes[i].TextFrame.TextRange.Font.Size > 0)
                         range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
+
+                    //fix alignment on some files like "Alleluia Jesus Is Lord" on Office 2007
+                    range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
+                }
 
                 //slide master
                 //reuse the same design otherwise, if we copy the design for every slide we end up with a very big file
@@ -423,6 +433,9 @@ namespace SongPresenter.App_Code
         /// <returns>The file path to the created image of slide</returns>
         public static string ExportToImage(object slide, int idx, string suffix, int width, int height)
         {
+            if (slide == null)
+                return "";
+
             string temp;
 
             for (int i = 0; true; i++)
