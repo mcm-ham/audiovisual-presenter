@@ -247,37 +247,25 @@
     <value>Search</value>
   </data>
   <data name="MainMenuAbout" xml:space="preserve">
-    <value>_About</value>
+    <value>About</value>
   </data>
-  <data name="MainMenuFile" xml:space="preserve">
-    <value>_File</value>
+  <data name="MainMenuMessage" xml:space="preserve">
+    <value>Message</value>
   </data>
-  <data name="MainMenuFileNew" xml:space="preserve">
-    <value>_New</value>
+  <data name="MainMenuOptions" xml:space="preserve">
+    <value>Options</value>
   </data>
-  <data name="MainMenuFileOpen" xml:space="preserve">
-    <value>_Open</value>
+  <data name="MainMenuPlanner" xml:space="preserve">
+    <value>Planner</value>
   </data>
-  <data name="MainMenuReports" xml:space="preserve">
-    <value>_Reports</value>
+  <data name="MainMenuRemote" xml:space="preserve">
+    <value>Remote</value>
   </data>
-  <data name="MainMenuReportsLibrary" xml:space="preserve">
-    <value>_Library list</value>
+  <data name="MainMenuReportList" xml:space="preserve">
+    <value>List</value>
   </data>
-  <data name="MainMenuReportsUsage" xml:space="preserve">
-    <value>_Usage report</value>
-  </data>
-  <data name="MainMenuTools" xml:space="preserve">
-    <value>_Tools</value>
-  </data>
-  <data name="MainMenuToolsOptions" xml:space="preserve">
-    <value>_Options</value>
-  </data>
-  <data name="MainMenuToolsRemote" xml:space="preserve">
-    <value>_Remote control</value>
-  </data>
-  <data name="MainMenuToolsShowMessage" xml:space="preserve">
-    <value>Show message</value>
+  <data name="MainMenuReportUsage" xml:space="preserve">
+    <value>Usage</value>
   </data>
   <data name="MainNoAddedItems" xml:space="preserve">
     <value>Please add items to the presentation list first.</value>

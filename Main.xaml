@@ -14,31 +14,71 @@
             <ColumnDefinition Name="col1" />
             <ColumnDefinition Name="col2" />
         </Grid.ColumnDefinitions>
-        <Menu Height="22" Name="menu1" VerticalAlignment="Top" Grid.ColumnSpan="2">
-            <MenuItem Header="{x:Static Loc:Labels.MainMenuFile}">
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuFileNew}" Name="MenuItemNew" Click="Planner_Click" />
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuFileOpen}" Click="Planner_Click" />
-            </MenuItem>
-            <MenuItem Header="{x:Static Loc:Labels.MainMenuTools}">
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuToolsOptions}" Click="Options_Click" InputGestureText="Ctrl+O" />
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuToolsRemote}" Click="RemoteMode_Click" InputGestureText="Ctrl+R" />
-                <MenuItem Name="ShowMessageMenuItem" Header="{x:Static Loc:Labels.MainMenuToolsShowMessage}" Click="ShowMessage" IsCheckable="True" InputGestureText="Ctrl+M" />
-            </MenuItem>
-            <MenuItem Header="{x:Static Loc:Labels.MainMenuReports}">
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuReportsLibrary}" Click="ReportsList_Click" />
-                <MenuItem Header="{x:Static Loc:Labels.MainMenuReportsUsage}" Click="ReportsUsage_Click" />
-            </MenuItem>
-            <MenuItem Header="{x:Static Loc:Labels.MainMenuAbout}" Click="About_Click" />
-        </Menu>
+        <ToolBar VerticalAlignment="Top" Grid.ColumnSpan="2">
+            <Button Click="Planner_Click" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/calendar_date.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuPlanner}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            
+            <Separator/>
+            
+            <Button Click="Options_Click" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/process.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuOptions}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            
+            <Button Click="RemoteMode_Click" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/user.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuRemote}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            
+            <Button Name="ShowMessageBtn" Click="ShowMessage" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/mail.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuMessage}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            
+            <Separator/>
+            
+            <Button Click="ReportsList_Click" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/page_preview.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuReportList}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            
+            <Button Click="ReportsUsage_Click" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/page_preview.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuReportUsage}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            
+            <Separator/>
+            
+            <Button Click="About_Click" VerticalAlignment="Top">
+                <StackPanel>
+                    <Image Width="32" Source="icons/info.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuAbout}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </ToolBar>
 
         <Grid Name="LibraryGrid">
-            <TextBlock Text="{x:Static Loc:Labels.MainHeaderLibrary}" Height="28" HorizontalAlignment="Left" Margin="12,28,0,0" VerticalAlignment="Top" FontSize="20" Padding="0" />
-            <TextBlock Text="{x:Static Loc:Labels.MainLabelLocation}" Height="23" HorizontalAlignment="Left" Margin="12,62,0,0" VerticalAlignment="Top" Width="63" Padding="0" />
-            <ComboBox Name="LocationList" Height="23" Margin="81,62,80,0" VerticalAlignment="Top" SelectionChanged="LocationList_SelectionChanged" />
-            <Button Name="RefreshBtn" Width="52" Height="23" Margin="0,62,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
-            <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,96,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
-            <TextBox Name="SearchTerms" Height="23" Margin="81,96,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
-            <ListBox Name="FileList" Margin="12,136,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="AddSelected" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
+            <TextBlock Text="{x:Static Loc:Labels.MainHeaderLibrary}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" FontSize="20" Padding="0" />
+            <TextBlock Text="{x:Static Loc:Labels.MainLabelLocation}" Height="23" HorizontalAlignment="Left" Margin="12,94,0,0" VerticalAlignment="Top" Width="63" Padding="0" />
+            <ComboBox Name="LocationList" Height="23" Margin="81,94,80,0" VerticalAlignment="Top" SelectionChanged="LocationList_SelectionChanged" />
+            <Button Name="RefreshBtn" Width="52" Height="23" Margin="0,94,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
+            <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,128,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
+            <TextBox Name="SearchTerms" Height="23" Margin="81,128,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
+            <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="AddSelected" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -57,9 +97,9 @@
         </Grid>
         <Button Name="Expander1" Click="Expander1_Click" Width="15" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="Collapsed">&lt;</Button>
 
-        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,28,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="20" Padding="0" />
-        <TextBlock Name="ScheduleName" Grid.Column="1" Height="28" Margin="12,62,12,0" VerticalAlignment="Top" Padding="0"/>
-        <ListBox Name="ScheduleList" Grid.Column="1" Margin="12,96,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
+        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="20" Padding="0" />
+        <TextBlock Name="ScheduleName" Grid.Column="1" Height="28" Margin="12,98,12,0" VerticalAlignment="Top" Padding="0"/>
+        <ListBox Name="ScheduleList" Grid.Column="1" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -82,7 +122,7 @@
         <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,91,12" VerticalAlignment="Bottom" Width="70" Click="Up_Click" IsEnabled="False" />
         <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" VerticalAlignment="Bottom" Width="70" Click="Down_Click" IsEnabled="False" />
 
-        <ListView x:Name="LiveList" Grid.Column="1" Margin="12,96,12,316" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown">
+        <ListView x:Name="LiveList" Grid.Column="1" Margin="12,128,12,316" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <EventSetter Event="MouseEnter" Handler="SlideListViewItem_MouseEnter" />

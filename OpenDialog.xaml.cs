@@ -18,7 +18,7 @@ namespace SongPresenter
     {
         private DateTime _mth;
 
-        public OpenDialog(bool newFocus)
+        public OpenDialog()
         {
             InitializeComponent();
             Background = new SolidColorBrush(Config.BackgroundColour);
@@ -28,13 +28,8 @@ namespace SongPresenter
             _mth = DateTime.Today;
             BindScheduleList();
 
-            if (newFocus)
-                ScheduleName.Focus();
-            else if (ScheduleList.Items.Count > 0)
-            {
-                ScheduleList.SelectedIndex = 0;
-                ScheduleList.Focus();
-            }
+            ScheduleList.SelectedIndex = 0;
+            ScheduleList.Focus();
         }
 
         protected void BindScheduleList()
