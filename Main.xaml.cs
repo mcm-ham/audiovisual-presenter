@@ -12,8 +12,8 @@ using System.Windows.Threading;
 using SongPresenter.App_Code;
 using SongPresenter.Resources;
 using System.Collections.Generic;
+using System.Reflection;
 
-//icon from http://www.iconspedia.com/search/projector/
 namespace SongPresenter
 {
     public partial class Main : Window
@@ -50,7 +50,7 @@ namespace SongPresenter
         #region menu
         protected void Planner_Click(object sender, RoutedEventArgs e)
         {
-            OpenDialog dialog = new OpenDialog((sender as MenuItem).Name == "MenuItemNew");
+            OpenDialog dialog = new OpenDialog();
             dialog.Owner = this;
             dialog.ShowDialog();
 
@@ -115,7 +115,7 @@ namespace SongPresenter
             //messenger
             if (ctrlm)
             {
-                ShowMessageMenuItem.IsChecked = !ShowMessageMenuItem.IsChecked;
+                //ShowMessageMenuItem.IsChecked = !ShowMessageMenuItem.IsChecked;
                 ShowMessage(null, null);
             }
 
@@ -165,7 +165,7 @@ namespace SongPresenter
         {
             if (SelectedSchedule == null)
             {
-                Planner_Click(MenuItemNew, null);
+                Planner_Click(null, null);
                 if (SelectedSchedule == null)
                     return;
             }
@@ -384,7 +384,7 @@ namespace SongPresenter
         {
             if (SelectedSchedule == null)
             {
-                Planner_Click(MenuItemNew, null);
+                Planner_Click(null, null);
                 if (SelectedSchedule == null)
                     return;
             }
@@ -596,20 +596,25 @@ namespace SongPresenter
         Window messageBox = null;
         protected void ShowMessage(object sender, RoutedEventArgs e)
         {
-            if (!ShowMessageMenuItem.IsChecked)
+            if (messageBox != null)
             {
-                if (messageBox != null)
-                {
-                    messageBox.Close();
-                    messageBox = null;
-                }
+                messageBox.Close();
+                messageBox = null;
                 return;
             }
+
+            ShowMessageBtn.GetType().GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ShowMessageBtn, new object[] { true });
 
             ScreenMessage prompt = new ScreenMessage();
             prompt.Owner = this;
             prompt.ShowInTaskbar = false;
-            prompt.Closed += (sen, args) => { ShowMessageMenuItem.IsChecked = ((sen as ScreenMessage).MessageBox != null); };
+            prompt.Closed += (sen, args) => {
+                if ((sen as ScreenMessage).MessageBox == null)
+                {
+                    messageBox = null;
+                    ShowMessageBtn.GetType().GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ShowMessageBtn, new object[] { false });
+                }
+            };
             prompt.ShowDialog();
             messageBox = prompt.MessageBox;
         }

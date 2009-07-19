@@ -448,7 +448,7 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _About.
+        ///   Looks up a localized string similar to About.
         /// </summary>
         public static string MainMenuAbout {
             get {
@@ -457,92 +457,56 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _File.
+        ///   Looks up a localized string similar to Message.
         /// </summary>
-        public static string MainMenuFile {
+        public static string MainMenuMessage {
             get {
-                return ResourceManager.GetString("MainMenuFile", resourceCulture);
+                return ResourceManager.GetString("MainMenuMessage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _New.
+        ///   Looks up a localized string similar to Options.
         /// </summary>
-        public static string MainMenuFileNew {
+        public static string MainMenuOptions {
             get {
-                return ResourceManager.GetString("MainMenuFileNew", resourceCulture);
+                return ResourceManager.GetString("MainMenuOptions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Open.
+        ///   Looks up a localized string similar to Planner.
         /// </summary>
-        public static string MainMenuFileOpen {
+        public static string MainMenuPlanner {
             get {
-                return ResourceManager.GetString("MainMenuFileOpen", resourceCulture);
+                return ResourceManager.GetString("MainMenuPlanner", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Reports.
+        ///   Looks up a localized string similar to Remote.
         /// </summary>
-        public static string MainMenuReports {
+        public static string MainMenuRemote {
             get {
-                return ResourceManager.GetString("MainMenuReports", resourceCulture);
+                return ResourceManager.GetString("MainMenuRemote", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Library list.
+        ///   Looks up a localized string similar to List.
         /// </summary>
-        public static string MainMenuReportsLibrary {
+        public static string MainMenuReportList {
             get {
-                return ResourceManager.GetString("MainMenuReportsLibrary", resourceCulture);
+                return ResourceManager.GetString("MainMenuReportList", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to _Usage report.
+        ///   Looks up a localized string similar to Usage.
         /// </summary>
-        public static string MainMenuReportsUsage {
+        public static string MainMenuReportUsage {
             get {
-                return ResourceManager.GetString("MainMenuReportsUsage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Tools.
-        /// </summary>
-        public static string MainMenuTools {
-            get {
-                return ResourceManager.GetString("MainMenuTools", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Options.
-        /// </summary>
-        public static string MainMenuToolsOptions {
-            get {
-                return ResourceManager.GetString("MainMenuToolsOptions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to _Remote control.
-        /// </summary>
-        public static string MainMenuToolsRemote {
-            get {
-                return ResourceManager.GetString("MainMenuToolsRemote", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Show _message.
-        /// </summary>
-        public static string MainMenuToolsShowMessage {
-            get {
-                return ResourceManager.GetString("MainMenuToolsShowMessage", resourceCulture);
+                return ResourceManager.GetString("MainMenuReportUsage", resourceCulture);
             }
         }
         

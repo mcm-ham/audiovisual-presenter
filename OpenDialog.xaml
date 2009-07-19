@@ -6,21 +6,21 @@
     xml:lang="en-US"
     Title="{x:Static Loc:Labels.OpenWindowTitle}" Height="360" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
     <Grid>
-        <GroupBox Name="groupBox1" Header="{x:Static Loc:Labels.OpenHeaderNew}" Width="260" Margin="10" Padding="5" HorizontalAlignment="Left">
+        <GroupBox Name="groupBox1" Header="{x:Static Loc:Labels.OpenHeaderNew}" Width="254" Margin="10" Padding="5" HorizontalAlignment="Left">
             <Grid>
-                <my:Calendar Name="monthCalendar" Height="200" Width="235" VerticalAlignment="Top" HorizontalAlignment="Center" SelectedDatesChanged="monthCalendar_SelectedDatesChanged" DisplayDateChanged="monthCalendar_DisplayDateChanged">
+                <my:Calendar Name="monthCalendar" VerticalAlignment="Top" HorizontalAlignment="Center" SelectedDatesChanged="monthCalendar_SelectedDatesChanged" DisplayDateChanged="monthCalendar_DisplayDateChanged">
                     <my:Calendar.LayoutTransform>
-                        <ScaleTransform ScaleY="1.3" ScaleX="1.3" />
+                        <ScaleTransform ScaleY="1.2" ScaleX="1.2" />
                     </my:Calendar.LayoutTransform>
                 </my:Calendar>
-                <TextBlock Name="DatePreview" Margin="0,0,0,58" Width="235" Height="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" Padding="0" />
-                <TextBox Name="ScheduleName" Margin="0,0,0,30" Height="25" Width="235" VerticalAlignment="Bottom" HorizontalAlignment="Center" KeyUp="ScheduleName_KeyUp" />
+                <TextBlock Name="DatePreview" Height="20" VerticalAlignment="Top" Margin="0,180,0,0" HorizontalAlignment="Center" Padding="0" />
+                <TextBox Name="ScheduleName" Height="25" VerticalAlignment="Bottom" KeyUp="ScheduleName_KeyUp" Margin="0,0,0,35" />
                 <Button Content="{x:Static Loc:Labels.OpenBtnNew}" Width="50" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="New_Click" />
             </Grid>
         </GroupBox>
-        <GroupBox Name="groupBox2" Header="{x:Static Loc:Labels.OpenHeaderOpen}" HorizontalAlignment="Right" Width="260" Margin="10" Padding="5">
+        <GroupBox Name="groupBox2" Header="{x:Static Loc:Labels.OpenHeaderOpen}" Width="254" Margin="10" Padding="5" HorizontalAlignment="Right">
             <Grid>
-                <ListBox Name="ScheduleList" SelectionChanged="ScheduleList_SelectionChanged" MouseDoubleClick="ScheduleList_MouseDoubleClick" Margin="0,0,0,31">
+                <ListBox Name="ScheduleList" SelectionChanged="ScheduleList_SelectionChanged" MouseDoubleClick="ScheduleList_MouseDoubleClick" Margin="0,0,0,35">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=DisplayName}" />
