@@ -304,7 +304,9 @@ namespace SongPresenter.App_Code
                         range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
 
                     //fix alignment on some files like "Alleluia Jesus Is Lord" on Office 2007
-                    range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
+                    var align = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
+                    if (align == PP.PpParagraphAlignment.ppAlignCenter || align == PP.PpParagraphAlignment.ppAlignLeft || align == PP.PpParagraphAlignment.ppAlignRight || align == PP.PpParagraphAlignment.ppAlignJustify)
+                        range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
                 }
 
                 //slide master

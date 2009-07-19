@@ -409,7 +409,7 @@ namespace SongPresenter
             NextBtn.Content = Labels.MainBtnNext;
             RefreshBtn.Visibility = Visibility.Hidden;
             RemoveBtn.Visibility = Visibility.Hidden;
-            LocationList.Margin = new Thickness(81, 62, 17, 0);
+            LocationList.Margin = new Thickness(81, 94, 17, 0);
             PrevBtn.IsEnabled = true;
             NextBtn.IsEnabled = true;
 
@@ -455,7 +455,7 @@ namespace SongPresenter
             NextBtn.Content = Labels.MainBtnMoveDown;
             RefreshBtn.Visibility = Visibility.Visible;
             RemoveBtn.Visibility = Visibility.Visible;
-            LocationList.Margin = new Thickness(81, 62, 80, 0);
+            LocationList.Margin = new Thickness(81, 94, 80, 0);
             HideMedia();
             if (Presentation != null)
                 Presentation.Stop();
@@ -489,7 +489,7 @@ namespace SongPresenter
                 if (idx == -1)
                     return;
                 
-                if (!String.IsNullOrEmpty(Presentation.Slides[idx].Preview))
+                if (Presentation.Slides.Length > idx && !String.IsNullOrEmpty(Presentation.Slides[idx].Preview))
                     CurrentImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(Presentation.Slides[idx].Preview)));
 
                 //autoscroll
