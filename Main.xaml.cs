@@ -177,6 +177,7 @@ namespace SongPresenter
             if (running)
             {
                 Presentation.AddSlides(SelectedSchedule.Items.OrderBy(i => i.Ordinal).Last());
+                LiveList.ScrollIntoView(LiveList.Items[LiveList.Items.Count - 1]);
             }
         }
 
