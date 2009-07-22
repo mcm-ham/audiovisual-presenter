@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using SongPresenter.App_Code;
 using SongPresenter.Resources;
 using System.IO;
+using System.Windows.Controls.DataVisualization.Charting;
 
 namespace SongPresenter
 {
@@ -22,6 +23,8 @@ namespace SongPresenter
         public ReportsUsageDialog()
         {
             InitializeComponent();
+
+            LibraryList.ItemsSource = new string[] { Labels.ReportsUsageOptionAll }.Union(Directory.GetDirectories(Config.LibraryPath).Select(p => System.IO.Path.GetFileName(p))).Union(new string[] { Labels.ReportsUsageOptionOther });
 
             FromDate.SelectedDate = DateTime.Today.AddYears(-1);
             ToDate.SelectedDate = DateTime.Today;
@@ -32,9 +35,11 @@ namespace SongPresenter
         {
             DateTime fromD = FromDate.SelectedDate ?? DateTime.Today.AddYears(-1);
             DateTime toD = ToDate.SelectedDate ?? DateTime.Today;
-            var list = Item.GetUsageStats(fromD, toD);
+            string[] libraries = options.Where(c => c.IsChecked ?? false).Select(c => c.Content.ToString().ToLower()).ToArray();
+            var list = Item.GetUsageStats(fromD, toD, libraries);
 
-            mainChart.DataContext = list;
+            //http://stackoverflow.com/questions/992241/what-does-cannot-modify-the-logical-children-for-this-node-at-this-time-because-a
+            (mainChart.Series[0] as Series).DataContext = list;
             mainChart.Height = Math.Max(450, 22 * list.Length);
         }
 
@@ -42,7 +47,8 @@ namespace SongPresenter
         {
             DateTime fromD = FromDate.SelectedDate ?? DateTime.Today.AddYears(-1);
             DateTime toD = ToDate.SelectedDate ?? DateTime.Today;
-            var list = Item.GetUsageStats(fromD, toD);
+            string[] libraries = options.Where(c => c.IsChecked ?? false).Select(c => c.Content.ToString().ToLower()).ToArray();
+            var list = Item.GetUsageStats(fromD, toD, libraries);
 
             StringBuilder output = new StringBuilder();
 
@@ -72,6 +78,21 @@ namespace SongPresenter
 
             System.Diagnostics.Process.Start(filename);
             this.Close();
+        }
+
+        protected void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox chkbx = sender as CheckBox;
+            if (chkbx == options[0])
+                options.ForEach(b => b.IsChecked = (chkbx.IsChecked ?? false));
+            else
+                options[0].IsChecked = false;
+        }
+
+        List<CheckBox> options = new List<CheckBox>();
+        private void CheckBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            options.Add(sender as CheckBox);
         }
     }
 }

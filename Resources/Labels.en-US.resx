@@ -371,6 +371,15 @@
   <data name="ReportsUsageLabelTo" xml:space="preserve">
     <value>To</value>
   </data>
+  <data name="ReportsUsageOptionAll" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ReportsUsageOptionOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ReportsUsageSelectionDesc" xml:space="preserve">
+    <value>Select what libraries you would like to include:</value>
+  </data>
   <data name="ReportsUsageWindowTitle" xml:space="preserve">
     <value>Usage Reports</value>
   </data>
