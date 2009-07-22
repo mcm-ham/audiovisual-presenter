@@ -817,6 +817,33 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string ReportsUsageOptionAll {
+            get {
+                return ResourceManager.GetString("ReportsUsageOptionAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Other.
+        /// </summary>
+        public static string ReportsUsageOptionOther {
+            get {
+                return ResourceManager.GetString("ReportsUsageOptionOther", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select what libraries you would like to include:.
+        /// </summary>
+        public static string ReportsUsageSelectionDesc {
+            get {
+                return ResourceManager.GetString("ReportsUsageSelectionDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Usage Reports.
         /// </summary>
         public static string ReportsUsageWindowTitle {

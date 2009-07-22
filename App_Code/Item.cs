@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SongPresenter.App_Code
 {
@@ -13,9 +14,17 @@ namespace SongPresenter.App_Code
         }
 
         //static methods
-        public static ItemUsage[] GetUsageStats(DateTime fromD, DateTime toD)
+        public static ItemUsage[] GetUsageStats(DateTime fromD, DateTime toD, string[] libraries)
         {
+            bool include = true;
+            if (libraries.Contains("other"))
+            {
+                libraries = Directory.GetDirectories(Config.LibraryPath).Select(p => System.IO.Path.GetFileName(p).ToLower()).Except(libraries).ToArray();
+                include = false;
+            }
+
             return (from i in DB.Instance.Items.Select(i => new { i.Filename, i.Schedule.Date }).Where(i => i.Date >= fromD && i.Date <= toD).ToArray()
+                    where libraries.Any(l => i.Filename.ToLower().Contains("\\" + l + "\\")) == include
                     group i by i.Filename into g
                     select new ItemUsage() {
                         Name = System.IO.Path.GetFileNameWithoutExtension(g.Key) + "  ", //add whitespace to end to provide gap between label and y-axis

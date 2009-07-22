@@ -340,6 +340,9 @@ namespace SongPresenter.App_Code
                 else
                     range.ColorScheme = (PP.ColorScheme)dest.ColorSchemes._Index(schemes[slide.ColorScheme]);
 
+                //required for the "Hide background graphics" property
+                range.DisplayMasterShapes = slide.DisplayMasterShapes;
+
                 //place this code after assigning master slide because if mouse happens to be hovering over the
                 //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
                 AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count));
