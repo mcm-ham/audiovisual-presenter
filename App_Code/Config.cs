@@ -20,17 +20,17 @@ namespace SongPresenter.App_Code
 
         public static string[] ImageFormats
         {
-            get { return ConfigurationManager.AppSettings["ImageFormats"].Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+            get { return (ConfigurationManager.AppSettings["ImageFormats"] ?? "jpg").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
         }
 
         public static string[] VideoFormats
         {
-            get { return ConfigurationManager.AppSettings["VideoFormats"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+            get { return (ConfigurationManager.AppSettings["VideoFormats"] ?? "wmv,mov,avi,mpg").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
         }
 
         public static string[] AudioFormats
         {
-            get { return ConfigurationManager.AppSettings["AudioFormats"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+            get { return (ConfigurationManager.AppSettings["AudioFormats"] ?? "wma,wav,mp3").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
         }
 
         private static string _path;
@@ -43,8 +43,15 @@ namespace SongPresenter.App_Code
             {
                 if (_path == null)
                 {
-                    var r = new DirectoryInfo(ConfigurationManager.AppSettings["LibraryPath"]).FullName;
-                    _path = r.EndsWith("\\") ? r : r + "\\";
+                    try
+                    {
+                        var r = new DirectoryInfo(ConfigurationManager.AppSettings["LibraryPath"]).FullName;
+                        _path = r.EndsWith("\\") ? r : r + "\\";
+                    }
+                    catch (Exception)
+                    {
+                        _path = "Library\\";
+                    }
                 }
                 return _path;
             }
@@ -91,13 +98,20 @@ namespace SongPresenter.App_Code
         
         public static Color BackgroundColour
         {
-            get { return (Color)ColorConverter.ConvertFromString(ConfigurationManager.AppSettings["AppColour"]); }
+            get
+            {
+                try { return (Color)ColorConverter.ConvertFromString(ConfigurationManager.AppSettings["AppColour"]); }
+                catch (Exception) { return Colors.White; }
+            }
         }
 
         private static void SaveSetting(string key, string value)
         {
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.AppSettings.Settings[key].Value = value;
+            if (config.AppSettings.Settings[key] != null)
+                config.AppSettings.Settings[key].Value = value;
+            else
+                config.AppSettings.Settings.Add(key, value);
             config.Save(ConfigurationSaveMode.Modified);
             ConfigurationManager.RefreshSection("appSettings");
         }
@@ -122,7 +136,7 @@ namespace SongPresenter.App_Code
         {
             get
             {
-                string path = ConfigurationManager.AppSettings["PresentationPath"];
+                string path = ConfigurationManager.AppSettings["PresentationPath"] ?? "Library\\Presentations\\";
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
                 return Path.GetFullPath(path);
@@ -149,7 +163,7 @@ namespace SongPresenter.App_Code
 
         public static double MessengerFontSize
         {
-            get { return Util.Parse<double?>(ConfigurationManager.AppSettings["MessengerFont"].Split(' ')[0]) ?? 25; }
+            get { return Util.Parse<double?>((ConfigurationManager.AppSettings["MessengerFont"] ?? "").Split(' ')[0]) ?? 46; }
         }
 
         public static void SaveMessengerFont(double size, FontFamily font, string colorName)
@@ -173,12 +187,12 @@ namespace SongPresenter.App_Code
 
         public static VerticalAlignment MessengerVerticalPosition
         {
-            get { return Util.Parse<VerticalAlignment?>(ConfigurationManager.AppSettings["MessengerPosition"].Split(' ')[0].ToFirstUpper()) ?? VerticalAlignment.Bottom; }
+            get { return Util.Parse<VerticalAlignment?>((ConfigurationManager.AppSettings["MessengerPosition"] ?? "").Split(' ').First().ToFirstUpper()) ?? VerticalAlignment.Bottom; }
         }
 
         public static HorizontalAlignment MessengerHorizontalPosition
         {
-            get { return Util.Parse<HorizontalAlignment?>(ConfigurationManager.AppSettings["MessengerPosition"].Split(' ')[1].ToFirstUpper()) ?? HorizontalAlignment.Left; }
+            get { return Util.Parse<HorizontalAlignment?>((ConfigurationManager.AppSettings["MessengerPosition"] ?? "").Split(' ').Last().ToFirstUpper()) ?? HorizontalAlignment.Left; }
         }
 
         public static void SaveMessengerLocation(VerticalAlignment posy, HorizontalAlignment posx)
