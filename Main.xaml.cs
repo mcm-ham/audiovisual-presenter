@@ -128,12 +128,16 @@ namespace SongPresenter
         #region library
         public void BindLocationList()
         {
-            LocationList.SelectedIndex = 0;
-
+            LocationList.Items.Clear();
+            
             if (Directory.Exists(Config.LibraryPath))
-                LocationList.ItemsSource = Directory.GetDirectories(Config.LibraryPath).Select(p => p.Substring(p.LastIndexOf('\\') + 1));
-            else
-                LocationList.ItemsSource = new string[] { };
+            {
+                foreach (var path in Directory.GetDirectories(Config.LibraryPath).Select(p => p.Substring(p.LastIndexOf('\\') + 1)))
+                    LocationList.Items.Add(path);
+                LocationList.SelectedValue = Config.SelectedLibrary;
+                if (LocationList.SelectedIndex == -1)
+                    LocationList.SelectedIndex = 0;
+            }
 
             BindFileList();
         }
@@ -158,6 +162,8 @@ namespace SongPresenter
 
         protected void LocationList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (LocationList.SelectedValue != null)
+                Config.SelectedLibrary = LocationList.SelectedValue.ToString();
             BindFileList();
         }
 
@@ -186,8 +192,20 @@ namespace SongPresenter
             if (LocationList.SelectedIndex == -1)
                 return;
 
-            string filename = Config.LibraryPath + LocationList.SelectedValue + "\\" + FileList.SelectedValue; ;
-            System.Diagnostics.Process.Start(filename);
+            string filename = Config.LibraryPath + LocationList.SelectedValue + "\\" + FileList.SelectedValue;
+            if (File.Exists(filename))
+                System.Diagnostics.Process.Start(filename);
+        }
+
+        protected void OpenLocation2(object sender, RoutedEventArgs e)
+        {
+            if (LocationList.SelectedIndex == -1)
+                return;
+
+            var proc = new System.Diagnostics.Process();
+            proc.StartInfo.FileName = Config.LibraryPath + LocationList.SelectedValue;
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
         }
 
         protected void FileList_KeyUp(object sender, KeyEventArgs e)
@@ -307,8 +325,32 @@ namespace SongPresenter
             if (ScheduleList.SelectedIndex == -1)
                 return;
 
-            //check that file exists and if not show friendly message box
-            System.Diagnostics.Process.Start(((Item)ScheduleList.SelectedItem).Filename);
+            Item item = ScheduleList.SelectedItem as Item;
+            if (!item.IsFound)
+            {
+                MessageBox.Show(Labels.MainMessageFileNotFound, "", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            System.Diagnostics.Process.Start(item.Filename);
+        }
+
+        protected void OpenLocation(object sender, RoutedEventArgs e)
+        {
+            if (ScheduleList.SelectedIndex == -1)
+                return;
+
+            string path = System.IO.Path.GetDirectoryName((ScheduleList.SelectedItem as Item).Filename);
+            if (!Directory.Exists(path))
+            {
+                MessageBox.Show(Labels.MainMessageFolderNotFound, "", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var proc = new System.Diagnostics.Process();
+            proc.StartInfo.FileName = path;
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
         }
 
         protected void RemoveFile(object sender, RoutedEventArgs e)
@@ -412,6 +454,7 @@ namespace SongPresenter
             LocationList.Margin = new Thickness(81, 94, 17, 0);
             PrevBtn.IsEnabled = true;
             NextBtn.IsEnabled = true;
+            Interval.Text = Config.TimerInterval.ToString();
 
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
@@ -453,6 +496,7 @@ namespace SongPresenter
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Hidden);
             PrevBtn.Content = Labels.MainBtnMoveUp;
             NextBtn.Content = Labels.MainBtnMoveDown;
+            Config.TimerInterval = Util.Parse<int>(Interval.Text);
             RefreshBtn.Visibility = Visibility.Visible;
             RemoveBtn.Visibility = Visibility.Visible;
             LocationList.Margin = new Thickness(81, 94, 80, 0);
@@ -476,9 +520,13 @@ namespace SongPresenter
         protected void Presentation_SlideIndexChanged(object sender, SlideShowEventArgs e)
         {
             int idx = e.NewIndex - 1;
-            
+
             if (e.OldIndex != e.NewIndex)
+            {
+                LiveList.SelectionChanged -= new SelectionChangedEventHandler(LiveList_SelectionChanged);
                 LiveList.SelectedIndex = idx;
+                LiveList.SelectionChanged += new SelectionChangedEventHandler(LiveList_SelectionChanged);
+            }
 
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
                 ShowMedia(Presentation.Slides[idx].Filename);
@@ -597,14 +645,17 @@ namespace SongPresenter
         Window messageBox = null;
         protected void ShowMessage(object sender, RoutedEventArgs e)
         {
+            MethodInfo setIsPressed = ShowMessageBtn.GetType().GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic);
+
             if (messageBox != null)
             {
                 messageBox.Close();
                 messageBox = null;
+                setIsPressed.Invoke(ShowMessageBtn, new object[] { false });
                 return;
             }
 
-            ShowMessageBtn.GetType().GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ShowMessageBtn, new object[] { true });
+            setIsPressed.Invoke(ShowMessageBtn, new object[] { true });
 
             ScreenMessage prompt = new ScreenMessage();
             prompt.Owner = this;
@@ -613,7 +664,7 @@ namespace SongPresenter
                 if ((sen as ScreenMessage).MessageBox == null)
                 {
                     messageBox = null;
-                    ShowMessageBtn.GetType().GetMethod("set_IsPressed", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ShowMessageBtn, new object[] { false });
+                    setIsPressed.Invoke(ShowMessageBtn, new object[] { false });
                 }
             };
             prompt.ShowDialog();

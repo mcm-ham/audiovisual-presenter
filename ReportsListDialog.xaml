@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.ReportsListWindowTitle}" Width="580" SizeToContent="Height" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+    Title="{x:Static Loc:Labels.ReportsListWindowTitle}" Width="590" SizeToContent="Height" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
     <Grid>
 
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="540" Margin="10">

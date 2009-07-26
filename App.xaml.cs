@@ -47,6 +47,20 @@ namespace SongPresenter
             if (key == null || Util.Parse<int>(key.GetValue("ServicePackLevel")) < 1)
                 throw new Exception(Labels.AppRequiresSql);
 
+            key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office");
+            if (key == null)
+                throw new Exception(Labels.AppRequiresOffice);
+            bool found = false;
+            string[] versions = key.GetSubKeyNames().Where(v => Util.Parse<double>(v) >= 10).ToArray();
+            foreach (string v in versions)
+            {
+                key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\" + v + @"\PowerPoint\InstallRoot", false);
+                if (key != null && !String.IsNullOrEmpty(key.GetValue("Path") as string))
+                    found = true;
+            }
+            if (!found)
+                throw new Exception(Labels.AppRequiresOffice);
+                
             base.OnStartup(e);
         }
     }

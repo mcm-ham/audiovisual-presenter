@@ -5,33 +5,33 @@
     xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.ReportsUsageWindowTitle}" SizeToContent="Height" Width="800" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
-    <StackPanel Margin="10">
-        <TextBlock Text="{x:Static Loc:Labels.ReportsUsageSelectionDesc}" Margin="0,0,0,10"/>
+    Title="{x:Static Loc:Labels.ReportsUsageWindowTitle}" Height="600" Width="800" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+    <ScrollViewer Padding="0" VerticalAlignment="Stretch">
+        <StackPanel Margin="10">
+            <TextBlock Text="{x:Static Loc:Labels.ReportsUsageSelectionDesc}" Margin="0,0,0,10"/>
 
-        <ListBox Name="LibraryList" BorderThickness="0">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <CheckBox Content="{Binding}" Margin="2" Click="CheckBox_Click" Loaded="CheckBox_Loaded" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Columns="3" IsItemsHost="True" />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-        </ListBox>
+            <ListBox Name="LibraryList" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding}" Margin="2" Click="CheckBox_Click" Loaded="CheckBox_Loaded" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="3" IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
 
-        <Grid Margin="0,30,0,10">
-            <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,0,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelFrom}" />
-            <my:DatePicker Name="FromDate" Height="23" Margin="35,0,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
-            <TextBlock Height="28" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,36,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelTo}" />
-            <my:DatePicker Name="ToDate" Height="23" Margin="35,36,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
-            <Button Height="23" HorizontalAlignment="Left" Margin="0,66,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="Generate"  Content="{x:Static Loc:Labels.ReportsUsageGenerateBtn}" />
-            <Button Height="23" HorizontalAlignment="Left" Margin="85,66,0,0" Name="button2" VerticalAlignment="Top" Width="75" Click="Download"  Content="{x:Static Loc:Labels.ReportsUsageDownloadBtn}" />
-        </Grid>
+            <Grid Margin="0,30,0,10">
+                <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,0,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelFrom}" />
+                <my:DatePicker Name="FromDate" Height="23" Margin="35,0,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <TextBlock Height="28" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,36,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelTo}" />
+                <my:DatePicker Name="ToDate" Height="23" Margin="35,36,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <Button Height="23" HorizontalAlignment="Left" Margin="0,66,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="Generate"  Content="{x:Static Loc:Labels.ReportsUsageGenerateBtn}" />
+                <Button Height="23" HorizontalAlignment="Left" Margin="85,66,0,0" Name="button2" VerticalAlignment="Top" Width="75" Click="Download"  Content="{x:Static Loc:Labels.ReportsUsageDownloadBtn}" />
+            </Grid>
         
-        <ScrollViewer Padding="0" VerticalAlignment="Stretch">
             <chartingToolkit:Chart Name="mainChart" BorderThickness="0" >
                 <chartingToolkit:Chart.Series>
                     <chartingToolkit:BarSeries ItemsSource="{Binding}" DependentValuePath="Count" IndependentValuePath="Name" />
@@ -43,6 +43,7 @@
                     </Style>
                 </chartingToolkit:Chart.LegendStyle>
             </chartingToolkit:Chart>
-        </ScrollViewer>
-    </StackPanel>
+        
+        </StackPanel>
+    </ScrollViewer>
 </Window>

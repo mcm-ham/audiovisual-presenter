@@ -9,9 +9,25 @@
         <TextBox Height="23" Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" /> 
         <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" Width="75" Height="23" VerticalAlignment="Top" HorizontalAlignment="Left" />
         
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="22,90,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
-        <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,115,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="22,80,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
+        <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
         <Button Height="23" HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" Width="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
         <Button Height="23" HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" Width="75" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
+        
+        <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerLabel}" Height="23" Margin="22,150,0,0" VerticalAlignment="Top" />
+        <StackPanel Orientation="Horizontal" Margin="22,175,0,0" VerticalAlignment="Top">
+            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerFont}" Width="110" VerticalAlignment="Center" />
+            <ComboBox Name="FontSizeList" Height="23" Width="40" Margin="10,0,0,0" />
+            <ComboBox Name="FontFamilyList" Height="23" Width="100" Margin="10,0,0,0" />
+            <ComboBox Name="FontColorList" Height="23" Width="100" Margin="10,0,0,0" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="22,205,0,0" VerticalAlignment="Top">
+            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerVertical}" Width="110" VerticalAlignment="Center" />
+            <ComboBox Name="VerLocation" Height="23" Width="100" Margin="10,0,0,0" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="22,235,0,0" VerticalAlignment="Top">
+            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerHorizontal}" Width="110" VerticalAlignment="Center" />
+            <ComboBox Name="HorLocation" Height="23" Width="100" Margin="10,0,0,0" />
+        </StackPanel>
     </Grid>
 </Window>

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Core = Microsoft.Office.Core;
 using PP = Microsoft.Office.Interop.PowerPoint;
+using SongPresenter.Resources;
 
 namespace SongPresenter.App_Code
 {
@@ -157,7 +158,7 @@ namespace SongPresenter.App_Code
             if (curpos > Slides.Length)
                 return;
             running.SlideShowWindow.View.Next();
-            int newpos = running.SlideShowWindow.View.CurrentShowPosition; ;
+            int newpos = running.SlideShowWindow.View.CurrentShowPosition;
 
             if (SlideIndexChanged != null)
                 SlideIndexChanged(this, new SlideShowEventArgs(curpos, newpos));
@@ -167,7 +168,7 @@ namespace SongPresenter.App_Code
         {
             int curpos = running.SlideShowWindow.View.CurrentShowPosition;
             running.SlideShowWindow.View.Previous();
-            int newpos = running.SlideShowWindow.View.CurrentShowPosition; ;
+            int newpos = running.SlideShowWindow.View.CurrentShowPosition;
 
             if (SlideIndexChanged != null)
                 SlideIndexChanged(this, new SlideShowEventArgs(curpos, newpos));
@@ -177,34 +178,36 @@ namespace SongPresenter.App_Code
 
         public void AddSlides(Item scheduleItem)
         {
-            if (!File.Exists(scheduleItem.Filename))
+            if (!scheduleItem.IsFound)
                 return;
 
-            if (Config.VideoFormats.Any(f => scheduleItem.Filename.ToLower().EndsWith("." + f)))
+            string filename = scheduleItem.Filename.ToLower();
+
+            if (Config.VideoFormats.Any(f => filename.EndsWith("." + f)))
             {
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, "", slide, SlideType.Video, scheduleItem.Filename);
+                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename);
             }
-            else if (Config.AudioFormats.Any(f => scheduleItem.Filename.ToLower().EndsWith("." + f)))
+            else if (Config.AudioFormats.Any(f => filename.EndsWith("." + f)))
             {
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, "", slide, SlideType.Audio, scheduleItem.Filename);
+                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename);
             }
-            else if (Config.ImageFormats.Any(f => scheduleItem.Filename.ToLower().EndsWith("." + f)))
+            else if (Config.ImageFormats.Any(f => filename.EndsWith("." + f)))
             {
                 PP.Slide slide = running.Slides.Add(running.Slides.Count + 1, PP.PpSlideLayout.ppLayoutBlank);
                 PP.Shape shape;
 
                 if (Util.Parse<double>(app.Version) >= 12)
-                    shape = slide.Shapes.AddPicture(scheduleItem.Filename, Core.MsoTriState.msoTrue, Core.MsoTriState.msoFalse, -1f, -1f, -1f, -1f);
+                    shape = slide.Shapes.AddPicture(filename, Core.MsoTriState.msoTrue, Core.MsoTriState.msoFalse, -1f, -1f, -1f, -1f);
                 else
                 {
                     string path = UniqueFilename(Config.TempPath + (running.Slides.Count + 1) + "-background.jpg");
-                    byte[] data = Util.ToByteArray(Util.Resize(Util.ToImage(File.ReadAllBytes(scheduleItem.Filename)), (int)slide.Design.SlideMaster.Width, (int)slide.Design.SlideMaster.Height, System.Drawing.Color.Black));
+                    byte[] data = Util.ToByteArray(Util.Resize(Util.ToImage(File.ReadAllBytes(filename)), (int)slide.Design.SlideMaster.Width, (int)slide.Design.SlideMaster.Height, System.Drawing.Color.Black));
                     using (FileStream stream = File.Open(path, FileMode.Create))
                         data.ForEach(b => stream.WriteByte(b));
                     shape = slide.Shapes.AddPicture(path, Core.MsoTriState.msoTrue, Core.MsoTriState.msoFalse, -1f, -1f, -1f, -1f);
@@ -217,22 +220,22 @@ namespace SongPresenter.App_Code
                 slide.Design = (PP.Design)running.Designs._Index(1);
                 slide.FollowMasterBackground = Core.MsoTriState.msoTrue;
                 slide.Comments.Add(0f, 0f, "", "", scheduleItem.Name);
-                AddSlide(scheduleItem.Name, "", slide);
+                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide);
             }
             else
             {
                 PP.Presentation pres;
-                if (scheduleItem.Filename.ToLower().EndsWith(".pptx") && Util.Parse<double>(app.Version) < 12)
+                if (filename.EndsWith(".pptx") && Util.Parse<double>(app.Version) < 12)
                 {
                     int count = app.Presentations.Count;
                     System.Diagnostics.Process p = new System.Diagnostics.Process();
-                    p.StartInfo.FileName = scheduleItem.Filename;
+                    p.StartInfo.FileName = filename;
                     p.Start();
                     while (count == app.Presentations.Count) { }
                     pres = (PP.Presentation)app.Presentations._Index(app.Presentations.Count);
                 }
                 else
-                    pres = app.Presentations.Open(scheduleItem.Filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
+                    pres = app.Presentations.Open(filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
 
                 PasteSlidesWithFormatting(running, pres);
                 pres.Close();
@@ -292,23 +295,6 @@ namespace SongPresenter.App_Code
                 slide.Copy();
                 PP.SlideRange range = dest.Slides.Paste(dest.Slides.Count + 1);
 
-                //fix bugs
-                for (int i = 1; i <= range.Shapes.Count; i++)
-                {
-                    if (range.Shapes[i].HasTextFrame != Core.MsoTriState.msoTrue)
-                        continue;
-
-                    //fix font sizes not being kept
-                    //check that source font size is greater than 0 i.e. "The Grace (7pm only)" on Office XP
-                    if (slide.Shapes[i].TextFrame.TextRange.Font.Size > 0)
-                        range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
-
-                    //fix alignment on some files like "Alleluia Jesus Is Lord" on Office 2007
-                    var align = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
-                    if (align == PP.PpParagraphAlignment.ppAlignCenter || align == PP.PpParagraphAlignment.ppAlignLeft || align == PP.PpParagraphAlignment.ppAlignRight || align == PP.PpParagraphAlignment.ppAlignJustify)
-                        range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
-                }
-
                 //slide master
                 //reuse the same design otherwise, if we copy the design for every slide we end up with a very big file
                 if (!designs.ContainsKey(slide.Design))
@@ -346,6 +332,33 @@ namespace SongPresenter.App_Code
                 //place this code after assigning master slide because if mouse happens to be hovering over the
                 //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
                 AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count));
+
+                //fix bugs
+                for (int i = 1; i <= range.Shapes.Count; i++)
+                {
+                    //fix picture size issue like "How Great Thou Art (A)" on Office 2007 caused after applying Master slide
+                    if (slide.Shapes[i].Name.StartsWith("Picture"))
+                    {
+                        range.Shapes[i].LockAspectRatio = Core.MsoTriState.msoFalse;
+                        range.Shapes[i].Width = slide.Shapes[i].Width;
+                        range.Shapes[i].Height = slide.Shapes[i].Height;
+                        range.Shapes[i].Top = slide.Shapes[i].Top;
+                        range.Shapes[i].Left = slide.Shapes[i].Left;
+                    }
+
+                    if (range.Shapes[i].HasTextFrame != Core.MsoTriState.msoTrue)
+                        continue;
+
+                    //fix font sizes not being kept (TODO: find example)
+                    //check that source font size is greater than 0 i.e. "The Grace (7pm only)" on Office XP
+                    if (slide.Shapes[i].TextFrame.TextRange.Font.Size > 0)
+                        range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
+
+                    //fix alignment on some files like "Alleluia Jesus Is Lord" on Office 2007
+                    var align = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
+                    if (align == PP.PpParagraphAlignment.ppAlignCenter || align == PP.PpParagraphAlignment.ppAlignLeft || align == PP.PpParagraphAlignment.ppAlignRight || align == PP.PpParagraphAlignment.ppAlignJustify)
+                        range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
+                }
                 
                 if (slide.FollowMasterBackground == Core.MsoTriState.msoTrue)
                     continue;

@@ -85,8 +85,9 @@
                             <TextBlock Text="{Binding}" Width="{Binding ElementName=ScheduleList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="{x:Static Loc:Labels.MainContextLibraryAdd}" Click="AddSelected"/>
-                                    <MenuItem Header="{x:Static Loc:Labels.MainContextLibraryOpen}" Click="OpenFile2"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextAdd}" Click="AddSelected"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile2"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextOpenLocation}" Click="OpenLocation2"/>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>
@@ -100,14 +101,24 @@
         <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="20" Padding="0" />
         <TextBlock Name="ScheduleName" Grid.Column="1" Height="28" Margin="12,98,12,0" VerticalAlignment="Top" Padding="0"/>
         <ListBox Name="ScheduleList" Grid.Column="1" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsFound}" Value="false">
+                            <Setter Property="Foreground" Value="Red" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Path=Name}" Width="{Binding ElementName=ScheduleList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
                         <StackPanel.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="{x:Static Loc:Labels.MainContextScheduleOpen}" Click="OpenFile"/>
-                                <MenuItem Header="{x:Static Loc:Labels.MainContextScheduleRemove}" Click="RemoveFile"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextOpenLocation}" Click="OpenLocation"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextRemove}" Click="RemoveFile"/>
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>
@@ -117,7 +128,7 @@
         <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="Start_Click" />
         <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="Stop_Click" Visibility="Hidden" />
         <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="TimerStart_Click" Visibility="Hidden" />
-        <TextBox Name="Interval" Grid.Column="1" Text="8" Height="23" HorizontalAlignment="Left" Margin="186,0,0,12" VerticalAlignment="Bottom" Width="35" Visibility="Hidden" TextChanged="Interval_TextChanged" />
+        <TextBox Name="Interval" Grid.Column="1" Height="23" HorizontalAlignment="Left" Margin="186,0,0,12" VerticalAlignment="Bottom" Width="35" Visibility="Hidden" TextChanged="Interval_TextChanged" />
         <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,171,12" VerticalAlignment="Bottom" Width="70" Click="RemoveFile" IsEnabled="False" />
         <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,91,12" VerticalAlignment="Bottom" Width="70" Click="Up_Click" IsEnabled="False" />
         <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" VerticalAlignment="Bottom" Width="70" Click="Down_Click" IsEnabled="False" />

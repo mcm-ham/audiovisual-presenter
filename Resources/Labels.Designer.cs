@@ -133,6 +133,15 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This program requires Microsoft Office XP with PowerPoint or greater..
+        /// </summary>
+        public static string AppRequiresOffice {
+            get {
+                return ResourceManager.GetString("AppRequiresOffice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This program requires Microsoft SQL Server Compact 3.5 Service Pack 1..
         /// </summary>
         public static string AppRequiresSql {
@@ -333,36 +342,36 @@ namespace SongPresenter.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
-        public static string MainContextLibraryAdd {
+        public static string MainContextAdd {
             get {
-                return ResourceManager.GetString("MainContextLibraryAdd", resourceCulture);
+                return ResourceManager.GetString("MainContextAdd", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open.
+        ///   Looks up a localized string similar to Open File.
         /// </summary>
-        public static string MainContextLibraryOpen {
+        public static string MainContextOpenFile {
             get {
-                return ResourceManager.GetString("MainContextLibraryOpen", resourceCulture);
+                return ResourceManager.GetString("MainContextOpenFile", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open.
+        ///   Looks up a localized string similar to Open Location.
         /// </summary>
-        public static string MainContextScheduleOpen {
+        public static string MainContextOpenLocation {
             get {
-                return ResourceManager.GetString("MainContextScheduleOpen", resourceCulture);
+                return ResourceManager.GetString("MainContextOpenLocation", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Remove.
         /// </summary>
-        public static string MainContextScheduleRemove {
+        public static string MainContextRemove {
             get {
-                return ResourceManager.GetString("MainContextScheduleRemove", resourceCulture);
+                return ResourceManager.GetString("MainContextRemove", resourceCulture);
             }
         }
         
@@ -511,6 +520,24 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File no longer exists..
+        /// </summary>
+        public static string MainMessageFileNotFound {
+            get {
+                return ResourceManager.GetString("MainMessageFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Folder no longer exists..
+        /// </summary>
+        public static string MainMessageFolderNotFound {
+            get {
+                return ResourceManager.GetString("MainMessageFolderNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please add items to the presentation list first..
         /// </summary>
         public static string MainNoAddedItems {
@@ -655,6 +682,42 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Font:.
+        /// </summary>
+        public static string OptionsMessengerFont {
+            get {
+                return ResourceManager.GetString("OptionsMessengerFont", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Horizontal position:.
+        /// </summary>
+        public static string OptionsMessengerHorizontal {
+            get {
+                return ResourceManager.GetString("OptionsMessengerHorizontal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message settings.
+        /// </summary>
+        public static string OptionsMessengerLabel {
+            get {
+                return ResourceManager.GetString("OptionsMessengerLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vertical position:.
+        /// </summary>
+        public static string OptionsMessengerVertical {
+            get {
+                return ResourceManager.GetString("OptionsMessengerVertical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Primary.
         /// </summary>
         public static string OptionsMonitorPrimary {
@@ -664,7 +727,7 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show presentation and video on:.
+        ///   Looks up a localized string similar to Show presentations and videos on:.
         /// </summary>
         public static string OptionsMonitorSetting {
             get {
@@ -930,6 +993,33 @@ namespace SongPresenter.Resources {
         public static string ShowMessageWindowTitle {
             get {
                 return ResourceManager.GetString("ShowMessageWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audio.
+        /// </summary>
+        public static string SlideShowAudioLabel {
+            get {
+                return ResourceManager.GetString("SlideShowAudioLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image.
+        /// </summary>
+        public static string SlideShowImageLabel {
+            get {
+                return ResourceManager.GetString("SlideShowImageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Video.
+        /// </summary>
+        public static string SlideShowVideoLabel {
+            get {
+                return ResourceManager.GetString("SlideShowVideoLabel", resourceCulture);
             }
         }
     }
