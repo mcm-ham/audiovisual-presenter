@@ -15,7 +15,7 @@ namespace SongPresenter
         {
             InitializeComponent();
 
-            LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"];
+            LibraryPath.Text = Config.LibraryPath;
 
             for (int i = 0; i < Screen.AllScreens.Length; i++)
             {

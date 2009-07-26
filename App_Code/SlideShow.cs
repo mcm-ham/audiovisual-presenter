@@ -181,7 +181,7 @@ namespace SongPresenter.App_Code
             if (!scheduleItem.IsFound)
                 return;
 
-            string filename = scheduleItem.Filename.ToLower();
+            string filename = Path.GetFullPath(scheduleItem.Filename).ToLower();
 
             if (Config.VideoFormats.Any(f => filename.EndsWith("." + f)))
             {
