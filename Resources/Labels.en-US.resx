@@ -141,6 +141,9 @@
   <data name="AppError" xml:space="preserve">
     <value>An error has occurred and been logged</value>
   </data>
+  <data name="AppRequiresOffice" xml:space="preserve">
+    <value>This program requires Microsoft Office XP with PowerPoint or greater.</value>
+  </data>
   <data name="AppRequiresSql" xml:space="preserve">
     <value>This program requires Microsoft SQL Server Compact 3.5 Service Pack 1.</value>
   </data>
@@ -207,16 +210,16 @@
   <data name="MainBtnVideoVolume" xml:space="preserve">
     <value>Volume</value>
   </data>
-  <data name="MainContextLibraryAdd" xml:space="preserve">
+  <data name="MainContextAdd" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="MainContextLibraryOpen" xml:space="preserve">
-    <value>Open</value>
+  <data name="MainContextOpenFile" xml:space="preserve">
+    <value>Open File</value>
   </data>
-  <data name="MainContextScheduleOpen" xml:space="preserve">
-    <value>Open</value>
+  <data name="MainContextOpenLocation" xml:space="preserve">
+    <value>Open Location</value>
   </data>
-  <data name="MainContextScheduleRemove" xml:space="preserve">
+  <data name="MainContextRemove" xml:space="preserve">
     <value>Remove</value>
   </data>
   <data name="MainDescRemote" xml:space="preserve">
@@ -267,6 +270,12 @@
   <data name="MainMenuReportUsage" xml:space="preserve">
     <value>Usage</value>
   </data>
+  <data name="MainMessageFileNotFound" xml:space="preserve">
+    <value>File no longer exists.</value>
+  </data>
+  <data name="MainMessageFolderNotFound" xml:space="preserve">
+    <value>Folder no longer exists.</value>
+  </data>
   <data name="MainNoAddedItems" xml:space="preserve">
     <value>Please add items to the presentation list first.</value>
   </data>
@@ -316,11 +325,23 @@
   <data name="OptionsLibraryPath" xml:space="preserve">
     <value>Presenter Library Path</value>
   </data>
+  <data name="OptionsMessengerFont" xml:space="preserve">
+    <value>Font:</value>
+  </data>
+  <data name="OptionsMessengerHorizontal" xml:space="preserve">
+    <value>Horizontal position:</value>
+  </data>
+  <data name="OptionsMessengerLabel" xml:space="preserve">
+    <value>Message settings</value>
+  </data>
+  <data name="OptionsMessengerVertical" xml:space="preserve">
+    <value>Vertical position:</value>
+  </data>
   <data name="OptionsMonitorPrimary" xml:space="preserve">
     <value>Primary</value>
   </data>
   <data name="OptionsMonitorSetting" xml:space="preserve">
-    <value>Show presentation and video on:</value>
+    <value>Show presentations and videos on:</value>
   </data>
   <data name="OptionsMonitorTitle" xml:space="preserve">
     <value>Monitor</value>
@@ -409,5 +430,14 @@
   </data>
   <data name="ShowMessageWindowTitle" xml:space="preserve">
     <value>Message Box</value>
+  </data>
+  <data name="SlideShowAudioLabel" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="SlideShowImageLabel" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="SlideShowVideoLabel" xml:space="preserve">
+    <value>Video</value>
   </data>
 </root>

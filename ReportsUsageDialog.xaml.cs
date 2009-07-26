@@ -41,6 +41,12 @@ namespace SongPresenter
             //http://stackoverflow.com/questions/992241/what-does-cannot-modify-the-logical-children-for-this-node-at-this-time-because-a
             (mainChart.Series[0] as Series).DataContext = list;
             mainChart.Height = Math.Max(450, 22 * list.Length);
+            if ((mainChart.Series[0] as BarSeries).ActualDependentRangeAxis != null)
+            {
+                LinearAxis axis = (mainChart.Series[0] as BarSeries).ActualDependentRangeAxis as LinearAxis;
+                axis.Minimum = 0;
+                axis.Interval = Math.Max(1, Math.Round(axis.Interval ?? 0));
+            }
         }
 
         private void Download(object sender, RoutedEventArgs e)

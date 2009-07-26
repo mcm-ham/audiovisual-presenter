@@ -109,7 +109,14 @@ namespace SongPresenter.App_Code
 
         public static void DeleteSchedule(Guid id)
         {
-            DB.Instance.DeleteObject(LoadSchedule(id));
+            var schedule = LoadSchedule(id);
+
+            //if presentations are kept, then remove saved presentation when schedule is deleted
+            string path = Config.PresentationPath + schedule.DisplayName + ".ppt";
+            if (File.Exists(path))
+                File.Delete(path);
+
+            DB.Instance.DeleteObject(schedule);
             DB.Instance.SaveChanges();
         }
     }

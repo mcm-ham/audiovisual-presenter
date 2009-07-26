@@ -36,18 +36,20 @@ namespace SongPresenter
 
         private void Show_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageValue.Text == "")
+            if (MessageValue.Text == "" && !(TimerEnabled.IsChecked ?? false))
             {
                 this.Close();
                 return;
             }
 
-            Grid grid = new Grid();
-            string initMessage = MessageValue.Text;
-            Label messageLabel = new Label() { Content = initMessage, Foreground = new SolidColorBrush(Config.MessengerFontColour), FontSize = Config.MessengerFontSize, FontFamily = Config.MessengerFontFamily };
-            grid.Children.Add(messageLabel);
+            
+            StackPanel panel = new StackPanel();
+            string initMessage = MessageValue.Text.Trim();
+            TextBlock messageLabel = new TextBlock() { Text = initMessage, Foreground = new SolidColorBrush(Config.MessengerFontColour), FontSize = Config.MessengerFontSize, FontFamily = Config.MessengerFontFamily, TextWrapping = TextWrapping.Wrap };
+            panel.Children.Add(messageLabel);
             MessageBox = new Window();
-            MessageBox.Content = grid;
+            MessageBox.Content = panel;
+            MessageBox.MaxWidth = Config.ProjectorScreen.WorkingArea.Width;
             MessageBox.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
             MessageBox.WindowStyle = WindowStyle.None;
             MessageBox.SizeToContent = SizeToContent.WidthAndHeight;
@@ -55,6 +57,7 @@ namespace SongPresenter
             MessageBox.ResizeMode = ResizeMode.NoResize;
             MessageBox.ShowInTaskbar = false;
             MessageBox.Show();
+            
             this.Focus(); //return focus to main program and not to message box
 
             switch (Config.MessengerVerticalPosition)
@@ -93,17 +96,19 @@ namespace SongPresenter
                 int elasped = 0;
                 int endTime = Util.Parse<int>(TimeValue.Text);
                 bool countUp = (TimerType.SelectedIndex == 1);
+                if (!initMessage.Contains("{0}"))
+                    initMessage += " {0}";
                 DispatcherTimer timer = new DispatcherTimer();
                 timer.Interval = new TimeSpan(0, 0, 0, 1);
                 timer.Tick += (sen, args) => {
                     elasped++;
-                    messageLabel.Content = initMessage.Trim() + " " + new TimeSpan(0, 0, countUp ? elasped : endTime - elasped).FormatTimeSpan(false);
+                    messageLabel.Text = String.Format(initMessage, new TimeSpan(0, 0, countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
                     if (elasped >= endTime)
                         timer.Stop();
                     MessageBox.UpdateLayout();
                 };
                 timer.Start();
-                messageLabel.Content = initMessage.Trim() + " " + new TimeSpan(0, 0, countUp ? elasped : endTime - elasped).FormatTimeSpan(false);
+                messageLabel.Text = String.Format(initMessage, new TimeSpan(0, 0, countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
             }
 
             this.Close();
