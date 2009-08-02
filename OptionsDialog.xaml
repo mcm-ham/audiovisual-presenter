@@ -16,17 +16,14 @@
         
         <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerLabel}" Height="23" Margin="22,150,0,0" VerticalAlignment="Top" />
         <StackPanel Orientation="Horizontal" Margin="22,175,0,0" VerticalAlignment="Top">
-            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerFont}" Width="110" VerticalAlignment="Center" />
+            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerFont}" Width="60" VerticalAlignment="Center" />
             <ComboBox Name="FontSizeList" Height="23" Width="40" Margin="10,0,0,0" />
             <ComboBox Name="FontFamilyList" Height="23" Width="100" Margin="10,0,0,0" />
             <ComboBox Name="FontColorList" Height="23" Width="100" Margin="10,0,0,0" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="22,205,0,0" VerticalAlignment="Top">
-            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerVertical}" Width="110" VerticalAlignment="Center" />
+            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerPosition}" Width="60" VerticalAlignment="Center" />
             <ComboBox Name="VerLocation" Height="23" Width="100" Margin="10,0,0,0" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="22,235,0,0" VerticalAlignment="Top">
-            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerHorizontal}" Width="110" VerticalAlignment="Center" />
             <ComboBox Name="HorLocation" Height="23" Width="100" Margin="10,0,0,0" />
         </StackPanel>
     </Grid>

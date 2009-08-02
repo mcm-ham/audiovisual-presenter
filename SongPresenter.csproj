@@ -87,6 +87,9 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.XML" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -120,6 +123,9 @@
     <Compile Include="App_Code\Slide.cs" />
     <Compile Include="App_Code\SlideShow.cs" />
     <Compile Include="App_Code\Util.cs" />
+    <Compile Include="BuildProgress.xaml.cs">
+      <DependentUpon>BuildProgress.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FullscreenVideo.xaml.cs">
       <DependentUpon>FullscreenVideo.xaml</DependentUpon>
     </Compile>
@@ -178,6 +184,10 @@
     <Page Include="AboutDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="BuildProgress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FullscreenVideo.xaml">
       <Generator>MSBuild:Compile</Generator>
