@@ -423,6 +423,7 @@ namespace SongPresenter
         #endregion
 
         #region session
+        BuildProgress progress = null;
         protected void Start_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedSchedule == null)
@@ -469,9 +470,13 @@ namespace SongPresenter
                 Presentation.SlideIndexChanged += new EventHandler<SlideShowEventArgs>(Presentation_SlideIndexChanged);
                 Presentation.SlideShowEnd += new EventHandler(Presentation_SlideShowEnd);
                 Presentation.SlideAdded += new EventHandler<SlideAddedEventArgs>(Presentation_SlideAdded);
+                Presentation.SlideShowStarted += new EventHandler(Presentation_SlideShowStarted);
             }
 
             new Action(() => Presentation.Start(SelectedSchedule) ).BeginInvoke(null, null);
+            progress = new BuildProgress();
+            progress.Owner = this;
+            progress.ShowDialog();
         }
 
         protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -505,9 +510,28 @@ namespace SongPresenter
                 Presentation.Stop();
         }
 
-        void Presentation_SlideAdded(object sender, SlideAddedEventArgs e)
+        protected void Presentation_SlideAdded(object sender, SlideAddedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() => { if (e.NewSlide != null) LiveList.Items.Add(e.NewSlide); else LiveList.Items.Clear(); }));
+            Dispatcher.Invoke(new Action(() => {
+                if (progress.Cancelled)
+                {
+                    Stop_Click(null, null);
+                    progress.Finish();
+                    progress = null;
+                    return;
+                }
+
+                progress.UpdateProgress(e.Progress);
+                if (e.NewSlide != null)
+                    LiveList.Items.Add(e.NewSlide);
+                else
+                    LiveList.Items.Clear();
+            }));
+        }
+
+        protected void Presentation_SlideShowStarted(object sender, EventArgs e)
+        {
+            progress.Finish();
         }
 
         protected void Presentation_SlideShowEnd(object sender, EventArgs e)

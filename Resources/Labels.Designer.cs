@@ -151,6 +151,15 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string BuildProgressCancel {
+            get {
+                return ResourceManager.GetString("BuildProgressCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hexadecimal Notation.
         /// </summary>
         public static string ColorPickerHex {
@@ -691,15 +700,6 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Horizontal position:.
-        /// </summary>
-        public static string OptionsMessengerHorizontal {
-            get {
-                return ResourceManager.GetString("OptionsMessengerHorizontal", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Message settings.
         /// </summary>
         public static string OptionsMessengerLabel {
@@ -709,11 +709,11 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vertical position:.
+        ///   Looks up a localized string similar to Location:.
         /// </summary>
-        public static string OptionsMessengerVertical {
+        public static string OptionsMessengerPosition {
             get {
-                return ResourceManager.GetString("OptionsMessengerVertical", resourceCulture);
+                return ResourceManager.GetString("OptionsMessengerPosition", resourceCulture);
             }
         }
         

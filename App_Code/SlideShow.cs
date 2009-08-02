@@ -31,6 +31,11 @@ namespace SongPresenter.App_Code
             set { _cpath = value; }
         }
 
+        public event EventHandler SlideShowEnd;
+        public event EventHandler<SlideAddedEventArgs> SlideAdded;
+        public event EventHandler<SlideShowEventArgs> SlideIndexChanged;
+        public event EventHandler SlideShowStarted;
+
         public void Start(Schedule schedule)
         {
             if (Config.KeepPresentations)
@@ -54,10 +59,10 @@ namespace SongPresenter.App_Code
                 previousDesigns.Clear();
                 _slides.Clear();
                 if (SlideAdded != null)
-                    SlideAdded(this, new SlideAddedEventArgs(null));
+                    SlideAdded(this, new SlideAddedEventArgs(null, 0));
 
                 running = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
-                AddSlide("", "Blank", running.Slides._Index(1));
+                AddSlide("", "Blank", running.Slides._Index(1), 0);
 
                 foreach (Item item in items)
                     AddSlides(item);
@@ -79,6 +84,8 @@ namespace SongPresenter.App_Code
             //    running.SlideShowSettings.Run();
             //}
 
+            SlideShowStarted(this, new EventArgs());
+
             //close master slide view
             PP.DocumentWindow wnd = ((PP.DocumentWindow)app.Windows._Index(1));
             wnd.ViewType = PP.PpViewType.ppViewSlide;
@@ -91,23 +98,19 @@ namespace SongPresenter.App_Code
                 SlideShowEnd(this, new EventArgs());
         }
 
-        public event EventHandler SlideShowEnd;
-
-        void AddSlide(string text, string comments, object slide)
+        void AddSlide(string text, string comments, object slide, double progress)
         {
-            AddSlide(text, comments, slide, SlideType.PowerPoint, "");
+            AddSlide(text, comments, slide, SlideType.PowerPoint, "", progress);
         }
 
-        void AddSlide(string text, string comments, object slide, SlideType type, string filename)
+        void AddSlide(string text, string comments, object slide, SlideType type, string filename, double progress)
         {
             Slide s = new Slide() { Text = text, Comment = comments, PSlide = slide, SlideIndex = _slides.Count + 1, Type = type, Filename = filename };
             _slides.Add(s);
 
             if (SlideAdded != null)
-                SlideAdded(this, new SlideAddedEventArgs(s));
+                SlideAdded(this, new SlideAddedEventArgs(s, progress));
         }
-
-        public event EventHandler<SlideAddedEventArgs> SlideAdded;
 
         public void Stop()
         {
@@ -174,13 +177,13 @@ namespace SongPresenter.App_Code
                 SlideIndexChanged(this, new SlideShowEventArgs(curpos, newpos));
         }
 
-        public event EventHandler<SlideShowEventArgs> SlideIndexChanged;
-
         public void AddSlides(Item scheduleItem)
         {
             if (!scheduleItem.IsFound)
                 return;
-
+            
+            double progress = scheduleItem.Ordinal / (double)scheduleItem.Schedule.Items.Count;
+            double progressEnd = (scheduleItem.Ordinal + 1) / (double)scheduleItem.Schedule.Items.Count;
             string filename = Path.GetFullPath(scheduleItem.Filename).ToLower();
 
             if (Config.VideoFormats.Any(f => filename.EndsWith("." + f)))
@@ -188,14 +191,14 @@ namespace SongPresenter.App_Code
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename);
+                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename, progress);
             }
             else if (Config.AudioFormats.Any(f => filename.EndsWith("." + f)))
             {
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename);
+                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename, progress);
             }
             else if (Config.ImageFormats.Any(f => filename.EndsWith("." + f)))
             {
@@ -220,7 +223,7 @@ namespace SongPresenter.App_Code
                 slide.Design = (PP.Design)running.Designs._Index(1);
                 slide.FollowMasterBackground = Core.MsoTriState.msoTrue;
                 slide.Comments.Add(0f, 0f, "", "", scheduleItem.Name);
-                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide);
+                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide, progress);
             }
             else
             {
@@ -237,7 +240,7 @@ namespace SongPresenter.App_Code
                 else
                     pres = app.Presentations.Open(filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
 
-                PasteSlidesWithFormatting(running, pres);
+                PasteSlidesWithFormatting(running, pres, progress, progressEnd);
                 pres.Close();
             }
 
@@ -285,10 +288,12 @@ namespace SongPresenter.App_Code
         }
 
         Dictionary<string, int> previousDesigns = new Dictionary<string, int>();
-        private void PasteSlidesWithFormatting(PP.Presentation dest, PP.Presentation source)
+        private void PasteSlidesWithFormatting(PP.Presentation dest, PP.Presentation source, double progress, double progressEnd)
         {
             Dictionary<PP.Design, int> designs = new Dictionary<PP.Design, int>();
             Dictionary<PP.ColorScheme, int> schemes = new Dictionary<PP.ColorScheme, int>();
+            double step = (progressEnd - progress) / source.Slides.Count;
+            int start = dest.Slides.Count;
 
             foreach (PP.Slide slide in source.Slides)
             {
@@ -331,7 +336,7 @@ namespace SongPresenter.App_Code
 
                 //place this code after assigning master slide because if mouse happens to be hovering over the
                 //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
-                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count));
+                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count), (dest.Slides.Count - start) * step + progress);
 
                 //fix bugs
                 for (int i = 1; i <= range.Shapes.Count; i++)
@@ -516,12 +521,13 @@ namespace SongPresenter.App_Code
 
     public class SlideAddedEventArgs : EventArgs
     {
-        public SlideAddedEventArgs(Slide slide)
-            : base()
+        public SlideAddedEventArgs(Slide slide, double progress) : base()
         {
             NewSlide = slide;
+            Progress = progress;
         }
 
         public Slide NewSlide { get; private set; }
+        public double Progress { get; private set; }
     }
 }
