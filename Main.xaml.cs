@@ -101,6 +101,8 @@ namespace SongPresenter
             bool ctrlr = (e.KeyboardDevice.IsKeyDown(Key.R) && ctrl);
             bool ctrlo = (e.KeyboardDevice.IsKeyDown(Key.O) && ctrl);
             bool ctrlm = (e.KeyboardDevice.IsKeyDown(Key.M) && ctrl);
+            bool ctrlA = (e.KeyboardDevice.IsKeyDown(Key.Add) && ctrl);
+            bool ctrlS = (e.KeyboardDevice.IsKeyDown(Key.Subtract) && ctrl);
             bool esc = e.Key == Key.Escape;
 
             //remote control
@@ -118,10 +120,18 @@ namespace SongPresenter
                 //ShowMessageMenuItem.IsChecked = !ShowMessageMenuItem.IsChecked;
                 ShowMessage(null, null);
             }
-
+            
             //options
             if (ctrlo)
                 Options_Click(null, null);
+
+            //enlarge font
+            if (ctrlA)
+                Config.FontSize++;
+            
+            //subtract font
+            if (ctrlS)
+                Config.FontSize--;
         }
         #endregion
 
@@ -439,19 +449,20 @@ namespace SongPresenter
                 return;
             }
 
-            StartBtn.Visibility = Visibility.Hidden;
+            StartBtn.Visibility = Visibility.Collapsed;
             StopBtn.Visibility = Visibility.Visible;
             Interval.Visibility = Visibility.Visible;
             TimerBtn.Visibility = Visibility.Visible;
             Expander1.Visibility = Visibility.Visible;
             PreviewPanel.Visibility = Visibility.Visible;
-            ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Hidden);
+            GridSplitter1.Visibility = Visibility.Visible;
+            ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Hidden); //needs to be hidden and not collapsed because FileList binds to it
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Visible);
             LiveList.SelectedIndex = 0;
             PrevBtn.Content = Labels.MainBtnPrev;
             NextBtn.Content = Labels.MainBtnNext;
-            RefreshBtn.Visibility = Visibility.Hidden;
-            RemoveBtn.Visibility = Visibility.Hidden;
+            RefreshBtn.Visibility = Visibility.Collapsed;
+            RemoveBtn.Visibility = Visibility.Collapsed;
             LocationList.Margin = new Thickness(81, 94, 17, 0);
             PrevBtn.IsEnabled = true;
             NextBtn.IsEnabled = true;
@@ -489,16 +500,17 @@ namespace SongPresenter
         protected void Stop_Click(object sender, RoutedEventArgs e)
         {
             StartBtn.Visibility = Visibility.Visible;
-            StopBtn.Visibility = Visibility.Hidden;
-            Interval.Visibility = Visibility.Hidden;
-            TimerBtn.Visibility = Visibility.Hidden;
-            Expander1.Visibility = Visibility.Hidden;
-            PreviewPanel.Visibility = Visibility.Hidden;
+            StopBtn.Visibility = Visibility.Collapsed;
+            Interval.Visibility = Visibility.Collapsed;
+            TimerBtn.Visibility = Visibility.Collapsed;
+            Expander1.Visibility = Visibility.Collapsed;
+            PreviewPanel.Visibility = Visibility.Collapsed;
+            GridSplitter1.Visibility = Visibility.Collapsed;
             LibraryGrid.Visibility = Visibility.Visible;
             Expander1.Content = "<";
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength((this.ActualWidth - 20) / 2, GridUnitType.Pixel));
             ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Visible);
-            LiveList.SetValue(ListView.VisibilityProperty, Visibility.Hidden);
+            LiveList.SetValue(ListView.VisibilityProperty, Visibility.Collapsed);
             PrevBtn.Content = Labels.MainBtnMoveUp;
             NextBtn.Content = Labels.MainBtnMoveDown;
             Config.TimerInterval = Util.Parse<int>(Interval.Text);
@@ -575,13 +587,13 @@ namespace SongPresenter
 
         protected void LiveList_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Down)
+            if (e.Key == Key.Down || e.Key == Key.Right)
             {
                 Presentation.Next();
                 e.Handled = true;
             }
 
-            if (e.Key == Key.Up)
+            if (e.Key == Key.Up || e.Key == Key.Left)
             {
                 Presentation.Previous();
                 e.Handled = true;
@@ -747,6 +759,7 @@ namespace SongPresenter
         #region video_player
         DispatcherTimer mediaPosTimer;
         bool _timeDragging = false;
+        bool _editingTime = false;
         FullscreenVideo fullscreen;
         protected void ShowMedia(string path)
         {
@@ -754,7 +767,7 @@ namespace SongPresenter
             CurrentImage.Visibility = Visibility.Collapsed;
             VideoPanel.Visibility = Visibility.Visible;
             mediaPosTimer = new DispatcherTimer();
-            mediaPosTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            mediaPosTimer.Interval = TimeSpan.FromMilliseconds(100);
             mediaPosTimer.Tick += new EventHandler(mediaPosTimer_Tick);
             VideoPlayer.Open(new Uri(path, UriKind.Absolute));
             PlayMedia(null, null);
@@ -812,6 +825,7 @@ namespace SongPresenter
         protected void Element_MediaOpened(object sender, EventArgs e)
         {
             timelineSlider.Maximum = VideoPlayer.NaturalDuration.TimeSpan.TotalMilliseconds;
+            totalTime.Text = (int)VideoPlayer.NaturalDuration.TimeSpan.TotalMinutes + ":" + VideoPlayer.NaturalDuration.TimeSpan.Seconds.ToString("d2");
 
             if (VideoPlayer.HasVideo)
             {
@@ -820,10 +834,11 @@ namespace SongPresenter
 
                 VideoDisplay.Visibility = Visibility.Visible;
 
-                double ratio = 220d / VideoPlayer.NaturalVideoHeight;
+                double ratio = VideoDisplay.Height / VideoPlayer.NaturalVideoHeight;
                 VideoDisplay.Width = VideoPlayer.NaturalVideoWidth * ratio;
 
                 fullscreen.Show();
+                this.Focus(); //retain focus in Main window and not in shown fullscreen
 
                 ratio = Math.Min(fullscreen.ActualHeight / VideoPlayer.NaturalVideoHeight, fullscreen.ActualWidth / VideoPlayer.NaturalVideoWidth);
                 fullscreen.VideoPanel.Height = VideoPlayer.NaturalVideoHeight * ratio;
@@ -837,7 +852,7 @@ namespace SongPresenter
 
         protected void SeekToMediaPosition(object sender, EventArgs args)
         {
-            VideoPlayer.Position = new TimeSpan(0, 0, 0, 0, (int)timelineSlider.Value);
+            VideoPlayer.Position = TimeSpan.FromMilliseconds(timelineSlider.Value);
             _timeDragging = false;
         }
 
@@ -850,6 +865,59 @@ namespace SongPresenter
         {
             if (!_timeDragging)
                 timelineSlider.Value = (double)VideoPlayer.Position.TotalMilliseconds;
+        }
+
+        private void timelineSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!_editingTime)
+            {
+                TimeSpan draggedVal = TimeSpan.FromMilliseconds(timelineSlider.Value);
+                currentTime.Text = (int)draggedVal.TotalMinutes + ":" + draggedVal.Seconds.ToString("d2");
+            }
+        }
+
+        private void currentTime_GotFocus(object sender, RoutedEventArgs e)
+        {
+            _editingTime = true;
+        }
+
+        private void currentTime_LostFocus(object sender, RoutedEventArgs e)
+        {
+            _editingTime = false;
+
+            var val = currentTime.Text.Split(new char[] { ':', '.' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+            if (val.Length == 1)
+                VideoPlayer.Position = TimeSpan.FromSeconds(Util.Parse<int>(val[0]));
+            else if (val.Length == 2)
+                VideoPlayer.Position = new TimeSpan(0, Util.Parse<int>(val[0]), Util.Parse<int>(val[1]));
+            else if (val.Length == 3)
+                VideoPlayer.Position = new TimeSpan(Util.Parse<int>(val[0]), Util.Parse<int>(val[1]), Util.Parse<int>(val[2]));
+        }
+
+        private void currentTime_KeyDown(object sender, KeyEventArgs e)
+        {
+            //cause the textbox to loose focus on enter to update media time
+            if (e.Key == Key.Enter)
+                LiveList.Focus();
+
+            //cause the textbox to loose focus on esc but blank out value so media time is not updated
+            if (e.Key == Key.Escape)
+            {
+                currentTime.Text = "";
+                LiveList.Focus();
+            }
+        }
+
+        private void GridSplitter_LayoutUpdated(object sender, EventArgs e)
+        {
+            //on startup videodisplay is zero which we con't want to set otherwise it will never be bigger than zero
+            //previewpanel is set to collapse so height can be zero while mediacontrols will still have a height
+            if (VideoDisplay.ActualHeight <= 0 || MediaControls.ActualHeight > PreviewPanel.ActualHeight)
+                return;
+
+            double ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight) / VideoDisplay.ActualHeight;
+            VideoDisplay.Height *= ratio;
+            VideoDisplay.Width *= ratio;
         }
         #endregion
 

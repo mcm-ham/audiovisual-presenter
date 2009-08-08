@@ -21,6 +21,7 @@ namespace SongPresenter
         public ReportsListDialog()
         {
             InitializeComponent();
+            Background = new SolidColorBrush(Config.BackgroundColour);
 
             LibraryList.ItemsSource = new string[] { Labels.ReportsListOptionAll }.Union(Directory.GetDirectories(Config.LibraryPath).Select(p => System.IO.Path.GetFileName(p)));
         }

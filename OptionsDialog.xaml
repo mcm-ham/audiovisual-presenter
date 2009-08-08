@@ -2,8 +2,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
+    xmlns:Code="clr-namespace:SongPresenter.App_Code"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.OptionsWindowTitle}" Height="370" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+    Title="{x:Static Loc:Labels.OptionsWindowTitle}" Height="370" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
         <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="25,14,0,0" Padding="0" Text="{x:Static Loc:Labels.OptionsLibraryPath}" />
         <TextBox Height="23" Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" /> 

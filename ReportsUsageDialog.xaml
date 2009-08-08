@@ -4,8 +4,9 @@
     xmlns:my="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
+    xmlns:Code="clr-namespace:SongPresenter.App_Code"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.ReportsUsageWindowTitle}" Height="600" Width="800" WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+    Title="{x:Static Loc:Labels.ReportsUsageWindowTitle}" Height="600" Width="800" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <ScrollViewer Padding="0" VerticalAlignment="Stretch">
         <StackPanel Margin="10">
             <TextBlock Text="{x:Static Loc:Labels.ReportsUsageSelectionDesc}" Margin="0,0,0,10"/>

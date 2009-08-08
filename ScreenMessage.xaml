@@ -2,10 +2,10 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Presenter="clr-namespace:SongPresenter"
-    xmlns:Presenter2="clr-namespace:SongPresenter.App_Code"
+    xmlns:Code="clr-namespace:SongPresenter.App_Code"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.ShowMessageWindowTitle}" Width="650" SizeToContent="Height" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" KeyDown="Window_KeyDown">
+    Title="{x:Static Loc:Labels.ShowMessageWindowTitle}" Width="650" SizeToContent="Height" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" KeyDown="Window_KeyDown" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
         <StackPanel Margin="10">
             <TextBlock Text="{x:Static Loc:Labels.ShowMessageDesc}" Margin="0,0,0,10" />
@@ -19,7 +19,6 @@
                 </ComboBox>
                 <TextBlock Name="TimeDesc" Text="{x:Static Loc:Labels.ShowMessageAddTimerMiddle1}" VerticalAlignment="Center" Margin="0,0,10,0" />
                 <TextBox Name="TimeValue" Width="100" VerticalAlignment="Center" Text="10" Margin="0,0,10,0" IsEnabled="False" />
-                <TextBlock Text="{x:Static Loc:Labels.ShowMessageAddTimerEnd}" VerticalAlignment="Center" Margin="0,0,10,0" />
             </StackPanel>
             <Button Name="ShowBtn" Width="100" Height="25" HorizontalAlignment="Left" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" />
         </StackPanel>

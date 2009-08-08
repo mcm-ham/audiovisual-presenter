@@ -2,19 +2,24 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Presenter="clr-namespace:SongPresenter"
-    xmlns:Presenter2="clr-namespace:SongPresenter.App_Code"
+    xmlns:Code="clr-namespace:SongPresenter.App_Code"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.MainWindowTitle}" Height="768" Width="1024" WindowState="Maximized" KeyDown="Window_KeyDown" Closed="Main_Closed" FlowDirection="LeftToRight">
+    Title="{x:Static Loc:Labels.MainWindowTitle}" Height="768" Width="1024" WindowState="Maximized" KeyDown="Window_KeyDown" Closed="Main_Closed" FlowDirection="LeftToRight" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Window.Resources>
-        <Presenter2:ScaleValueConverter x:Key="ScaleValueConverter" />
+        <Code:ScaleValueConverter x:Key="ScaleValueConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Name="col1" />
             <ColumnDefinition Name="col2" />
         </Grid.ColumnDefinitions>
-        <ToolBar VerticalAlignment="Top" Grid.ColumnSpan="2">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="310" />
+        </Grid.RowDefinitions>
+        
+        <ToolBar VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Row="0">
             <Button Click="Planner_Click" VerticalAlignment="Top">
                 <StackPanel>
                     <Image Width="32" Source="icons/calendar_date.png" HorizontalAlignment="Center" />
@@ -71,11 +76,11 @@
             </Button>
         </ToolBar>
 
-        <Grid Name="LibraryGrid">
+        <Grid Name="LibraryGrid" Grid.RowSpan="2">
             <TextBlock Text="{x:Static Loc:Labels.MainHeaderLibrary}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" FontSize="20" Padding="0" />
             <TextBlock Text="{x:Static Loc:Labels.MainLabelLocation}" Height="23" HorizontalAlignment="Left" Margin="12,94,0,0" VerticalAlignment="Top" Width="63" Padding="0" />
             <ComboBox Name="LocationList" Height="23" Margin="81,94,80,0" VerticalAlignment="Top" SelectionChanged="LocationList_SelectionChanged" />
-            <Button Name="RefreshBtn" Width="52" Height="23" Margin="0,94,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
+            <Button Name="RefreshBtn" MinWidth="52" Padding="2" Margin="0,94,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
             <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,128,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
             <TextBox Name="SearchTerms" Height="23" Margin="81,128,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
             <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="AddSelected" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
@@ -94,13 +99,14 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Name="AddBtn" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" Content="{x:Static Loc:Labels.MainBtnAdd}" VerticalAlignment="Bottom" Width="75" Click="AddSelected" IsEnabled="False" />
+            <Button Name="AddBtn" HorizontalAlignment="Left" Margin="12,0,0,12" Content="{x:Static Loc:Labels.MainBtnAdd}" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="AddSelected" IsEnabled="False" />
         </Grid>
-        <Button Name="Expander1" Click="Expander1_Click" Width="15" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="Collapsed">&lt;</Button>
+        
+        <Button Name="Expander1" Click="Expander1_Click" Grid.RowSpan="2" Width="15" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="Collapsed">&lt;</Button>
 
-        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" Grid.Column="1" FontSize="20" Padding="0" />
-        <TextBlock Name="ScheduleName" Grid.Column="1" Height="28" Margin="12,98,12,0" VerticalAlignment="Top" Padding="0"/>
-        <ListBox Name="ScheduleList" Grid.Column="1" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
+        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="0" FontSize="20" Padding="0" />
+        <TextBlock Name="ScheduleName" Grid.Column="1" Grid.Row="0" Height="28" Margin="12,98,12,0" VerticalAlignment="Top" Padding="0"/>
+        <ListBox Name="ScheduleList" Grid.Column="1" Grid.RowSpan="2" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Style.Triggers>
@@ -125,15 +131,8 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="Start_Click" />
-        <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Height="23" HorizontalAlignment="Left" Margin="12,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="Stop_Click" Visibility="Hidden" />
-        <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Height="23" HorizontalAlignment="Left" Margin="99,0,0,12" VerticalAlignment="Bottom" Width="75" Grid.Column="1" Click="TimerStart_Click" Visibility="Hidden" />
-        <TextBox Name="Interval" Grid.Column="1" Height="23" HorizontalAlignment="Left" Margin="186,0,0,12" VerticalAlignment="Bottom" Width="35" Visibility="Hidden" TextChanged="Interval_TextChanged" />
-        <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,171,12" VerticalAlignment="Bottom" Width="70" Click="RemoveFile" IsEnabled="False" />
-        <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,91,12" VerticalAlignment="Bottom" Width="70" Click="Up_Click" IsEnabled="False" />
-        <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Grid.Column="1" Height="23" HorizontalAlignment="Right" Margin="0,0,12,12" VerticalAlignment="Bottom" Width="70" Click="Down_Click" IsEnabled="False" />
 
-        <ListView x:Name="LiveList" Grid.Column="1" Margin="12,128,12,316" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown">
+        <ListView x:Name="LiveList" Grid.Column="1" Grid.Row="0" Margin="12,128,12,10" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <EventSetter Event="MouseEnter" Handler="SlideListViewItem_MouseEnter" />
@@ -155,9 +154,11 @@
             </ListView.View>
         </ListView>
         
-        <StackPanel Name="PreviewPanel" Grid.Column="1" Height="250" Margin="12 0 0 45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
-            <Image Name="PreviewImage" Width="333" Height="250" Margin="0 0 40 0" />
-            <Image Name="CurrentImage" Width="333" Height="250" />
+        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="3" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" />
+        
+        <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
+            <Image Name="PreviewImage" Margin="0,0,40,0" />
+            <Image Name="CurrentImage" />
 
             <StackPanel Name="VideoPanel" Visibility="Collapsed">
                 <Rectangle Name="VideoDisplay" Height="220" Visibility="Hidden">
@@ -176,7 +177,7 @@
                         </DrawingBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
                     <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="5" />
                     <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="5" />
 
@@ -184,12 +185,26 @@
                     <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="120"/>
 
                     <TextBlock Margin="5" VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
-                    <Slider Name="timelineSlider" Margin="5" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="120" />
+                    <TextBox Name="currentTime" Width="40" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" />
+                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="120" />
+                    <TextBlock Name="totalTime" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="12">
+            <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Start_Click" />
+            <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Stop_Click" Visibility="Collapsed" />
+            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="TimerStart_Click" Visibility="Collapsed" />
+            <TextBox Name="Interval" Padding="2" Margin="0,0,12,0" Width="35" Visibility="Collapsed" TextChanged="Interval_TextChanged" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Margin="12">
+            <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="RemoveFile" IsEnabled="False" />
+            <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Up_Click" IsEnabled="False" />
+            <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Down_Click" IsEnabled="False" />
+        </StackPanel>
 
-        <Grid Name="RemotePanel" Grid.ColumnSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Hidden" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">
+        <Grid Name="RemotePanel" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Collapsed" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">
             <Rectangle Fill="White" Stroke="Black" StrokeDashCap="Square" StrokeThickness="2" />
             <TextBlock Text="{x:Static Loc:Labels.MainDescRemote}" Padding="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" />
         </Grid>

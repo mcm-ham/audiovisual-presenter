@@ -407,9 +407,6 @@
   <data name="ShowMessageAddTimerDown" xml:space="preserve">
     <value>down</value>
   </data>
-  <data name="ShowMessageAddTimerEnd" xml:space="preserve">
-    <value>sec.</value>
-  </data>
   <data name="ShowMessageAddTimerMiddle1" xml:space="preserve">
     <value>timer starting at</value>
   </data>

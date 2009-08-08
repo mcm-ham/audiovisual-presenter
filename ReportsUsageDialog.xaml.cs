@@ -23,6 +23,7 @@ namespace SongPresenter
         public ReportsUsageDialog()
         {
             InitializeComponent();
+            Background = new SolidColorBrush(Config.BackgroundColour);
 
             LibraryList.ItemsSource = new string[] { Labels.ReportsUsageOptionAll }.Union(Directory.GetDirectories(Config.LibraryPath).Select(p => System.IO.Path.GetFileName(p))).Union(new string[] { Labels.ReportsUsageOptionOther });
 

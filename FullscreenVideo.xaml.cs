@@ -20,6 +20,7 @@ namespace SongPresenter
         public FullscreenVideo(MediaPlayer player)
         {
             InitializeComponent();
+
             VideoDisplay.Player = player;
 
             this.Left = Config.ProjectorScreen.WorkingArea.Left;

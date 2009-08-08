@@ -925,15 +925,6 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to sec..
-        /// </summary>
-        public static string ShowMessageAddTimerEnd {
-            get {
-                return ResourceManager.GetString("ShowMessageAddTimerEnd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to timer starting at.
         /// </summary>
         public static string ShowMessageAddTimerMiddle1 {
