@@ -6,6 +6,7 @@ using SongPresenter.Resources;
 using Screen = System.Windows.Forms.Screen;
 using System.Collections.Generic;
 using System.Windows.Media;
+using System.Windows.Data;
 
 namespace SongPresenter
 {
@@ -14,6 +15,7 @@ namespace SongPresenter
         public OptionsDialog()
         {
             InitializeComponent();
+            Background = new SolidColorBrush(Config.BackgroundColour);
 
             LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"] ?? "Library\\";
 

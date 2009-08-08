@@ -21,6 +21,7 @@ namespace SongPresenter
         public ScreenMessage()
         {
             InitializeComponent();
+            Background = new SolidColorBrush(Config.BackgroundColour);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -94,21 +95,21 @@ namespace SongPresenter
             if (TimerEnabled.IsChecked ?? false)
             {
                 int elasped = 0;
-                int endTime = Util.Parse<int>(TimeValue.Text);
+                int endTime = TimeValue.Text.Replace('.', ':').Contains(':') ? (int)Util.Parse<TimeSpan>(TimeValue.Text.Replace('.', ':')).TotalSeconds : Util.Parse<int>(TimeValue.Text);
                 bool countUp = (TimerType.SelectedIndex == 1);
                 if (!initMessage.Contains("{0}"))
                     initMessage += " {0}";
                 DispatcherTimer timer = new DispatcherTimer();
-                timer.Interval = new TimeSpan(0, 0, 0, 1);
+                timer.Interval = TimeSpan.FromSeconds(1);
                 timer.Tick += (sen, args) => {
                     elasped++;
-                    messageLabel.Text = String.Format(initMessage, new TimeSpan(0, 0, countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
+                    messageLabel.Text = String.Format(initMessage, TimeSpan.FromSeconds(countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
                     if (elasped >= endTime)
                         timer.Stop();
                     MessageBox.UpdateLayout();
                 };
                 timer.Start();
-                messageLabel.Text = String.Format(initMessage, new TimeSpan(0, 0, countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
+                messageLabel.Text = String.Format(initMessage, TimeSpan.FromSeconds(countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
             }
 
             this.Close();

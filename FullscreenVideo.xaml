@@ -2,8 +2,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
+    xmlns:Code="clr-namespace:SongPresenter.App_Code"
     xml:lang="en-US"
-    Title="FullscreenVideo" WindowStyle="None" Topmost="True" Width="0" Height="0" ShowInTaskbar="False" Background="Black" Loaded="Window_Loaded">
+    Title="FullscreenVideo" WindowStyle="None" Topmost="True" Width="0" Height="0" ShowInTaskbar="False" Background="Black" Loaded="Window_Loaded" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
         <Grid.ContextMenu>
             <ContextMenu>

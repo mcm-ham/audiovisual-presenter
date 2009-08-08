@@ -60,7 +60,9 @@ namespace SongPresenter
             }
             if (!found)
                 throw new Exception(Labels.AppRequiresOffice);
-                
+
+            Config.FontSize = SystemFonts.MessageFontSize;
+
             base.OnStartup(e);
         }
     }

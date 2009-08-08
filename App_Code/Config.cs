@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using System.ComponentModel;
 
 namespace SongPresenter.App_Code
 {
@@ -31,6 +32,14 @@ namespace SongPresenter.App_Code
         public static string[] AudioFormats
         {
             get { return (ConfigurationManager.AppSettings["AudioFormats"] ?? "wma,wav,mp3").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+        }
+
+
+        public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSizeProperty", typeof(double), typeof(Config));
+        public static double FontSize
+        {
+            get { return (double)instance.GetValue(FontSizeProperty); }
+            set { instance.SetValue(FontSizeProperty, value); }
         }
 
         private static string _path;

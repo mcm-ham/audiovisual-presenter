@@ -145,10 +145,13 @@ namespace SongPresenter.App_Code
             if (showSign && (span > TimeSpan.Zero))
                 sign = "+";
 
-            return sign +
-                   (span.Hours > 0 ? span.Hours.ToString("00") + ":" : "") +
-                   span.Minutes.ToString("00") + ":" +
-                   span.Seconds.ToString("00");
+            if (span.Hours > 0)
+                return sign + ((int)span.TotalHours).ToString("00") + ":" + span.Minutes.ToString("00") + ":" + span.Seconds.ToString("00");
+
+            if (span.Minutes > 0)
+                return sign + span.Minutes.ToString() + ":" + span.Seconds.ToString("00");
+
+            return sign + span.Seconds.ToString();
         }
     }
 }

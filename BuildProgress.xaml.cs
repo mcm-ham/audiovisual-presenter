@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Threading;
+using SongPresenter.App_Code;
 
 namespace SongPresenter
 {
@@ -20,6 +21,7 @@ namespace SongPresenter
         public BuildProgress()
         {
             InitializeComponent();
+            Background = new SolidColorBrush(Config.BackgroundColour);
         }
 
         protected void CancelButton_Click(object sender, RoutedEventArgs e)
