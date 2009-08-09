@@ -22,6 +22,7 @@ namespace SongPresenter
             InitializeComponent();
 
             VideoDisplay.Player = player;
+            
 
             this.Left = Config.ProjectorScreen.WorkingArea.Left;
             this.Top = Config.ProjectorScreen.WorkingArea.Top;

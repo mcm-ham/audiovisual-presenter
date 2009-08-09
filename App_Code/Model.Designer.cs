@@ -12,7 +12,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("SongPresenter.App_Code", "FK_Schedule_Items", "Schedules", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(SongPresenter.App_Code.Schedule), "Items", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(SongPresenter.App_Code.Item))]
 
 // Original file name:
-// Generation date: 18/07/2009 5:57:58 p.m.
+// Generation date: 9/08/2009 12:47:13 p.m.
 namespace SongPresenter.App_Code
 {
     
@@ -108,7 +108,7 @@ namespace SongPresenter.App_Code
         /// <param name="id">Initial value of ID.</param>
         /// <param name="filename">Initial value of Filename.</param>
         /// <param name="ordinal">Initial value of Ordinal.</param>
-        public static Item CreateItem(global::System.Guid id, string filename, int ordinal)
+        public static Item CreateItem(global::System.Guid id, string filename, short ordinal)
         {
             Item item = new Item();
             item.ID = id;
@@ -167,7 +167,7 @@ namespace SongPresenter.App_Code
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public int Ordinal
+        public short Ordinal
         {
             get
             {
@@ -182,9 +182,32 @@ namespace SongPresenter.App_Code
                 this.OnOrdinalChanged();
             }
         }
-        private int _Ordinal;
-        partial void OnOrdinalChanging(int value);
+        private short _Ordinal;
+        partial void OnOrdinalChanging(short value);
         partial void OnOrdinalChanged();
+        /// <summary>
+        /// There are no comments for Property HighlightedIndexes in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public byte[] HighlightedIndexes
+        {
+            get
+            {
+                return global::System.Data.Objects.DataClasses.StructuralObject.GetValidValue(this._HighlightedIndexes);
+            }
+            set
+            {
+                this.OnHighlightedIndexesChanging(value);
+                this.ReportPropertyChanging("HighlightedIndexes");
+                this._HighlightedIndexes = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
+                this.ReportPropertyChanged("HighlightedIndexes");
+                this.OnHighlightedIndexesChanged();
+            }
+        }
+        private byte[] _HighlightedIndexes;
+        partial void OnHighlightedIndexesChanging(byte[] value);
+        partial void OnHighlightedIndexesChanged();
         /// <summary>
         /// There are no comments for Schedule in the schema.
         /// </summary>

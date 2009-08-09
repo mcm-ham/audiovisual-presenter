@@ -62,7 +62,7 @@ namespace SongPresenter.App_Code
                     SlideAdded(this, new SlideAddedEventArgs(null, 0));
 
                 running = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
-                AddSlide("", "Blank", running.Slides._Index(1), 0);
+                AddSlide("", "Blank", running.Slides._Index(1), 0, new Item(), 1);
 
                 foreach (Item item in items)
                     AddSlides(item);
@@ -70,7 +70,8 @@ namespace SongPresenter.App_Code
                 //ppSaveAsPresentation = 1, ppSaveAsOpenXMLPresentation = 24
                 PP.PpSaveAsFileType filetype = (PP.PpSaveAsFileType)(Util.Parse<double>(app.Version) >= 12 ? 24 : 1);
 
-                running.SaveAs(CPath, (PP.PpSaveAsFileType)filetype, Core.MsoTriState.msoFalse);
+                try { running.SaveAs(CPath, (PP.PpSaveAsFileType)filetype, Core.MsoTriState.msoFalse); }
+                catch (Exception) { }
 
                 running.SlideShowSettings.Run();
             }
@@ -98,14 +99,14 @@ namespace SongPresenter.App_Code
                 SlideShowEnd(this, new EventArgs());
         }
 
-        void AddSlide(string text, string comments, object slide, double progress)
+        void AddSlide(string text, string comments, object slide, double progress, Item scheduleItem, int itemIndex)
         {
-            AddSlide(text, comments, slide, SlideType.PowerPoint, "", progress);
+            AddSlide(text, comments, slide, SlideType.PowerPoint, "", progress, scheduleItem, itemIndex);
         }
 
-        void AddSlide(string text, string comments, object slide, SlideType type, string filename, double progress)
+        void AddSlide(string text, string comments, object slide, SlideType type, string filename, double progress, Item scheduleItem, int itemIndex)
         {
-            Slide s = new Slide() { Text = text, Comment = comments, PSlide = slide, SlideIndex = _slides.Count + 1, Type = type, Filename = filename };
+            Slide s = new Slide() { Text = text, Comment = comments, PSlide = slide, SlideIndex = _slides.Count + 1, Type = type, Filename = filename, ScheduleItem = scheduleItem, ItemIndex = itemIndex };
             _slides.Add(s);
 
             if (SlideAdded != null)
@@ -185,22 +186,23 @@ namespace SongPresenter.App_Code
             double progress = scheduleItem.Ordinal / (double)scheduleItem.Schedule.Items.Count;
             double progressEnd = (scheduleItem.Ordinal + 1) / (double)scheduleItem.Schedule.Items.Count;
             string filename = Path.GetFullPath(scheduleItem.Filename).ToLower();
-
-            if (Config.VideoFormats.Any(f => filename.EndsWith("." + f)))
+            string filetype = System.IO.Path.GetExtension(filename).TrimStart('.').ToLower();
+            
+            if (Config.VideoFormats.Contains(filetype))
             {
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename, progress);
+                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename, progress, scheduleItem, 1);
             }
-            else if (Config.AudioFormats.Any(f => filename.EndsWith("." + f)))
+            else if (Config.AudioFormats.Contains(filetype))
             {
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename, progress);
+                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename, progress, scheduleItem, 1);
             }
-            else if (Config.ImageFormats.Any(f => filename.EndsWith("." + f)))
+            else if (Config.ImageFormats.Contains(filetype))
             {
                 PP.Slide slide = running.Slides.Add(running.Slides.Count + 1, PP.PpSlideLayout.ppLayoutBlank);
                 PP.Shape shape;
@@ -223,9 +225,9 @@ namespace SongPresenter.App_Code
                 slide.Design = (PP.Design)running.Designs._Index(1);
                 slide.FollowMasterBackground = Core.MsoTriState.msoTrue;
                 slide.Comments.Add(0f, 0f, "", "", scheduleItem.Name);
-                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide, progress);
+                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide, progress, scheduleItem, 1);
             }
-            else
+            else if (Config.PowerPointFormats.Contains(filetype))
             {
                 PP.Presentation pres;
                 if (filename.EndsWith(".pptx") && Util.Parse<double>(app.Version) < 12)
@@ -240,7 +242,7 @@ namespace SongPresenter.App_Code
                 else
                     pres = app.Presentations.Open(filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
 
-                PasteSlidesWithFormatting(running, pres, progress, progressEnd);
+                PasteSlidesWithFormatting(running, pres, progress, progressEnd, scheduleItem);
                 pres.Close();
             }
 
@@ -288,7 +290,7 @@ namespace SongPresenter.App_Code
         }
 
         Dictionary<string, int> previousDesigns = new Dictionary<string, int>();
-        private void PasteSlidesWithFormatting(PP.Presentation dest, PP.Presentation source, double progress, double progressEnd)
+        private void PasteSlidesWithFormatting(PP.Presentation dest, PP.Presentation source, double progress, double progressEnd, Item scheduleItem)
         {
             Dictionary<PP.Design, int> designs = new Dictionary<PP.Design, int>();
             Dictionary<PP.ColorScheme, int> schemes = new Dictionary<PP.ColorScheme, int>();
@@ -336,7 +338,7 @@ namespace SongPresenter.App_Code
 
                 //place this code after assigning master slide because if mouse happens to be hovering over the
                 //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
-                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count), (dest.Slides.Count - start) * step + progress);
+                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count), (dest.Slides.Count - start) * step + progress, scheduleItem, dest.Slides.Count - start);
 
                 //fix bugs
                 for (int i = 1; i <= range.Shapes.Count; i++)

@@ -145,13 +145,24 @@ namespace SongPresenter.App_Code
             if (showSign && (span > TimeSpan.Zero))
                 sign = "+";
 
-            if (span.Hours > 0)
+            if ((int)span.TotalHours > 0)
                 return sign + ((int)span.TotalHours).ToString("00") + ":" + span.Minutes.ToString("00") + ":" + span.Seconds.ToString("00");
 
             if (span.Minutes > 0)
                 return sign + span.Minutes.ToString() + ":" + span.Seconds.ToString("00");
 
             return sign + span.Seconds.ToString();
+        }
+
+        public static T GetAncestorByType<T>(this DependencyObject element) where T : DependencyObject
+        {
+            if (element == null)
+                return default(T);
+
+            if (element is T)
+                return (T)element;
+
+            return GetAncestorByType<T>(VisualTreeHelper.GetParent(element));
         }
     }
 }

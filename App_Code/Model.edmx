@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="SongPresenter.App_Code.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+    <Schema Namespace="SongPresenter.App_Code.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
         <EntityContainer Name="SongPresenterApp_CodeStoreContainer">
           <EntitySet Name="Items" EntityType="SongPresenter.App_Code.Store.Items" store:Type="Tables" />
           <EntitySet Name="Schedules" EntityType="SongPresenter.App_Code.Store.Schedules" store:Type="Tables" />
@@ -19,8 +19,9 @@
           </Key>
           <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ScheduleID" Type="uniqueidentifier" Nullable="false" />
-          <Property Name="Filename" Type="nvarchar" Nullable="false" MaxLength="100" />
-          <Property Name="Ordinal" Type="int" Nullable="false" />
+          <Property Name="Filename" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="Ordinal" Type="smallint" Nullable="false" />
+          <Property Name="HighlightedIndexes" Type="varbinary" MaxLength="100" />
         </EntityType>
         <EntityType Name="Schedules">
           <Key>
@@ -44,8 +45,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SongPresenter.App_Code" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
@@ -63,9 +63,9 @@
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="Filename" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
-          <Property Name="Ordinal" Type="Int32" Nullable="false" />
+          <Property Name="Ordinal" Type="Int16" Nullable="false" />
           <NavigationProperty Name="Schedule" Relationship="SongPresenter.App_Code.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
-        </EntityType>
+          <Property Name="HighlightedIndexes" Type="Binary" Nullable="true" /></EntityType>
         <EntityType Name="Schedule">
           <Key>
             <PropertyRef Name="ID" />
@@ -90,6 +90,7 @@
           <EntitySetMapping Name="Items">
             <EntityTypeMapping TypeName="IsTypeOf(SongPresenter.App_Code.Item)">
               <MappingFragment StoreEntitySet="Items">
+                <ScalarProperty Name="HighlightedIndexes" ColumnName="HighlightedIndexes" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Filename" ColumnName="Filename" />
                 <ScalarProperty Name="Ordinal" ColumnName="Ordinal" />

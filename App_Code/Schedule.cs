@@ -45,14 +45,15 @@ namespace SongPresenter.App_Code
 
         public void AddItem(string filename, bool removeExistingPres)
         {
-            if (!Config.SupportedFileTypes.Any(t => (filename ?? "").ToLower().EndsWith("." + t)))
+            string ext = System.IO.Path.GetExtension(filename).TrimStart('.').ToLower();
+            if (!Config.SupportedFileTypes.Contains(ext))
                 return;
 
             Items.Add(new Item()
             {
                 ID = Guid.NewGuid(),
                 Filename = filename,
-                Ordinal = Items.Count > 0 ? Items.Max(i => i.Ordinal) + 1 : 0
+                Ordinal = Items.Max(i => (short?)i.Ordinal) ?? 0
             });
             Save(removeExistingPres);
         }
@@ -73,17 +74,17 @@ namespace SongPresenter.App_Code
             if (source == null)
                 return;
 
-            int destIdx = (dest == null) ? Items.Count - 1 : Items.FirstOrDefault(i => i.ID == dest.ID).Ordinal;
+            short destIdx = (dest == null) ? (short)(Items.Count - 1) : Items.FirstOrDefault(i => i.ID == dest.ID).Ordinal;
             var list = Items.ToDictionary(i => i.Ordinal);
             
             if (destIdx < source.Ordinal)
             {
-                for (int j = destIdx; j < source.Ordinal; j++)
+                for (short j = destIdx; j < source.Ordinal; j++)
                     list[j].Ordinal++;
             }
             else if (destIdx > source.Ordinal)
             {
-                for (int j = source.Ordinal + 1; j <= destIdx; j++)
+                for (short j = (short)(source.Ordinal + 1); j <= destIdx; j++)
                     list[j].Ordinal--;
             }
 
