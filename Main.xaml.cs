@@ -33,18 +33,8 @@ namespace SongPresenter
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
             selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
 
-            //listviewitem on winxp does not highlight on hover by default so we add a hover colour below
             if (Environment.OSVersion.Version.Major < 6)
-            {
-                Setter setter = new Setter();
-                setter.Property = ListViewItem.BackgroundProperty;
-                setter.Value = new SolidColorBrush(new Color() { A = 255, R = 180, G = 230, B = 253});
-                Trigger trigger = new Trigger();
-                trigger.Property = ListViewItem.IsMouseOverProperty;
-                trigger.Value = true;
-                trigger.Setters.Add(setter);
-                LiveList.ItemContainerStyle.Triggers.Add(trigger);
-            }
+                LiveList.ItemContainerStyle.Triggers.Add(GetLiveListStyle());
         }
 
         #region menu
@@ -698,11 +688,28 @@ namespace SongPresenter
 
             Style style = new Style();
             style.Setters.Add(new EventSetter(ListViewItem.MouseEnterEvent, new MouseEventHandler(SlideListViewItem_MouseEnter)));
+            if (Environment.OSVersion.Version.Major < 6)
+                style.Triggers.Add(GetLiveListStyle());
 
             if (slide.ScheduleItem.Highlighted.Contains(slide.ItemIndex))
                 style.Setters.Add(new Setter(ListViewItem.ForegroundProperty, new SolidColorBrush(Colors.Red)));
 
             row.Style = style;
+        }
+
+        /// <summary>
+        /// listviewitem on winxp does not highlight on hover by default so we add a hover colour below
+        /// </summary>
+        public Trigger GetLiveListStyle()
+        {
+            Setter setter = new Setter();
+            setter.Property = ListViewItem.BackgroundProperty;
+            setter.Value = new SolidColorBrush(new Color() { A = 255, R = 180, G = 230, B = 253 });
+            Trigger trigger = new Trigger();
+            trigger.Property = ListViewItem.IsMouseOverProperty;
+            trigger.Value = true;
+            trigger.Setters.Add(setter);
+            return trigger;
         }
 
         #endregion
