@@ -150,6 +150,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
+                    <GridViewColumn>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Height="17" Content="  " Click="HightlightRow" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
@@ -204,7 +211,7 @@
             <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Down_Click" IsEnabled="False" />
         </StackPanel>
 
-        <Grid Name="RemotePanel" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Collapsed" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">
+        <Grid Name="RemotePanel" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Hidden" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">
             <Rectangle Fill="White" Stroke="Black" StrokeDashCap="Square" StrokeThickness="2" />
             <TextBlock Text="{x:Static Loc:Labels.MainDescRemote}" Padding="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" />
         </Grid>

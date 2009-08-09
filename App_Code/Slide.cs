@@ -13,11 +13,21 @@ namespace SongPresenter.App_Code
     {
         public string Text { get; set; }
         public string Comment { get; set; }
-        public int SlideIndex { get; set; }
         public object PSlide { get; set; }
         public int? JumpIndex { get; set; }
         public SlideType Type { get; set; }
         public string Filename { get; set; }
+        public Item ScheduleItem { get; set; }
+
+        /// <summary>
+        /// one based index of the slide position in Schedule
+        /// </summary>
+        public int SlideIndex { get; set; }
+
+        /// <summary>
+        /// one based index of slide in ScheduleItem
+        /// </summary>
+        public int ItemIndex { get; set; }
 
         private string _preview;
         public string Preview

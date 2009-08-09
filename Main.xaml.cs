@@ -116,10 +116,7 @@ namespace SongPresenter
 
             //messenger
             if (ctrlm)
-            {
-                //ShowMessageMenuItem.IsChecked = !ShowMessageMenuItem.IsChecked;
                 ShowMessage(null, null);
-            }
             
             //options
             if (ctrlo)
@@ -161,7 +158,7 @@ namespace SongPresenter
             }
 
             FileList.ItemsSource = from file in Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*")
-                                   where Config.SupportedFileTypes.Any(t => file.ToLower().EndsWith("." + t))
+                                   where Config.SupportedFileTypes.Contains(System.IO.Path.GetExtension(file).TrimStart('.').ToLower())
                                    select file.Substring(file.LastIndexOf('\\') + 1);
         }
 
@@ -310,17 +307,8 @@ namespace SongPresenter
         //gets the object for the element selected (from the point) in the listbox (source)
         private static object GetObjectDataFromPoint(ListBox source, Point point)
         {
-            UIElement element = source.InputHitTest(point) as UIElement;
-
-            while (element != source && element != null)
-            {
-                if (element is ListBoxItem)
-                    return source.ItemContainerGenerator.ItemFromContainer(element);
-
-                element = VisualTreeHelper.GetParent(element) as UIElement;
-            }
-
-            return null;
+            ListBoxItem item = (source.InputHitTest(point) as UIElement).GetAncestorByType<ListBoxItem>();
+            return (item == null) ? null : source.ItemContainerGenerator.ItemFromContainer(item);
         }
         #endregion
 
@@ -461,8 +449,8 @@ namespace SongPresenter
             LiveList.SelectedIndex = 0;
             PrevBtn.Content = Labels.MainBtnPrev;
             NextBtn.Content = Labels.MainBtnNext;
-            RefreshBtn.Visibility = Visibility.Collapsed;
-            RemoveBtn.Visibility = Visibility.Collapsed;
+            RefreshBtn.Visibility = Visibility.Hidden;
+            RemoveBtn.Visibility = Visibility.Hidden;
             LocationList.Margin = new Thickness(81, 94, 17, 0);
             PrevBtn.IsEnabled = true;
             NextBtn.IsEnabled = true;
@@ -471,9 +459,10 @@ namespace SongPresenter
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
             ((GridView)LiveList.View).Columns[0].Width = 35;
-            ((GridView)LiveList.View).Columns[1].Width = (LiveList.ActualWidth + widthIncrease - 80) * 0.77;
-            ((GridView)LiveList.View).Columns[2].Width = (LiveList.ActualWidth + widthIncrease - 80) * 0.18;
+            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.77;
+            ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
             ((GridView)LiveList.View).Columns[3].Width = 50;
+            ((GridView)LiveList.View).Columns[4].Width = 25;
 
             if (Presentation == null)
             {
@@ -500,12 +489,12 @@ namespace SongPresenter
         protected void Stop_Click(object sender, RoutedEventArgs e)
         {
             StartBtn.Visibility = Visibility.Visible;
-            StopBtn.Visibility = Visibility.Collapsed;
-            Interval.Visibility = Visibility.Collapsed;
-            TimerBtn.Visibility = Visibility.Collapsed;
-            Expander1.Visibility = Visibility.Collapsed;
-            PreviewPanel.Visibility = Visibility.Collapsed;
-            GridSplitter1.Visibility = Visibility.Collapsed;
+            StopBtn.Visibility = Visibility.Hidden;
+            Interval.Visibility = Visibility.Hidden;
+            TimerBtn.Visibility = Visibility.Hidden;
+            Expander1.Visibility = Visibility.Hidden;
+            PreviewPanel.Visibility = Visibility.Hidden;
+            GridSplitter1.Visibility = Visibility.Hidden;
             LibraryGrid.Visibility = Visibility.Visible;
             Expander1.Content = "<";
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength((this.ActualWidth - 20) / 2, GridUnitType.Pixel));
@@ -513,6 +502,11 @@ namespace SongPresenter
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Collapsed);
             PrevBtn.Content = Labels.MainBtnMoveUp;
             NextBtn.Content = Labels.MainBtnMoveDown;
+            if (ScheduleList.SelectedIndex == -1)
+            {
+                PrevBtn.IsEnabled = false;
+                NextBtn.IsEnabled = false;
+            }
             Config.TimerInterval = Util.Parse<int>(Interval.Text);
             RefreshBtn.Visibility = Visibility.Visible;
             RemoveBtn.Visibility = Visibility.Visible;
@@ -534,10 +528,19 @@ namespace SongPresenter
                 }
 
                 progress.UpdateProgress(e.Progress);
-                if (e.NewSlide != null)
-                    LiveList.Items.Add(e.NewSlide);
-                else
+                if (e.NewSlide == null)
+                {
                     LiveList.Items.Clear();
+                    return;
+                }
+
+                int idx = LiveList.Items.Add(e.NewSlide);
+                
+                //add new listitem happens asyncronously so look for lisitem asyncronously as well with low priority to ensure listitem has been added before running
+                if (e.NewSlide.ScheduleItem.Highlighted.Contains(e.NewSlide.ItemIndex))
+                    Dispatcher.BeginInvoke(new Action(() => {
+                        HightlightRow(LiveList.ItemContainerGenerator.ContainerFromIndex(idx) as ListViewItem);
+                    }), DispatcherPriority.ApplicationIdle);
             }));
         }
 
@@ -675,6 +678,33 @@ namespace SongPresenter
             ((GridView)LiveList.View).Columns[2].Width = (LiveList.ActualWidth + widthIncrease - 80) * 0.18;
             ((GridView)LiveList.View).Columns[3].Width = 50;
         }
+
+        private void HightlightRow(object sender, RoutedEventArgs e)
+        {
+            ListViewItem row = (sender as Button).GetAncestorByType<ListViewItem>();
+            Slide slide = row.DataContext as Slide;
+
+            if (!slide.ScheduleItem.Highlighted.Contains(slide.ItemIndex))
+                slide.ScheduleItem.Highlighted.Add(slide.ItemIndex);
+            else
+                slide.ScheduleItem.Highlighted.Remove(slide.ItemIndex);
+
+              HightlightRow(row);
+        }
+
+        private void HightlightRow(ListViewItem row)
+        {
+            Slide slide = row.DataContext as Slide;
+
+            Style style = new Style();
+            style.Setters.Add(new EventSetter(ListViewItem.MouseEnterEvent, new MouseEventHandler(SlideListViewItem_MouseEnter)));
+
+            if (slide.ScheduleItem.Highlighted.Contains(slide.ItemIndex))
+                style.Setters.Add(new Setter(ListViewItem.ForegroundProperty, new SolidColorBrush(Colors.Red)));
+
+            row.Style = style;
+        }
+
         #endregion
 
         #region message_box

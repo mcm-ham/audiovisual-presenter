@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.ComponentModel;
+using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace SongPresenter.App_Code
 {
@@ -14,26 +16,61 @@ namespace SongPresenter.App_Code
     {
         public static readonly Config instance = new Config();
 
-        public static string[] SupportedFileTypes
+        private static Collection<string> _allformats;
+        public static Collection<string> SupportedFileTypes
         {
-            get { return new string[] { "ppt", "pptx", "pps", "ppsx" }.Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray(); }
+            get
+            {
+                if (_allformats == null)
+                    _allformats = new Collection<string>(PowerPointFormats.Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray());
+                return _allformats;
+            }
         }
 
-        public static string[] ImageFormats
+        private static Collection<string> _powerpoint;
+        public static Collection<string> PowerPointFormats
         {
-            get { return (ConfigurationManager.AppSettings["ImageFormats"] ?? "jpg").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+            get
+            {
+                if (_powerpoint == null)
+                    _powerpoint = new Collection<string>("ppt,pptx,pps,ppsx".Split(','));
+                return _powerpoint;
+            }
         }
 
-        public static string[] VideoFormats
+        private static Collection<string> _image;
+        public static Collection<string> ImageFormats
         {
-            get { return (ConfigurationManager.AppSettings["VideoFormats"] ?? "wmv,mov,avi,mpg").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+            get
+            {
+                if (_image == null)
+                    _image = new Collection<string>("jpg,wmp".Split(','));
+                return _image;
+            }
         }
 
-        public static string[] AudioFormats
+        //http://support.microsoft.com/kb/316992
+        private static Collection<string> _video;
+        public static Collection<string> VideoFormats
         {
-            get { return (ConfigurationManager.AppSettings["AudioFormats"] ?? "wma,wav,mp3").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(f => f.Trim().ToLower()).ToArray(); }
+            get
+            {
+                if (_video == null)
+                    _video = new Collection<string>("ivf,asf,asx,wm,wmd,wmv,wvx,wmx,wpl,dvr-ms,avi,mov,qt,mpeg,mpg,m1v,mp2,mpa,mpe,mp2v,mp2,vob".Split(','));
+                return _video;
+            }
         }
 
+        private static Collection<string> _audio;
+        public static Collection<string> AudioFormats
+        {
+            get
+            {
+                if (_audio == null)
+                    _audio = new Collection<string>("cda,aif,aifc,aiff,wax,wma,wav,au,snd,mp3,m3u,mid,midi,rmi".Split(','));
+                return _audio;
+            }
+        }
 
         public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSizeProperty", typeof(double), typeof(Config));
         public static double FontSize
@@ -202,6 +239,11 @@ namespace SongPresenter.App_Code
         public static HorizontalAlignment MessengerHorizontalPosition
         {
             get { return Util.Parse<HorizontalAlignment?>((ConfigurationManager.AppSettings["MessengerPosition"] ?? "").Split(' ').Last().ToFirstUpper()) ?? HorizontalAlignment.Left; }
+        }
+
+        public static Thickness MessengerMargin
+        {
+            get { return Util.Parse<Thickness?>(ConfigurationManager.AppSettings["MessengerMargin"]) ?? new Thickness(); }
         }
 
         public static void SaveMessengerLocation(VerticalAlignment posy, HorizontalAlignment posx)

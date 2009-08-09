@@ -37,7 +37,6 @@ namespace SongPresenter
             StringBuilder output = new StringBuilder();
             output.AppendLine(@"{\rtf1\ansi\ansicpg1252\deff0\deflang5129{\fonttbl{\f0\fnil\fcharset0 Arial;}}");
             output.AppendLine(@"\viewkind4\uc1\pard\sa200\sl276\slmult1\lang9\b\f0\fs22 " + Labels.ReportsListDocTitle + " " + DateTime.Today.ToLongDateString() + @"\b0\par");
-            string[] filetypes = Config.SupportedFileTypes;
 
             foreach (CheckBox chkbx in options.Skip(1))
             {
@@ -48,7 +47,7 @@ namespace SongPresenter
 
                 foreach (string file in Directory.GetFiles(Config.LibraryPath + chkbx.Content))
                 {
-                    if (filetypes.Contains(System.IO.Path.GetExtension(file).ToLower().TrimStart('.')))
+                    if (Config.SupportedFileTypes.Contains(System.IO.Path.GetExtension(file).ToLower().TrimStart('.')))
                         output.Append(System.IO.Path.GetFileNameWithoutExtension(file) + "\\line ");
                 }
 

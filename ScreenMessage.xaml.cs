@@ -64,10 +64,10 @@ namespace SongPresenter
             switch (Config.MessengerVerticalPosition)
             {
                 case VerticalAlignment.Top:
-                    MessageBox.Top = Config.ProjectorScreen.WorkingArea.Top;
+                    MessageBox.Top = Config.ProjectorScreen.WorkingArea.Top + Config.MessengerMargin.Top;
                     break;
                 case VerticalAlignment.Bottom:
-                    MessageBox.Top = Config.ProjectorScreen.WorkingArea.Bottom - MessageBox.ActualHeight;
+                    MessageBox.Top = Config.ProjectorScreen.WorkingArea.Bottom - MessageBox.ActualHeight - Config.MessengerMargin.Bottom;
                     break;
                 default:
                     MessageBox.Top = (Config.ProjectorScreen.WorkingArea.Height - MessageBox.ActualHeight) / 2 + Config.ProjectorScreen.WorkingArea.Top;
@@ -77,10 +77,10 @@ namespace SongPresenter
             switch (Config.MessengerHorizontalPosition)
             {
                 case HorizontalAlignment.Left:
-                    MessageBox.Left = Config.ProjectorScreen.WorkingArea.Left;
+                    MessageBox.Left = Config.ProjectorScreen.WorkingArea.Left + Config.MessengerMargin.Left;
                     break;
                 case HorizontalAlignment.Right:
-                    MessageBox.Left = Config.ProjectorScreen.WorkingArea.Right - MessageBox.ActualWidth;
+                    MessageBox.Left = Config.ProjectorScreen.WorkingArea.Right - MessageBox.ActualWidth - Config.MessengerMargin.Right;
                     break;
                 default:
                     MessageBox.Left = (Config.ProjectorScreen.WorkingArea.Width - MessageBox.ActualWidth) / 2 + Config.ProjectorScreen.WorkingArea.Left;
