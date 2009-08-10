@@ -20,7 +20,7 @@
                 <TextBlock Name="TimeDesc" Text="{x:Static Loc:Labels.ShowMessageAddTimerMiddle1}" VerticalAlignment="Center" Margin="0,0,10,0" />
                 <TextBox Name="TimeValue" Width="100" VerticalAlignment="Center" Text="10" Margin="0,0,10,0" IsEnabled="False" />
             </StackPanel>
-            <Button Name="ShowBtn" Width="100" Height="25" HorizontalAlignment="Left" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" />
+            <Button Name="ShowBtn" MinWidth="75" Padding="2" HorizontalAlignment="Left" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" />
         </StackPanel>
     </Grid>
 </Window>

@@ -91,13 +91,18 @@ namespace SongPresenter.App_Code
                 {
                     try
                     {
-                        var r = new DirectoryInfo(ConfigurationManager.AppSettings["LibraryPath"]).FullName;
-                        _path = r.EndsWith("\\") ? r : r + "\\";
+                        string res = ConfigurationManager.AppSettings["LibraryPath"];
+                        if (!Path.IsPathRooted(res))
+                            res = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + res.TrimStart('\\');
+                        _path = res.TrimEnd('\\') + "\\";
                     }
                     catch (Exception)
                     {
-                        _path = "Library\\";
+                        _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Library\\";
                     }
+
+                    if (!Directory.Exists(_path))
+                        Directory.CreateDirectory(_path);
                 }
                 return _path;
             }

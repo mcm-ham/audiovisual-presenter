@@ -24,8 +24,8 @@
             </ListBox>
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Height="23" HorizontalAlignment="Right" Margin="0,0,10,0" Name="button1" VerticalAlignment="Bottom" Width="75" Click="Ok_Click" Content="{x:Static Loc:Labels.GenericOk}" />
-                <Button Height="23" HorizontalAlignment="Right" Name="button2" VerticalAlignment="Bottom" Width="75" Click="Cancel_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
+                <Button Padding="2" HorizontalAlignment="Right" Margin="0,0,10,0" Name="button1" VerticalAlignment="Bottom" MinWidth="75" Click="Ok_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+                <Button Padding="2" HorizontalAlignment="Right" Name="button2" VerticalAlignment="Bottom" MinWidth="75" Click="Cancel_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
             </StackPanel>
         </StackPanel>
     </Grid>

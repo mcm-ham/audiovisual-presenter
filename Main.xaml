@@ -87,7 +87,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding}" Width="{Binding ElementName=ScheduleList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
+                            <!-- set width to 0.9 of containing listbox so that context menu works anywhere along listboxitem and to 0.9 to not unecessarily cause scroll bar to appear -->
+                            <TextBlock Text="{Binding}" MinWidth="{Binding ElementName=FileList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{x:Static Loc:Labels.MainContextAdd}" Click="AddSelected"/>
@@ -119,7 +120,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Name}" Width="{Binding ElementName=ScheduleList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
+                        <TextBlock Text="{Binding Path=Name}" MinWidth="{Binding ElementName=ScheduleList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
                         <StackPanel.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile"/>
