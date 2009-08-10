@@ -49,11 +49,10 @@ namespace SongPresenter.App_Code
             if (!Config.SupportedFileTypes.Contains(ext))
                 return;
 
-            Items.Add(new Item()
-            {
+            Items.Add(new Item() {
                 ID = Guid.NewGuid(),
                 Filename = filename,
-                Ordinal = Items.Max(i => (short?)i.Ordinal) ?? 0
+                Ordinal = (short)((Items.Max(i => (short?)i.Ordinal) ?? -1) + 1)
             });
             Save(removeExistingPres);
         }

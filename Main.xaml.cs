@@ -25,10 +25,10 @@ namespace SongPresenter
         {
             InitializeComponent();
             Background = new SolidColorBrush(Config.BackgroundColour);
-            
+
             ScheduleList.IsEnabled = false;
             BindLocationList();
-            
+
             timer.Tick += new EventHandler(timer_Tick);
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
             selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
@@ -107,7 +107,7 @@ namespace SongPresenter
             //messenger
             if (ctrlm)
                 ShowMessage(null, null);
-            
+
             //options
             if (ctrlo)
                 Options_Click(null, null);
@@ -115,7 +115,7 @@ namespace SongPresenter
             //enlarge font
             if (ctrlA)
                 Config.FontSize++;
-            
+
             //subtract font
             if (ctrlS)
                 Config.FontSize--;
@@ -126,7 +126,7 @@ namespace SongPresenter
         public void BindLocationList()
         {
             LocationList.Items.Clear();
-            
+
             if (Directory.Exists(Config.LibraryPath))
             {
                 foreach (var path in Directory.GetDirectories(Config.LibraryPath).Select(p => p.Substring(p.LastIndexOf('\\') + 1)))
@@ -449,7 +449,7 @@ namespace SongPresenter
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
             ((GridView)LiveList.View).Columns[0].Width = 35;
-            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.77;
+            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.75;
             ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
             ((GridView)LiveList.View).Columns[3].Width = 50;
             ((GridView)LiveList.View).Columns[4].Width = 25;
@@ -463,7 +463,7 @@ namespace SongPresenter
                 Presentation.SlideShowStarted += new EventHandler(Presentation_SlideShowStarted);
             }
 
-            new Action(() => Presentation.Start(SelectedSchedule) ).BeginInvoke(null, null);
+            new Action(() => Presentation.Start(SelectedSchedule)).BeginInvoke(null, null);
             progress = new BuildProgress();
             progress.Owner = this;
             progress.ShowDialog();
@@ -508,7 +508,8 @@ namespace SongPresenter
 
         protected void Presentation_SlideAdded(object sender, SlideAddedEventArgs e)
         {
-            Dispatcher.Invoke(new Action(() => {
+            Dispatcher.Invoke(new Action(() =>
+            {
                 if (progress.Cancelled)
                 {
                     Stop_Click(null, null);
@@ -525,10 +526,11 @@ namespace SongPresenter
                 }
 
                 int idx = LiveList.Items.Add(e.NewSlide);
-                
+
                 //add new listitem happens asyncronously so look for lisitem asyncronously as well with low priority to ensure listitem has been added before running
                 if (e.NewSlide.ScheduleItem.Highlighted.Contains(e.NewSlide.ItemIndex))
-                    Dispatcher.BeginInvoke(new Action(() => {
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
                         HightlightRow(LiveList.ItemContainerGenerator.ContainerFromIndex(idx) as ListViewItem);
                     }), DispatcherPriority.ApplicationIdle);
             }));
@@ -565,7 +567,7 @@ namespace SongPresenter
 
                 if (idx == -1)
                     return;
-                
+
                 if (Presentation.Slides.Length > idx && !String.IsNullOrEmpty(Presentation.Slides[idx].Preview))
                     CurrentImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(Presentation.Slides[idx].Preview)));
 
@@ -626,7 +628,7 @@ namespace SongPresenter
             int interval = Util.Parse<int?>(Interval.Text) ?? 8;
             timer.Interval = TimeSpan.FromSeconds(interval);
         }
-        
+
         protected void LiveList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //The timer is necessary to allow the selection event to complete first, otherwise if changing slide
@@ -679,7 +681,7 @@ namespace SongPresenter
             else
                 slide.ScheduleItem.Highlighted.Remove(slide.ItemIndex);
 
-              HightlightRow(row);
+            HightlightRow(row);
         }
 
         private void HightlightRow(ListViewItem row)
@@ -733,7 +735,8 @@ namespace SongPresenter
             ScreenMessage prompt = new ScreenMessage();
             prompt.Owner = this;
             prompt.ShowInTaskbar = false;
-            prompt.Closed += (sen, args) => {
+            prompt.Closed += (sen, args) =>
+            {
                 if ((sen as ScreenMessage).MessageBox == null)
                 {
                     messageBox = null;
@@ -746,7 +749,7 @@ namespace SongPresenter
         #endregion
 
         #region remote_ctrl
-         private void RemoteMode_Click(object sender, RoutedEventArgs e)
+        private void RemoteMode_Click(object sender, RoutedEventArgs e)
         {
             if (Presentation == null || !Presentation.IsRunning)
             {
@@ -755,6 +758,7 @@ namespace SongPresenter
             }
 
             RemotePanel.Visibility = Visibility.Visible;
+            LiveList.Focus(); //cause livelist to focus so that up or down arrow keys changes slides
 
             Point abs = Mouse.GetPosition(this);
             Point remote = Mouse.GetPosition(RemotePanel);
@@ -797,6 +801,7 @@ namespace SongPresenter
         DispatcherTimer mediaPosTimer;
         bool _timeDragging = false;
         bool _editingTime = false;
+        TimeSpan? _initEditTime = null;
         FullscreenVideo fullscreen;
         protected void ShowMedia(string path)
         {
@@ -916,19 +921,34 @@ namespace SongPresenter
         private void currentTime_GotFocus(object sender, RoutedEventArgs e)
         {
             _editingTime = true;
+            _initEditTime = getCurrentTime();
         }
 
         private void currentTime_LostFocus(object sender, RoutedEventArgs e)
         {
             _editingTime = false;
 
+            TimeSpan? value = getCurrentTime();
+
+            //if entered value is valid and the time has changed (presume they would have entered a new value if the user wanted to jump to a time)
+            if (value.HasValue && value != _initEditTime)
+                VideoPlayer.Position = value.Value;
+        }
+
+        private TimeSpan? getCurrentTime()
+        {
             var val = currentTime.Text.Split(new char[] { ':', '.' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+
             if (val.Length == 1)
-                VideoPlayer.Position = TimeSpan.FromSeconds(Util.Parse<int>(val[0]));
-            else if (val.Length == 2)
-                VideoPlayer.Position = new TimeSpan(0, Util.Parse<int>(val[0]), Util.Parse<int>(val[1]));
-            else if (val.Length == 3)
-                VideoPlayer.Position = new TimeSpan(Util.Parse<int>(val[0]), Util.Parse<int>(val[1]), Util.Parse<int>(val[2]));
+                return TimeSpan.FromSeconds(Util.Parse<int>(val[0]));
+
+            if (val.Length == 2)
+                return new TimeSpan(0, Util.Parse<int>(val[0]), Util.Parse<int>(val[1]));
+
+            if (val.Length == 3)
+                return new TimeSpan(Util.Parse<int>(val[0]), Util.Parse<int>(val[1]), Util.Parse<int>(val[2]));
+
+            return null;
         }
 
         private void currentTime_KeyDown(object sender, KeyEventArgs e)
