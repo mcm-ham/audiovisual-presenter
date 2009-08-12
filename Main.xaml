@@ -88,7 +88,7 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <!-- set width to 0.9 of containing listbox so that context menu works anywhere along listboxitem and to 0.9 to not unecessarily cause scroll bar to appear -->
-                            <TextBlock Text="{Binding}" MinWidth="{Binding ElementName=FileList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.9}" />
+                            <TextBlock Text="{Binding}" MinWidth="{Binding ElementName=FileList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.88}" />
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{x:Static Loc:Labels.MainContextAdd}" Click="AddSelected"/>
@@ -141,17 +141,17 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn x:Uid="MainLabelLiveSlide" Header="{x:Static Loc:Labels.MainLabelLiveSlide}" DisplayMemberBinding="{Binding SlideIndex}" />
-                    <GridViewColumn x:Uid="MainLabelLiveText" Header="{x:Static Loc:Labels.MainLabelLiveText}" DisplayMemberBinding="{Binding Text}" />
-                    <GridViewColumn x:Uid="MainLabelLiveNotes" Header="{x:Static Loc:Labels.MainLabelLiveNotes}" DisplayMemberBinding="{Binding Comment}" />
-                    <GridViewColumn x:Uid="MainLabelLiveJump" Header="{x:Static Loc:Labels.MainLabelLiveJump}">
+                    <GridViewColumn Width="35" Header="{x:Static Loc:Labels.MainLabelLiveSlide}" DisplayMemberBinding="{Binding SlideIndex}" />
+                    <GridViewColumn Header="{x:Static Loc:Labels.MainLabelLiveText}" DisplayMemberBinding="{Binding Text}" />
+                    <GridViewColumn Header="{x:Static Loc:Labels.MainLabelLiveNotes}" DisplayMemberBinding="{Binding Comment}" />
+                    <GridViewColumn Width="50" Header="{x:Static Loc:Labels.MainLabelLiveJump}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding Path=JumpIndex}" Width="35" Height="17" FontSize="10" Padding="0" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn>
+                    <GridViewColumn Width="25">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Height="17" Content="  " Click="HightlightRow" />

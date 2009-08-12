@@ -13,6 +13,7 @@ using SongPresenter.App_Code;
 using SongPresenter.Resources;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Windows.Documents;
 
 namespace SongPresenter
 {
@@ -91,8 +92,8 @@ namespace SongPresenter
             bool ctrlr = (e.KeyboardDevice.IsKeyDown(Key.R) && ctrl);
             bool ctrlo = (e.KeyboardDevice.IsKeyDown(Key.O) && ctrl);
             bool ctrlm = (e.KeyboardDevice.IsKeyDown(Key.M) && ctrl);
-            bool ctrlA = (e.KeyboardDevice.IsKeyDown(Key.Add) && ctrl);
-            bool ctrlS = (e.KeyboardDevice.IsKeyDown(Key.Subtract) && ctrl);
+            bool ctrlA = ((e.KeyboardDevice.IsKeyDown(Key.Add) || e.KeyboardDevice.IsKeyDown(Key.OemPlus)) && ctrl);
+            bool ctrlS = ((e.KeyboardDevice.IsKeyDown(Key.Subtract) || e.KeyboardDevice.IsKeyDown(Key.OemMinus)) && ctrl);
             bool esc = e.Key == Key.Escape;
 
             //remote control
@@ -448,11 +449,8 @@ namespace SongPresenter
 
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
-            ((GridView)LiveList.View).Columns[0].Width = 35;
             ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.75;
             ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
-            ((GridView)LiveList.View).Columns[3].Width = 50;
-            ((GridView)LiveList.View).Columns[4].Width = 25;
 
             if (Presentation == null)
             {
@@ -665,10 +663,8 @@ namespace SongPresenter
 
             double widthIncrease = col1.ActualWidth - newWidth;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(newWidth, GridUnitType.Pixel));
-            ((GridView)LiveList.View).Columns[0].Width = 35;
-            ((GridView)LiveList.View).Columns[1].Width = (LiveList.ActualWidth + widthIncrease - 80) * 0.77;
-            ((GridView)LiveList.View).Columns[2].Width = (LiveList.ActualWidth + widthIncrease - 80) * 0.18;
-            ((GridView)LiveList.View).Columns[3].Width = 50;
+            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.75;
+            ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
         }
 
         private void HightlightRow(object sender, RoutedEventArgs e)
@@ -759,13 +755,17 @@ namespace SongPresenter
 
             RemotePanel.Visibility = Visibility.Visible;
             LiveList.Focus(); //cause livelist to focus so that up or down arrow keys changes slides
+            AdornerLayer.GetAdornerLayer(LiveList).Visibility = Visibility.Collapsed; //hide selection border which appears above remote panel
 
             Point abs = Mouse.GetPosition(this);
             Point remote = Mouse.GetPosition(RemotePanel);
+            Point dpi = Util.GetResolution(RemotePanel);
             abs.X -= remote.X;
             abs.Y -= remote.Y;
             abs = PointToScreen(abs);
-            CaptureCursor((int)abs.X, (int)abs.Y, (int)RemotePanel.Width, (int)RemotePanel.Height);
+
+            //1px border to prevent mouse from being able to select a slide as it can on some pcs
+            CaptureCursor((int)abs.X + 1, (int)abs.Y + 1, (int)(RemotePanel.ActualWidth * dpi.X / 96) - 2, (int)(RemotePanel.ActualHeight * dpi.Y / 96) - 2);
         }
 
         Rect BoundRect;
