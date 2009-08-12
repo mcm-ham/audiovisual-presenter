@@ -37,7 +37,7 @@ namespace SongPresenter
             MessageBox.Show(Labels.AppError + ":" + Environment.NewLine + ex.Message, "Presenter", MessageBoxButton.OK, MessageBoxImage.Error);
 
             //if main window is not open when error is thrown, close application otherwise only way to close it will be via task manager
-            if (this.MainWindow == null)
+            if (this.MainWindow == null || this.MainWindow.Visibility != Visibility.Visible)
                 Environment.Exit(1);
         }
 
