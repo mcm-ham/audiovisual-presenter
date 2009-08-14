@@ -420,6 +420,14 @@ namespace SongPresenter.App_Code
                         CopySlideBackgroundAsImage(range, slide);
                 }
             }
+
+            if (Config.InsertBlankSlides)
+            {
+                PP.Slide blank = dest.Slides.Add(dest.Slides.Count + 1, PP.PpSlideLayout.ppLayoutBlank);
+                blank.FollowMasterBackground = Core.MsoTriState.msoTrue;
+                blank.Design = (PP.Design)dest.Designs._Index(1);
+                AddSlide("", "Blank", blank, progressEnd, new Item(), 1);
+            }
         }
 
         private void CopySlideBackgroundAsImage(PP.SlideRange dest, PP.Slide source)

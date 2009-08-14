@@ -93,7 +93,16 @@ namespace SongPresenter.App_Code
                     {
                         string res = ConfigurationManager.AppSettings["LibraryPath"];
                         if (!Path.IsPathRooted(res))
-                            res = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + res.TrimStart('\\');
+                        {
+                            string special = res.TrimStart('\\').TrimEnd('\\').Replace(" ", "");
+                            if (special.Contains('\\'))
+                                special = special.Substring(0, special.IndexOf('\\'));
+                            Environment.SpecialFolder? folder = Util.Parse<Environment.SpecialFolder?>(special);
+                            if (folder.HasValue && folder.Value == Environment.SpecialFolder.MyDocuments && folder.Value == Environment.SpecialFolder.MyMusic)
+                                res = Environment.GetFolderPath(folder.Value) + "\\" + res.TrimStart('\\');
+                            else
+                                res = Path.GetFullPath(res);
+                        }
                         _path = res.TrimEnd('\\') + "\\";
                     }
                     catch (Exception)
@@ -266,6 +275,12 @@ namespace SongPresenter.App_Code
         {
             get { return ConfigurationManager.AppSettings["SelectedLibrary"]; }
             set { SaveSetting("SelectedLibrary", value); }
+        }
+
+        public static bool InsertBlankSlides
+        {
+            get { return Util.Parse<bool>(ConfigurationManager.AppSettings["InsertBlankSlides"]); }
+            set { SaveSetting("InsertBlankSlides", value.ToString()); }
         }
     }
 }
