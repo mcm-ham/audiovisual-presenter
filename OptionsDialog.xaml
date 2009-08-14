@@ -26,6 +26,9 @@
             <ComboBox Name="HorLocation" Height="23" Width="100" Margin="10,0,0,0" />
         </StackPanel>
         
+        <TextBlock Text="{x:Static Loc:Labels.OptionsPresentionSettings}" Margin="22,250,0,0" VerticalAlignment="Top" />
+        <CheckBox Name="InsertBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlanks}" Margin="22,275,0,0" Height="16" VerticalAlignment="Top" />
+        
         <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
         <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
     </Grid>

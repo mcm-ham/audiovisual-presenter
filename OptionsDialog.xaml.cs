@@ -49,6 +49,7 @@ namespace SongPresenter
                     VerLocation.Items.Add(align);
             VerLocation.SelectedValue = Config.MessengerVerticalPosition.ToString();
 
+            InsertBlanks.IsChecked = Config.InsertBlankSlides;
             /*
             //enable presenter view
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + Config.PowerpointVersion + @"\PowerPoint\Options", true);
@@ -70,6 +71,8 @@ namespace SongPresenter
 
             if (MonitorSelection.SelectedIndex != -1)
                 Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex];
+
+            Config.InsertBlankSlides = InsertBlanks.IsChecked ?? false;
 
             (Owner as Main).BindLocationList();
             this.Close();

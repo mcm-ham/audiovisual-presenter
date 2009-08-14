@@ -325,6 +325,9 @@
   <data name="OptionsBtnBrowse" xml:space="preserve">
     <value>Browse</value>
   </data>
+  <data name="OptionsInsertBlanks" xml:space="preserve">
+    <value>Insert blank slide after PowerPoint files</value>
+  </data>
   <data name="OptionsLibraryPath" xml:space="preserve">
     <value>Presenter Library Path</value>
   </data>
@@ -345,6 +348,9 @@
   </data>
   <data name="OptionsMonitorTitle" xml:space="preserve">
     <value>Monitor</value>
+  </data>
+  <data name="OptionsPresentionSettings" xml:space="preserve">
+    <value>Presentation Settings</value>
   </data>
   <data name="OptionsSlideDelay" xml:space="preserve">
     <value>Slide Preview Popup Delay (sec)</value>
