@@ -30,7 +30,7 @@ namespace SongPresenter
             StreamWriter log = new StreamWriter(File.Open(path, FileMode.Append));
             log.WriteLine("Date: " + DateTime.Now);
             log.WriteLine("Type: " + ex.GetType().Name);
-            log.WriteLine("Error: " + ex.Message + Environment.NewLine + "StackTrace:" + Environment.NewLine + stacktrace);
+            log.WriteLine("Error: " + ex.Message + Environment.NewLine + "StackTrace:" + Environment.NewLine + stacktrace + Environment.NewLine);
             log.Flush();
             log.Close();
             

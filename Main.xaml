@@ -83,7 +83,7 @@
             <Button Name="RefreshBtn" MinWidth="52" Padding="2" Margin="0,94,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
             <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,128,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
             <TextBox Name="SearchTerms" Height="23" Margin="81,128,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
-            <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="AddSelected" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
+            <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="FileList_MouseDoubleClick" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">

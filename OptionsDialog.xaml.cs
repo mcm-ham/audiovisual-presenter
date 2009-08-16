@@ -17,7 +17,7 @@ namespace SongPresenter
             InitializeComponent();
             Background = new SolidColorBrush(Config.BackgroundColour);
 
-            LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"] ?? "Library\\";
+            LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"] ?? "My Documents\\Library\\";
 
             for (int i = 0; i < Screen.AllScreens.Length; i++)
             {
@@ -86,6 +86,8 @@ namespace SongPresenter
         private void Browse_Click(object sender, RoutedEventArgs e)
         {
             var dirDialog = new System.Windows.Forms.FolderBrowserDialog();
+            dirDialog.Description = Labels.OptionsLibraryBrowseDesc;
+            dirDialog.SelectedPath = Config.LibraryPath;
             var res = dirDialog.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
                 LibraryPath.Text = dirDialog.SelectedPath;

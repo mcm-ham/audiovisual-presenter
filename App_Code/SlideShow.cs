@@ -7,6 +7,7 @@ using System.Text;
 using Core = Microsoft.Office.Core;
 using PP = Microsoft.Office.Interop.PowerPoint;
 using SongPresenter.Resources;
+using System.Windows;
 
 namespace SongPresenter.App_Code
 {
@@ -38,73 +39,102 @@ namespace SongPresenter.App_Code
 
         public void Start(Schedule schedule)
         {
-            if (Config.KeepPresentations)
-                CPath = Config.PresentationPath + schedule.DisplayName + ".ppt";
-
-            Item[] items = schedule.Items.OrderBy(i => i.Ordinal).ToArray();
-            IsRunning = true;
-
-            //if (app == null)
+            try
             {
-                app = new PP.Application();
-                app.SlideShowEnd += new PP.EApplication_SlideShowEndEventHandler(app_SlideShowEnd);
+                if (Config.KeepPresentations)
+                    CPath = Config.PresentationPath + schedule.DisplayName + ".ppt";
+
+                Item[] items = schedule.Items.OrderBy(i => i.Ordinal).ToArray();
+                IsRunning = true;
+
+                //if (app == null)
+                {
+                    app = new PP.Application();
+                    app.SlideShowEnd += new PP.EApplication_SlideShowEndEventHandler(app_SlideShowEnd);
+                }
+
+                app.Activate();
+                app.WindowState = PP.PpWindowState.ppWindowMinimized;
+                Core.MsoTriState showWindow = Core.MsoTriState.msoTrue;
+
+                //if (!File.Exists(CPath))
+                {
+                    previousDesigns.Clear();
+                    _slides.Clear();
+                    if (SlideAdded != null)
+                        SlideAdded(this, new SlideAddedEventArgs(null, 0));
+
+                    running = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
+                    AddSlide("", "Blank", running.Slides._Index(1), 0, new Item(), 1);
+
+                    foreach (Item item in items)
+                        AddSlides(item);
+
+                    //ppSaveAsPresentation = 1, ppSaveAsOpenXMLPresentation = 24
+                    PP.PpSaveAsFileType filetype = (PP.PpSaveAsFileType)(Util.Parse<double>(app.Version) >= 12 ? 24 : 1);
+
+                    try { running.SaveAs(CPath, (PP.PpSaveAsFileType)filetype, Core.MsoTriState.msoFalse); }
+                    catch (Exception) { }
+
+                    running.SlideShowSettings.Run();
+                }
+                //else
+                //{
+                //    running = app.Presentations.Open(CPath, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
+
+                //    for (int i = 1; i <= Math.Min(Slides.Length, running.Slides.Count); i++)
+                //        Slides[i - 1].PSlide = running.Slides._Index(i);
+
+                //    running.SlideShowSettings.Run();
+                //}
+
+                //close master slide view
+                PP.DocumentWindow wnd = ((PP.DocumentWindow)app.Windows._Index(1));
+                wnd.ViewType = PP.PpViewType.ppViewSlide;
+                wnd.ViewType = PP.PpViewType.ppViewNormal;
+
+                if (SlideShowStarted != null)
+                    SlideShowStarted(this, new EventArgs());
             }
-
-            app.Activate();
-            app.WindowState = PP.PpWindowState.ppWindowMinimized;
-            Core.MsoTriState showWindow = Core.MsoTriState.msoTrue;
-
-            //if (!File.Exists(CPath))
+            catch (Exception ex)
             {
-                previousDesigns.Clear();
-                _slides.Clear();
-                if (SlideAdded != null)
-                    SlideAdded(this, new SlideAddedEventArgs(null, 0));
+                //build has been stopped by another thread, so return without recording error
+                if (running == null)
+                    return;
 
-                running = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
-                AddSlide("", "Blank", running.Slides._Index(1), 0, new Item(), 1);
-
-                foreach (Item item in items)
-                    AddSlides(item);
-
-                //ppSaveAsPresentation = 1, ppSaveAsOpenXMLPresentation = 24
-                PP.PpSaveAsFileType filetype = (PP.PpSaveAsFileType)(Util.Parse<double>(app.Version) >= 12 ? 24 : 1);
-
-                try { running.SaveAs(CPath, (PP.PpSaveAsFileType)filetype, Core.MsoTriState.msoFalse); }
+                //if slideshow not running (SlideShowWindow will throw error) then close down application and suppress error
+                try
+                {
+                    try { var test = running.SlideShowWindow; }
+                    catch (Exception)
+                    {
+                        app_SlideShowEnd(running);
+                        app.Quit();
+                        Marshal.FinalReleaseComObject(app);
+                        app = null;
+                    }
+                }
                 catch (Exception) { }
 
-                running.SlideShowSettings.Run();
+                if (!Application.Current.Dispatcher.CheckAccess())
+                    Application.Current.Dispatcher.Invoke(new Action(() => { throw new Exception(ex.Message, ex); }));
+                else
+                    throw ex;
             }
-            //else
-            //{
-            //    running = app.Presentations.Open(CPath, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
-
-            //    for (int i = 1; i <= Math.Min(Slides.Length, running.Slides.Count); i++)
-            //        Slides[i - 1].PSlide = running.Slides._Index(i);
-
-            //    running.SlideShowSettings.Run();
-            //}
-
-            SlideShowStarted(this, new EventArgs());
-
-            //close master slide view
-            PP.DocumentWindow wnd = ((PP.DocumentWindow)app.Windows._Index(1));
-            wnd.ViewType = PP.PpViewType.ppViewSlide;
-            wnd.ViewType = PP.PpViewType.ppViewNormal;
         }
 
-        void app_SlideShowEnd(PP.Presentation Pres)
+        private void app_SlideShowEnd(PP.Presentation Pres)
         {
             if (SlideShowEnd != null)
                 SlideShowEnd(this, new EventArgs());
         }
 
-        void AddSlide(string text, string comments, object slide, double progress, Item scheduleItem, int itemIndex)
+        private void AddSlide(string text, string comments, object slide, double progress, Item scheduleItem, int itemIndex)
         {
             AddSlide(text, comments, slide, SlideType.PowerPoint, "", progress, scheduleItem, itemIndex);
         }
 
-        void AddSlide(string text, string comments, object slide, SlideType type, string filename, double progress, Item scheduleItem, int itemIndex)
+        private void AddSlide(string text, string comments, object slide, SlideType type, string filename, double progress, Item scheduleItem, int itemIndex)
         {
             Slide s = new Slide() { Text = text, Comment = comments, PSlide = slide, SlideIndex = _slides.Count + 1, Type = type, Filename = filename, ScheduleItem = scheduleItem, ItemIndex = itemIndex };
             _slides.Add(s);
@@ -125,7 +155,11 @@ namespace SongPresenter.App_Code
             //call this code leading to an eternal loop
             IsRunning = false;
 
-            try { running.Close(); }
+            try
+            {
+                running.Close();
+                Marshal.FinalReleaseComObject(running);
+            }
             catch (InvalidCastException) { }
             catch (COMException) { }
             running = null;
@@ -518,8 +552,7 @@ namespace SongPresenter.App_Code
 
     public class SlideShowEventArgs : EventArgs
     {
-        public SlideShowEventArgs(int oldIdx, int newIdx)
-            : base()
+        public SlideShowEventArgs(int oldIdx, int newIdx) : base()
         {
             OldIndex = oldIdx;
             NewIndex = newIdx;
