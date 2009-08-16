@@ -328,6 +328,9 @@
   <data name="OptionsInsertBlanks" xml:space="preserve">
     <value>Insert blank slide after PowerPoint files</value>
   </data>
+  <data name="OptionsLibraryBrowseDesc" xml:space="preserve">
+    <value>Please select the root folder containing presentation files located in sub-folders.</value>
+  </data>
   <data name="OptionsLibraryPath" xml:space="preserve">
     <value>Presenter Library Path</value>
   </data>

@@ -94,12 +94,10 @@ namespace SongPresenter.App_Code
                         string res = ConfigurationManager.AppSettings["LibraryPath"];
                         if (!Path.IsPathRooted(res))
                         {
-                            string special = res.TrimStart('\\').TrimEnd('\\').Replace(" ", "");
-                            if (special.Contains('\\'))
-                                special = special.Substring(0, special.IndexOf('\\'));
-                            Environment.SpecialFolder? folder = Util.Parse<Environment.SpecialFolder?>(special);
-                            if (folder.HasValue && folder.Value == Environment.SpecialFolder.MyDocuments && folder.Value == Environment.SpecialFolder.MyMusic)
-                                res = Environment.GetFolderPath(folder.Value) + "\\" + res.TrimStart('\\');
+                            string[] parts = res.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                            Environment.SpecialFolder? folder = Util.Parse<Environment.SpecialFolder?>((parts.FirstOrDefault() ?? "").Replace(" ", ""));
+                            if (folder.HasValue && (folder.Value == Environment.SpecialFolder.MyDocuments || folder.Value == Environment.SpecialFolder.MyMusic || folder.Value == Environment.SpecialFolder.MyPictures))
+                                res = Environment.GetFolderPath(folder.Value) + "\\" + String.Join("\\", parts.Skip(1).ToArray());
                             else
                                 res = Path.GetFullPath(res);
                         }
@@ -279,7 +277,7 @@ namespace SongPresenter.App_Code
 
         public static bool InsertBlankSlides
         {
-            get { return Util.Parse<bool>(ConfigurationManager.AppSettings["InsertBlankSlides"]); }
+            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["InsertBlankSlides"]) ?? true; }
             set { SaveSetting("InsertBlankSlides", value.ToString()); }
         }
     }

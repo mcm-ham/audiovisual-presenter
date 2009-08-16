@@ -4,7 +4,7 @@
     xmlns:Loc="clr-namespace:SongPresenter.Resources"
     xmlns:Code="clr-namespace:SongPresenter.App_Code"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.ReportsListWindowTitle}" Width="590" SizeToContent="Height" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
+    Title="{x:Static Loc:Labels.ReportsListWindowTitle}" Width="582" SizeToContent="Height" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
 
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="540" Margin="10">

@@ -27,17 +27,12 @@ namespace SongPresenter
         protected void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Cancelled = true;
-            CancelButton.IsEnabled = false;
+            Close();
         }
 
         public void UpdateProgress(double progress)
         {
             Dispatcher.BeginInvoke(new Action(() => { Progress.SetValue(ProgressBar.ValueProperty, progress); }), DispatcherPriority.Background, null);
-        }
-        
-        public void Finish()
-        {
-            Dispatcher.BeginInvoke(new Action(() => { Close(); }), DispatcherPriority.Background, null);
         }
 
         public bool Cancelled { get; private set; }

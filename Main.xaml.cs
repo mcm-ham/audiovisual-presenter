@@ -223,6 +223,14 @@ namespace SongPresenter
             FileSelected();
         }
 
+        protected void FileList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //checks if listboxitem is clicked, otherwise something like the scrollbar was clicked so don't add selected file
+            ListBoxItem item = ItemsControl.ContainerFromElement(FileList, e.OriginalSource as DependencyObject) as ListBoxItem;
+            if (item != null)
+                FileSelected();
+        }
+
         protected void RefreshLocations(object sender, EventArgs e)
         {
             object value = LocationList.SelectedValue;
@@ -458,13 +466,23 @@ namespace SongPresenter
                 Presentation.SlideIndexChanged += new EventHandler<SlideShowEventArgs>(Presentation_SlideIndexChanged);
                 Presentation.SlideShowEnd += new EventHandler(Presentation_SlideShowEnd);
                 Presentation.SlideAdded += new EventHandler<SlideAddedEventArgs>(Presentation_SlideAdded);
-                Presentation.SlideShowStarted += new EventHandler(Presentation_SlideShowStarted);
             }
 
-            new Action(() => Presentation.Start(SelectedSchedule)).BeginInvoke(null, null);
+            new Action(() => Presentation.Start(SelectedSchedule)).BeginInvoke(SlideShowStarted, null);
             progress = new BuildProgress();
             progress.Owner = this;
             progress.ShowDialog();
+        }
+
+        protected void SlideShowStarted(IAsyncResult res)
+        {
+            if (progress == null)
+                return;
+
+            Dispatcher.Invoke(new Action(() => {
+                progress.Close();
+                progress = null;
+            }));
         }
 
         protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -499,6 +517,8 @@ namespace SongPresenter
             RefreshBtn.Visibility = Visibility.Visible;
             RemoveBtn.Visibility = Visibility.Visible;
             LocationList.Margin = new Thickness(81, 94, 80, 0);
+            PreviewImage.Source = null;
+            CurrentImage.Source = null;
             HideMedia();
             if (Presentation != null)
                 Presentation.Stop();
@@ -511,7 +531,6 @@ namespace SongPresenter
                 if (progress.Cancelled)
                 {
                     Stop_Click(null, null);
-                    progress.Finish();
                     progress = null;
                     return;
                 }
@@ -532,11 +551,6 @@ namespace SongPresenter
                         HightlightRow(LiveList.ItemContainerGenerator.ContainerFromIndex(idx) as ListViewItem);
                     }), DispatcherPriority.ApplicationIdle);
             }));
-        }
-
-        protected void Presentation_SlideShowStarted(object sender, EventArgs e)
-        {
-            progress.Finish();
         }
 
         protected void Presentation_SlideShowEnd(object sender, EventArgs e)
@@ -993,7 +1007,7 @@ namespace SongPresenter
         }
 
         //properties
-        protected Schedule SelectedSchedule { get; set; }
+        public Schedule SelectedSchedule { get; set; }
         protected SlideShow Presentation { get; set; }
     }
 }
