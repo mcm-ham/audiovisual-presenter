@@ -477,7 +477,7 @@ namespace SongPresenter
 
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
-            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.75;
+            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.74;
             ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
 
             if (Presentation == null)
@@ -700,7 +700,7 @@ namespace SongPresenter
 
             double widthIncrease = col1.ActualWidth - newWidth;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(newWidth, GridUnitType.Pixel));
-            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.75;
+            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.74;
             ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
         }
 

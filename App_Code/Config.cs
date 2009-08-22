@@ -145,7 +145,10 @@ namespace SongPresenter.App_Code
             set
             {
                 _screen = value;
-                Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", true).SetValue("DisplayMonitor", value.DeviceName);
+                var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options", true);
+                if (key == null)
+                    key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Office\" + PowerpointVersion + @"\PowerPoint\Options");
+                key.SetValue("DisplayMonitor", value.DeviceName);
             }
         }
 
