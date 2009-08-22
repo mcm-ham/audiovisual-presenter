@@ -66,7 +66,7 @@ namespace SongPresenter
             VerticalAlignment posy = Util.Parse<VerticalAlignment>(VerLocation.SelectedValue);
 
             Config.LibraryPath = LibraryPath.Text;
-            Config.SaveMessengerFont(size, family, FontColorList.SelectedValue.ToString());
+            Config.SaveMessengerFont(size, family, (FontColorList.SelectedValue ?? "").ToString());
             Config.SaveMessengerLocation(posy, posx);
 
             if (MonitorSelection.SelectedIndex != -1)

@@ -14,6 +14,8 @@ using SongPresenter.Resources;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Documents;
+using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
 namespace SongPresenter
 {
@@ -148,9 +150,26 @@ namespace SongPresenter
                 return;
             }
 
-            FileList.ItemsSource = from file in Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*")
+            string[] files;
+            if (ShellSearchFolder.IsPlatformSupported && SearchTerms.Text != "")
+            {
+                SearchCondition cond1 = SearchConditionFactory.CreateLeafCondition(SystemProperties.System.FileName, SearchTerms.Text, SearchConditionOperation.ValueContains);
+                SearchCondition cond2 = SearchConditionFactory.CreateLeafCondition(SystemProperties.System.Search.Contents, SearchTerms.Text, SearchConditionOperation.ValueContains);
+                SearchCondition condition = SearchConditionFactory.CreateAndOrCondition(SearchConditionType.Or, false, cond1, cond2);
+
+                files = new ShellSearchFolder(condition, Config.LibraryPath + LocationList.SelectedValue).Select(f => f.Name).OrderBy(n => n).ToArray();
+            }
+            else
+            {
+                files = Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*");
+            }
+
+            FileList.ItemsSource = from file in files
                                    where Config.SupportedFileTypes.Contains(System.IO.Path.GetExtension(file).TrimStart('.').ToLower())
                                    select file.Substring(file.LastIndexOf('\\') + 1);
+
+            if (FileList.Items.Count > 0)
+                FileList.ScrollIntoView(FileList.Items[0]);
         }
 
         protected void SearchTerms_TextChanged(object sender, TextChangedEventArgs e)
@@ -175,7 +194,8 @@ namespace SongPresenter
             }
 
             bool running = (Presentation != null && Presentation.IsRunning);
-            SelectedSchedule.AddItem(Config.LibraryPath + LocationList.SelectedValue + "\\" + FileList.SelectedValue, !running);
+            foreach (string file in FileList.SelectedItems)
+                SelectedSchedule.AddItem(Config.LibraryPath + LocationList.SelectedValue + "\\" + file, !running);
             BindScheduleList();
 
             if (running)
@@ -528,18 +548,21 @@ namespace SongPresenter
         {
             Dispatcher.Invoke(new Action(() =>
             {
-                if (progress.Cancelled)
+                if (progress != null)
                 {
-                    Stop_Click(null, null);
-                    progress = null;
-                    return;
-                }
+                    if (progress.Cancelled)
+                    {
+                        Stop_Click(null, null);
+                        progress = null;
+                        return;
+                    }
 
-                progress.UpdateProgress(e.Progress);
-                if (e.NewSlide == null)
-                {
-                    LiveList.Items.Clear();
-                    return;
+                    progress.UpdateProgress(e.Progress);
+                    if (e.NewSlide == null)
+                    {
+                        LiveList.Items.Clear();
+                        return;
+                    }
                 }
 
                 int idx = LiveList.Items.Add(e.NewSlide);

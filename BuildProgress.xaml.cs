@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Threading;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using SongPresenter.App_Code;
 
 namespace SongPresenter
@@ -24,6 +17,12 @@ namespace SongPresenter
             Background = new SolidColorBrush(Config.BackgroundColour);
         }
 
+        protected void BuildProgress_Closing(object sender, CancelEventArgs e)
+        {
+            if (TaskbarManager.IsPlatformSupported)
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+        }
+
         protected void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             Cancelled = true;
@@ -32,6 +31,8 @@ namespace SongPresenter
 
         public void UpdateProgress(double progress)
         {
+            if (TaskbarManager.IsPlatformSupported)
+                TaskbarManager.Instance.SetProgressValue((int)(progress * 100), 100);
             Dispatcher.BeginInvoke(new Action(() => { Progress.SetValue(ProgressBar.ValueProperty, progress); }), DispatcherPriority.Background, null);
         }
 
