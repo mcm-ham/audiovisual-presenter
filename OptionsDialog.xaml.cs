@@ -7,6 +7,10 @@ using Screen = System.Windows.Forms.Screen;
 using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Data;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Microsoft.WindowsAPICodePack.Shell;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SongPresenter
 {
@@ -85,12 +89,24 @@ namespace SongPresenter
 
         private void Browse_Click(object sender, RoutedEventArgs e)
         {
-            var dirDialog = new System.Windows.Forms.FolderBrowserDialog();
-            dirDialog.Description = Labels.OptionsLibraryBrowseDesc;
-            dirDialog.SelectedPath = Config.LibraryPath;
-            var res = dirDialog.ShowDialog();
-            if (res == System.Windows.Forms.DialogResult.OK)
-                LibraryPath.Text = dirDialog.SelectedPath;
+            if (CommonOpenFileDialog.IsPlatformSupported)
+            {
+                var dirDialog = new CommonOpenFileDialog();
+                dirDialog.InitialDirectory = Config.LibraryPath;
+                dirDialog.Title = Labels.OptionsLibraryBrowseDesc;
+                dirDialog.IsFolderPicker = true;
+                if (dirDialog.ShowDialog() == CommonFileDialogResult.OK)
+                    LibraryPath.Text = dirDialog.FileName;
+            }
+            else
+            {
+                var dirDialog = new System.Windows.Forms.FolderBrowserDialog();
+                dirDialog.Description = Labels.OptionsLibraryBrowseDesc;
+                dirDialog.SelectedPath = Config.LibraryPath;
+                var res = dirDialog.ShowDialog();
+                if (res == System.Windows.Forms.DialogResult.OK)
+                    LibraryPath.Text = dirDialog.SelectedPath;
+            }
         }
     }
 }
