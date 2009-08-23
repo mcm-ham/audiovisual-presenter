@@ -82,7 +82,7 @@ namespace SongPresenter
             ScheduleName.Text = "";
             BindScheduleList();
 
-            //note since ADO.NET is being used the object instance below is the same as what
+            //note since ADO.NET Entities is being used the object instance below is the same as what
             //BindScheduleList retrieved therefore the line below works
             ScheduleList.SelectedValue = schedule;
             
@@ -97,8 +97,12 @@ namespace SongPresenter
             {
                 Schedule.DeleteSchedule(schedule.ID);
                 BindScheduleList();
+                if (ScheduleDeleted != null)
+                    ScheduleDeleted(this, new DeletedScheduleArgs(schedule.ID));
             }
         }
+
+        public event EventHandler<DeletedScheduleArgs> ScheduleDeleted;
 
         protected void ScheduleList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -120,5 +124,16 @@ namespace SongPresenter
 
         //properties
         public Schedule SelectedSchedule { get; set; }
+
+        //classes
+        public class DeletedScheduleArgs : EventArgs
+        {
+            public DeletedScheduleArgs(Guid scheduleId) : base()
+            {
+                DeletedScheduleID = scheduleId;
+            }
+
+            public Guid DeletedScheduleID { get; set; }
+        }
     }
 }

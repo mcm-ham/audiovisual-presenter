@@ -45,6 +45,7 @@ namespace SongPresenter
         {
             OpenDialog dialog = new OpenDialog();
             dialog.Owner = this;
+            dialog.ScheduleDeleted += new EventHandler<OpenDialog.DeletedScheduleArgs>(dialog_ScheduleDeleted);
             dialog.ShowDialog();
 
             if (dialog.SelectedSchedule != null)
@@ -57,6 +58,20 @@ namespace SongPresenter
                 if (Presentation != null)
                     Presentation.Stop();
                 SlideShow.RemoveOldPres();
+            }
+        }
+
+        protected void dialog_ScheduleDeleted(object sender, OpenDialog.DeletedScheduleArgs e)
+        {
+            if (SelectedSchedule != null && SelectedSchedule.ID == e.DeletedScheduleID)
+            {
+                SelectedSchedule = null;
+                ScheduleName.Text = "";
+                ScheduleList.IsEnabled = false;
+                ScheduleList.ItemsSource = new Item[] { };
+
+                if (Presentation != null)
+                    Stop_Click(null, null);
             }
         }
 
@@ -568,9 +583,10 @@ namespace SongPresenter
                 int idx = LiveList.Items.Add(e.NewSlide);
 
                 //add new listitem happens asyncronously so look for lisitem asyncronously as well with low priority to ensure listitem has been added before running
-                if (e.NewSlide.ScheduleItem.Highlighted.Contains(e.NewSlide.ItemIndex))
-                    Dispatcher.BeginInvoke(new Action(() =>
-                    {
+                if (e.NewSlide.ScheduleItem.EntityState != System.Data.EntityState.Detached && !e.NewSlide.ScheduleItem.Flags.IsLoaded)
+                    e.NewSlide.ScheduleItem.Flags.Load();
+                if (e.NewSlide.ScheduleItem.Flags.Any(f => f.Index == e.NewSlide.ItemIndex))
+                    Dispatcher.BeginInvoke(new Action(() => {
                         HightlightRow(LiveList.ItemContainerGenerator.ContainerFromIndex(idx) as ListViewItem);
                     }), DispatcherPriority.ApplicationIdle);
             }));
@@ -708,12 +724,14 @@ namespace SongPresenter
         {
             ListViewItem row = (sender as Button).GetAncestorByType<ListViewItem>();
             Slide slide = row.DataContext as Slide;
+            Flag flag = slide.ScheduleItem.Flags.FirstOrDefault(f => f.Index == slide.ItemIndex);
 
-            if (!slide.ScheduleItem.Highlighted.Contains(slide.ItemIndex))
-                slide.ScheduleItem.Highlighted.Add(slide.ItemIndex);
+            if (flag == null)
+                slide.ScheduleItem.Flags.Add(new Flag() { Index = (short)slide.ItemIndex, Colour = "Red" });
             else
-                slide.ScheduleItem.Highlighted.Remove(slide.ItemIndex);
-
+                slide.ScheduleItem.Flags.Remove(flag);
+            slide.ScheduleItem.Save();
+            
             HightlightRow(row);
         }
 
@@ -726,8 +744,11 @@ namespace SongPresenter
             if (Environment.OSVersion.Version.Major < 6)
                 style.Triggers.Add(GetLiveListStyle());
 
-            if (slide.ScheduleItem.Highlighted.Contains(slide.ItemIndex))
-                style.Setters.Add(new Setter(ListViewItem.ForegroundProperty, new SolidColorBrush(Colors.Red)));
+            if (!slide.ScheduleItem.Flags.IsLoaded)
+                slide.ScheduleItem.Flags.Load();
+            Flag flag = slide.ScheduleItem.Flags.FirstOrDefault(f => f.Index == slide.ItemIndex);
+            if (flag != null)
+                style.Setters.Add(new Setter(ListViewItem.ForegroundProperty, new SolidColorBrush(flag.SystemColor)));
 
             row.Style = style;
         }

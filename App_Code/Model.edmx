@@ -6,6 +6,7 @@
     <edmx:StorageModels>
     <Schema Namespace="SongPresenter.App_Code.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
         <EntityContainer Name="SongPresenterApp_CodeStoreContainer">
+          <EntitySet Name="Flags" EntityType="SongPresenter.App_Code.Store.Flags" store:Type="Tables" />
           <EntitySet Name="Items" EntityType="SongPresenter.App_Code.Store.Items" store:Type="Tables" />
           <EntitySet Name="Schedules" EntityType="SongPresenter.App_Code.Store.Schedules" store:Type="Tables" />
           <AssociationSet Name="FK_Schedule_Items" Association="SongPresenter.App_Code.Store.FK_Schedule_Items">
@@ -13,6 +14,15 @@
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Flags">
+          <Key>
+            <PropertyRef Name="ItemID" />
+            <PropertyRef Name="Index" />
+          </Key>
+          <Property Name="ItemID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Colour" Type="nvarchar" Nullable="false" MaxLength="30" />
+          <Property Name="Index" Type="smallint" Nullable="false" />
+        </EntityType>
         <EntityType Name="Items">
           <Key>
             <PropertyRef Name="ID" />
@@ -21,7 +31,6 @@
           <Property Name="ScheduleID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="Filename" Type="nvarchar" Nullable="false" MaxLength="200" />
           <Property Name="Ordinal" Type="smallint" Nullable="false" />
-          <Property Name="HighlightedIndexes" Type="varbinary" MaxLength="100" />
         </EntityType>
         <EntityType Name="Schedules">
           <Key>
@@ -56,7 +65,10 @@
             <End Role="Schedules" EntitySet="Schedules" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
-        </EntityContainer>
+          <EntitySet Name="Flags" EntityType="SongPresenter.App_Code.Flag" />
+          <AssociationSet Name="ItemFlag" Association="SongPresenter.App_Code.ItemFlag">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Flag" EntitySet="Flags" /></AssociationSet></EntityContainer>
         <EntityType Name="Item">
           <Key>
             <PropertyRef Name="ID" />
@@ -65,7 +77,7 @@
           <Property Name="Filename" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
           <Property Name="Ordinal" Type="Int16" Nullable="false" />
           <NavigationProperty Name="Schedule" Relationship="SongPresenter.App_Code.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
-          <Property Name="HighlightedIndexes" Type="Binary" Nullable="true" /></EntityType>
+          <NavigationProperty Name="Flags" Relationship="SongPresenter.App_Code.ItemFlag" FromRole="Item" ToRole="Flag" /></EntityType>
         <EntityType Name="Schedule">
           <Key>
             <PropertyRef Name="ID" />
@@ -81,7 +93,22 @@
           </End>
           <End Role="Items" Type="SongPresenter.App_Code.Item" Multiplicity="*" />
         </Association>
-      </Schema>
+        <EntityType Name="Flag">
+          <Key>
+            <PropertyRef Name="Index" />
+            <PropertyRef Name="ItemID" /></Key>
+          <Property Name="Colour" Type="String" Nullable="false" />
+          <Property Name="Index" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Item" Relationship="SongPresenter.App_Code.ItemFlag" FromRole="Flag" ToRole="Item" />
+          <Property Name="ItemID" Type="Guid" Nullable="false" /></EntityType>
+        <Association Name="ItemFlag">
+          <End Type="SongPresenter.App_Code.Item" Role="Item" Multiplicity="1" />
+          <End Type="SongPresenter.App_Code.Flag" Role="Flag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ID" /></Principal>
+            <Dependent Role="Flag">
+              <PropertyRef Name="ItemID" /></Dependent></ReferentialConstraint></Association></Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -90,7 +117,6 @@
           <EntitySetMapping Name="Items">
             <EntityTypeMapping TypeName="IsTypeOf(SongPresenter.App_Code.Item)">
               <MappingFragment StoreEntitySet="Items">
-                <ScalarProperty Name="HighlightedIndexes" ColumnName="HighlightedIndexes" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Filename" ColumnName="Filename" />
                 <ScalarProperty Name="Ordinal" ColumnName="Ordinal" />
@@ -114,7 +140,20 @@
               <ScalarProperty Name="ID" ColumnName="ID" />
             </EndProperty>
           </AssociationSetMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="Flags">
+            <EntityTypeMapping TypeName="IsTypeOf(SongPresenter.App_Code.Flag)">
+              <MappingFragment StoreEntitySet="Flags">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Index" ColumnName="Index" />
+                <ScalarProperty Name="Colour" ColumnName="Colour" />
+                </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <AssociationSetMapping Name="ItemFlag" TypeName="SongPresenter.App_Code.ItemFlag" StoreEntitySet="Flags">
+            <EndProperty Name="Item">
+              <ScalarProperty Name="ID" ColumnName="ItemID" /></EndProperty>
+            <EndProperty Name="Flag">
+              <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+              <ScalarProperty Name="Index" ColumnName="Index" />
+              </EndProperty></AssociationSetMapping></EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
@@ -137,6 +176,11 @@
         <EntityTypeShape EntityType="SongPresenter.App_Code.Schedule" Width="1.5" PointX="0.75" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
         <AssociationConnector Association="SongPresenter.App_Code.FK_Schedule_Items" ManuallyRouted="false">
           <ConnectorPoint PointX="2.25" PointY="1.7689925130208335" />
-          <ConnectorPoint PointX="3" PointY="1.7689925130208335" /></AssociationConnector></Diagram></edmx:Diagrams>
+          <ConnectorPoint PointX="3" PointY="1.7689925130208335" /></AssociationConnector>
+        <EntityTypeShape EntityType="SongPresenter.App_Code.Flag" Width="1.5" PointX="0.75" PointY="3.75" Height="1.7879850260416665" />
+        <AssociationConnector Association="SongPresenter.App_Code.ItemFlag">
+          <ConnectorPoint PointX="3.75" PointY="2.8552864583333331" />
+          <ConnectorPoint PointX="3.75" PointY="4.6439925130208337" />
+          <ConnectorPoint PointX="2.25" PointY="4.6439925130208337" /></AssociationConnector></Diagram></edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

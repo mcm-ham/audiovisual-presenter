@@ -10,9 +10,10 @@
 
 [assembly: global::System.Data.Objects.DataClasses.EdmSchemaAttribute()]
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("SongPresenter.App_Code", "FK_Schedule_Items", "Schedules", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(SongPresenter.App_Code.Schedule), "Items", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(SongPresenter.App_Code.Item))]
+[assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("SongPresenter.App_Code", "ItemFlag", "Item", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(SongPresenter.App_Code.Item), "Flag", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(SongPresenter.App_Code.Flag))]
 
 // Original file name:
-// Generation date: 9/08/2009 12:47:13 p.m.
+// Generation date: 23/08/2009 2:52:37 p.m.
 namespace SongPresenter.App_Code
 {
     
@@ -77,6 +78,21 @@ namespace SongPresenter.App_Code
         }
         private global::System.Data.Objects.ObjectQuery<Schedule> _Schedules;
         /// <summary>
+        /// There are no comments for Flags in the schema.
+        /// </summary>
+        public global::System.Data.Objects.ObjectQuery<Flag> Flags
+        {
+            get
+            {
+                if ((this._Flags == null))
+                {
+                    this._Flags = base.CreateQuery<Flag>("[Flags]");
+                }
+                return this._Flags;
+            }
+        }
+        private global::System.Data.Objects.ObjectQuery<Flag> _Flags;
+        /// <summary>
         /// There are no comments for Items in the schema.
         /// </summary>
         public void AddToItems(Item item)
@@ -89,6 +105,13 @@ namespace SongPresenter.App_Code
         public void AddToSchedules(Schedule schedule)
         {
             base.AddObject("Schedules", schedule);
+        }
+        /// <summary>
+        /// There are no comments for Flags in the schema.
+        /// </summary>
+        public void AddToFlags(Flag flag)
+        {
+            base.AddObject("Flags", flag);
         }
     }
     /// <summary>
@@ -186,29 +209,6 @@ namespace SongPresenter.App_Code
         partial void OnOrdinalChanging(short value);
         partial void OnOrdinalChanged();
         /// <summary>
-        /// There are no comments for Property HighlightedIndexes in the schema.
-        /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute()]
-        [global::System.Runtime.Serialization.DataMemberAttribute()]
-        public byte[] HighlightedIndexes
-        {
-            get
-            {
-                return global::System.Data.Objects.DataClasses.StructuralObject.GetValidValue(this._HighlightedIndexes);
-            }
-            set
-            {
-                this.OnHighlightedIndexesChanging(value);
-                this.ReportPropertyChanging("HighlightedIndexes");
-                this._HighlightedIndexes = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, true);
-                this.ReportPropertyChanged("HighlightedIndexes");
-                this.OnHighlightedIndexesChanged();
-            }
-        }
-        private byte[] _HighlightedIndexes;
-        partial void OnHighlightedIndexesChanging(byte[] value);
-        partial void OnHighlightedIndexesChanged();
-        /// <summary>
         /// There are no comments for Schedule in the schema.
         /// </summary>
         [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("SongPresenter.App_Code", "FK_Schedule_Items", "Schedules")]
@@ -242,6 +242,27 @@ namespace SongPresenter.App_Code
                 if ((value != null))
                 {
                     ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Schedule>("SongPresenter.App_Code.FK_Schedule_Items", "Schedules", value);
+                }
+            }
+        }
+        /// <summary>
+        /// There are no comments for Flags in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("SongPresenter.App_Code", "ItemFlag", "Flag")]
+        [global::System.Xml.Serialization.XmlIgnoreAttribute()]
+        [global::System.Xml.Serialization.SoapIgnoreAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Data.Objects.DataClasses.EntityCollection<Flag> Flags
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<Flag>("SongPresenter.App_Code.ItemFlag", "Flag");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<Flag>("SongPresenter.App_Code.ItemFlag", "Flag", value);
                 }
             }
         }
@@ -358,6 +379,139 @@ namespace SongPresenter.App_Code
                 if ((value != null))
                 {
                     ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<Item>("SongPresenter.App_Code.FK_Schedule_Items", "Items", value);
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// There are no comments for SongPresenter.App_Code.Flag in the schema.
+    /// </summary>
+    /// <KeyProperties>
+    /// Index
+    /// ItemID
+    /// </KeyProperties>
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="SongPresenter.App_Code", Name="Flag")]
+    [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
+    [global::System.Serializable()]
+    public partial class Flag : global::System.Data.Objects.DataClasses.EntityObject
+    {
+        /// <summary>
+        /// Create a new Flag object.
+        /// </summary>
+        /// <param name="colour">Initial value of Colour.</param>
+        /// <param name="index">Initial value of Index.</param>
+        /// <param name="itemID">Initial value of ItemID.</param>
+        public static Flag CreateFlag(string colour, short index, global::System.Guid itemID)
+        {
+            Flag flag = new Flag();
+            flag.Colour = colour;
+            flag.Index = index;
+            flag.ItemID = itemID;
+            return flag;
+        }
+        /// <summary>
+        /// There are no comments for Property Colour in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public string Colour
+        {
+            get
+            {
+                return this._Colour;
+            }
+            set
+            {
+                this.OnColourChanging(value);
+                this.ReportPropertyChanging("Colour");
+                this._Colour = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value, false);
+                this.ReportPropertyChanged("Colour");
+                this.OnColourChanged();
+            }
+        }
+        private string _Colour;
+        partial void OnColourChanging(string value);
+        partial void OnColourChanged();
+        /// <summary>
+        /// There are no comments for Property Index in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public short Index
+        {
+            get
+            {
+                return this._Index;
+            }
+            set
+            {
+                this.OnIndexChanging(value);
+                this.ReportPropertyChanging("Index");
+                this._Index = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("Index");
+                this.OnIndexChanged();
+            }
+        }
+        private short _Index;
+        partial void OnIndexChanging(short value);
+        partial void OnIndexChanged();
+        /// <summary>
+        /// There are no comments for Property ItemID in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Guid ItemID
+        {
+            get
+            {
+                return this._ItemID;
+            }
+            set
+            {
+                this.OnItemIDChanging(value);
+                this.ReportPropertyChanging("ItemID");
+                this._ItemID = global::System.Data.Objects.DataClasses.StructuralObject.SetValidValue(value);
+                this.ReportPropertyChanged("ItemID");
+                this.OnItemIDChanged();
+            }
+        }
+        private global::System.Guid _ItemID;
+        partial void OnItemIDChanging(global::System.Guid value);
+        partial void OnItemIDChanged();
+        /// <summary>
+        /// There are no comments for Item in the schema.
+        /// </summary>
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("SongPresenter.App_Code", "ItemFlag", "Item")]
+        [global::System.Xml.Serialization.XmlIgnoreAttribute()]
+        [global::System.Xml.Serialization.SoapIgnoreAttribute()]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public Item Item
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("SongPresenter.App_Code.ItemFlag", "Item").Value;
+            }
+            set
+            {
+                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("SongPresenter.App_Code.ItemFlag", "Item").Value = value;
+            }
+        }
+        /// <summary>
+        /// There are no comments for Item in the schema.
+        /// </summary>
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        [global::System.Runtime.Serialization.DataMemberAttribute()]
+        public global::System.Data.Objects.DataClasses.EntityReference<Item> ItemReference
+        {
+            get
+            {
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("SongPresenter.App_Code.ItemFlag", "Item");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Item>("SongPresenter.App_Code.ItemFlag", "Item", value);
                 }
             }
         }

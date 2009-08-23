@@ -9,7 +9,6 @@ using System.Windows.Media;
 using System.Windows.Data;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Shell;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SongPresenter

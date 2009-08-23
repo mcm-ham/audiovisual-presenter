@@ -121,6 +121,7 @@
     <Compile Include="App_Code\Converters.cs" />
     <Compile Include="App_Code\DB.cs" />
     <Compile Include="App_Code\Enum.cs" />
+    <Compile Include="App_Code\Flag.cs" />
     <Compile Include="App_Code\Item.cs" />
     <Compile Include="App_Code\Model.Designer.cs">
       <AutoGen>True</AutoGen>

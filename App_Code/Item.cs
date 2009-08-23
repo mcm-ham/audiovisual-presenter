@@ -5,6 +5,8 @@ using System.Text;
 using System.IO;
 using System.ComponentModel;
 using System.Collections;
+using System.Windows.Media;
+using System.Data;
 
 namespace SongPresenter.App_Code
 {
@@ -14,52 +16,6 @@ namespace SongPresenter.App_Code
         public string Name
         {
             get { return Path.GetFileName(Filename); }
-        }
-
-        private HighlightedCollection _highlighted;
-        public HighlightedCollection Highlighted
-        {
-            get
-            {
-                if (_highlighted == null)
-                {
-                    _highlighted = new HighlightedCollection();
-                    if (HighlightedIndexes != null)
-                    {
-                        //highlighted indexes are stored in binary format to save space
-                        //slide index:  5	4	3	2	1
-                        //highlighted:  1   0   0	0	1   = 0x11
-                        BitArray array = new BitArray(HighlightedIndexes);
-                        for (int i = 1; i < array.Length; i++)
-                            if (array[i - 1])
-                                _highlighted.Add(i);
-                    }
-
-                    _highlighted.PropertyChanged += new PropertyChangedEventHandler(_highlighted_PropertyChanged);
-                }
-
-                return _highlighted;
-            }
-        }
-
-        protected void _highlighted_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (Highlighted.Count == 0)
-            {
-                HighlightedIndexes = new byte[0];
-                DB.Instance.SaveChanges();
-                return;
-            }
-
-            BitArray array = new BitArray(Highlighted.Max());
-            for (int i = 1; i <= array.Length; i++)
-                array[i - 1] = Highlighted.Contains(i);
-
-            byte[] bytes = new byte[array.Length];
-            array.CopyTo(bytes, 0);
-            HighlightedIndexes = bytes;
-
-            DB.Instance.SaveChanges();
         }
 
         private bool? _found;
@@ -91,6 +47,18 @@ namespace SongPresenter.App_Code
             }
         }
 
+        //methods
+        public void Save()
+        {
+            if (EntityState == EntityState.Detached)
+            {
+                ID = Guid.NewGuid();
+                DB.Instance.AddToItems(this);
+            }
+
+            DB.Instance.SaveChanges();
+        }
+
         //static methods
         public static ItemUsage[] GetUsageStats(DateTime fromD, DateTime toD, string[] libraries)
         {
@@ -117,34 +85,5 @@ namespace SongPresenter.App_Code
         public int Count { get; set; }
         public string Name { get; set; }
         public DateTime[] Dates { get; set; }
-    }
-
-    public class HighlightedCollection : System.Collections.ObjectModel.Collection<int>, INotifyPropertyChanged
-    {
-        public HighlightedCollection() : base() { }
-        public HighlightedCollection(IList<int> List) : base(List) { }
-
-        protected override void InsertItem(int index, int item)
-        {
-            base.InsertItem(index, item);
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(null));
-        }
-
-        protected override void RemoveItem(int index)
-        {
-            base.RemoveItem(index);
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(null));
-        }
-
-        protected override void ClearItems()
-        {
-            base.ClearItems();
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(null));
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
