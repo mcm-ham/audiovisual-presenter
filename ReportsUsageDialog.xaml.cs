@@ -46,6 +46,7 @@ namespace SongPresenter
             {
                 LinearAxis axis = (mainChart.Series[0] as BarSeries).ActualDependentRangeAxis as LinearAxis;
                 axis.Minimum = 0;
+                axis.Maximum = list.Max(i => (int?)i.Count); //occasionally the default maximum is insanely high
                 axis.Interval = Math.Max(1, Math.Round(axis.Interval ?? 0));
             }
         }
