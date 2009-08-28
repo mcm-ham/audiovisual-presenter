@@ -314,8 +314,9 @@ namespace SongPresenter
 
                     foreach (string file in files)
                     {
-                        SelectedSchedule.AddItem(file);
-                        added++;
+                        int res = SelectedSchedule.AddItem(file);
+                        if (res == 0) //successful
+                            added++;
                     }
                 }
                 else if (parent.Name != "LiveList") //reordering

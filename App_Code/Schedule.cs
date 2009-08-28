@@ -38,16 +38,17 @@ namespace SongPresenter.App_Code
         /// <summary>
         /// Adds an item to schedule and saves back to the database immediately.
         /// </summary>
-        public void AddItem(string filename)
+        /// <returns>Returns 0 if successful or 1 if the file is not supported</returns>
+        public int AddItem(string filename)
         {
-            AddItem(filename, true);
+            return AddItem(filename, true);
         }
 
-        public void AddItem(string filename, bool removeExistingPres)
+        public int AddItem(string filename, bool removeExistingPres)
         {
             string ext = System.IO.Path.GetExtension(filename).TrimStart('.').ToLower();
             if (!Config.SupportedFileTypes.Contains(ext))
-                return;
+                return 1;
 
             Items.Add(new Item() {
                 ID = Guid.NewGuid(),
@@ -55,6 +56,7 @@ namespace SongPresenter.App_Code
                 Ordinal = (short)((Items.Max(i => (short?)i.Ordinal) ?? -1) + 1)
             });
             Save(removeExistingPres);
+            return 0;
         }
 
         /// <summary>
