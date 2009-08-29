@@ -165,7 +165,7 @@
         <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="3" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" />
         
         <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
-            <Image Name="PreviewImage" Margin="0,0,40,0" />
+            <Image Name="PreviewImage" Margin="0,0,20,0" />
             <Image Name="CurrentImage" />
 
             <StackPanel Name="VideoPanel" Visibility="Collapsed">
@@ -190,11 +190,11 @@
                     <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="5" />
 
                     <TextBlock VerticalAlignment="Center" Margin="5" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" />
-                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="120"/>
+                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="60"/>
 
                     <TextBlock Margin="5" VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
                     <TextBox Name="currentTime" Width="40" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" />
-                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="120" />
+                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="100" />
                     <TextBlock Name="totalTime" VerticalAlignment="Center" />
                 </StackPanel>
             </StackPanel>

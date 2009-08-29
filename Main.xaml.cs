@@ -1,21 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using SongPresenter.App_Code;
 using SongPresenter.Resources;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Windows.Documents;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 
 namespace SongPresenter
 {
@@ -177,7 +173,7 @@ namespace SongPresenter
         protected void searchDelay_Tick(object sender, EventArgs e)
         {
             List<string> files = new List<string>();
-            files.AddRange(Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => System.IO.Path.GetFileName(f)));
+            files.AddRange(Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => Path.GetFileName(f)));
 
             if (SearchTerms.Text != "")
             {
@@ -195,7 +191,7 @@ namespace SongPresenter
                 catch (Exception) { } //windows search 4 not installed
             }
 
-            FileList.ItemsSource = files.Where(f => Config.SupportedFileTypes.Contains(System.IO.Path.GetExtension(f).TrimStart('.').ToLower())).Distinct().OrderBy(f => f);
+            FileList.ItemsSource = files.Where(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).TrimStart('.').ToLower())).Distinct().OrderBy(f => f);
 
             if (FileList.Items.Count > 0)
                 FileList.ScrollIntoView(FileList.Items[0]);
@@ -223,6 +219,7 @@ namespace SongPresenter
                 if (SelectedSchedule == null)
                     return;
             }
+
 
             bool running = (Presentation != null && Presentation.IsRunning);
             foreach (string file in FileList.SelectedItems)

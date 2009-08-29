@@ -151,6 +151,15 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This application requires Windows Media Player 10 or higher to play video or audio files..
+        /// </summary>
+        public static string AppRequiresWMP {
+            get {
+                return ResourceManager.GetString("AppRequiresWMP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string BuildProgressCancel {
