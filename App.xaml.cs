@@ -47,6 +47,10 @@ namespace SongPresenter
             if (key == null || Util.Parse<int>(key.GetValue("ServicePackLevel")) < 1)
                 throw new Exception(Labels.AppRequiresSql);
 
+            key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MediaPlayer\PlayerUpgrade", false);
+            if (key == null || Util.Parse<int>((key.GetValue("PlayerVersion") ?? "").ToString().Split(',').FirstOrDefault()) < 10)
+                MessageBox.Show(Labels.AppRequiresWMP, "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
             key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office");
             if (key == null)
                 throw new Exception(Labels.AppRequiresOffice);
