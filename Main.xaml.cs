@@ -23,6 +23,7 @@ namespace SongPresenter
     {
         DispatcherTimer timer = new DispatcherTimer();
         DispatcherTimer selectionDelay = new DispatcherTimer();
+        DispatcherTimer searchDelay = new DispatcherTimer();
 
         public Main()
         {
@@ -34,7 +35,9 @@ namespace SongPresenter
 
             timer.Tick += new EventHandler(timer_Tick);
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
-            selectionDelay.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            selectionDelay.Interval = TimeSpan.FromMilliseconds(100);
+            searchDelay.Tick += new EventHandler(searchDelay_Tick);
+            searchDelay.Interval = TimeSpan.FromMilliseconds(500);
 
             if (Environment.OSVersion.Version.Major < 6)
                 LiveList.ItemContainerStyle.Triggers.Add(GetLiveListStyle());
@@ -157,6 +160,7 @@ namespace SongPresenter
             BindFileList();
         }
 
+        
         protected void BindFileList()
         {
             if (!Directory.Exists(Config.LibraryPath + LocationList.SelectedValue))
@@ -165,26 +169,38 @@ namespace SongPresenter
                 return;
             }
 
-            string[] files;
-            if (ShellSearchFolder.IsPlatformSupported && SearchTerms.Text != "")
-            {
-                SearchCondition cond1 = SearchConditionFactory.CreateLeafCondition(SystemProperties.System.FileName, SearchTerms.Text, SearchConditionOperation.ValueContains);
-                SearchCondition cond2 = SearchConditionFactory.CreateLeafCondition(SystemProperties.System.Search.Contents, SearchTerms.Text, SearchConditionOperation.ValueContains);
-                SearchCondition condition = SearchConditionFactory.CreateAndOrCondition(SearchConditionType.Or, false, cond1, cond2);
+            //use timer to delay searching for files until user has finished typing, makes gui more responsive
+            searchDelay.Stop(); //reset timer
+            searchDelay.Start();
+        }
 
-                files = new ShellSearchFolder(condition, Config.LibraryPath + LocationList.SelectedValue).Select(f => f.Name).OrderBy(n => n).ToArray();
-            }
-            else
+        protected void searchDelay_Tick(object sender, EventArgs e)
+        {
+            List<string> files = new List<string>();
+            files.AddRange(Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => System.IO.Path.GetFileName(f)));
+
+            if (SearchTerms.Text != "")
             {
-                files = Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*");
+                try
+                {
+                    using (var connection = new System.Data.OleDb.OleDbConnection("Provider=Search.CollatorDSO;Extended Properties=\"Application=Windows\""))
+                    {
+                        connection.Open();
+                        var command = new System.Data.OleDb.OleDbCommand("SELECT System.FileName FROM SystemIndex WHERE contains(System.Search.Contents, '\"" + SearchTerms.Text.Replace("\"", "*") + "*\"') AND SCOPE='file:" + Config.LibraryPath + LocationList.SelectedValue + "'", connection);
+                        var reader = command.ExecuteReader();
+                        while (reader.Read())
+                            files.Add(reader.GetString(0));
+                    }
+                }
+                catch (Exception) { } //windows search 4 not installed
             }
 
-            FileList.ItemsSource = from file in files
-                                   where Config.SupportedFileTypes.Contains(System.IO.Path.GetExtension(file).TrimStart('.').ToLower())
-                                   select file.Substring(file.LastIndexOf('\\') + 1);
+            FileList.ItemsSource = files.Where(f => Config.SupportedFileTypes.Contains(System.IO.Path.GetExtension(f).TrimStart('.').ToLower())).Distinct().OrderBy(f => f);
 
             if (FileList.Items.Count > 0)
                 FileList.ScrollIntoView(FileList.Items[0]);
+
+            searchDelay.Stop();
         }
 
         protected void SearchTerms_TextChanged(object sender, TextChangedEventArgs e)
