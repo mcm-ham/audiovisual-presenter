@@ -65,7 +65,7 @@ namespace SongPresenter.App_Code
                         SlideAdded(this, new SlideAddedEventArgs(null, 0));
 
                     running = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
-                    AddSlide("", "Blank", running.Slides._Index(1), 0, new Item(), 1);
+                    AddSlide("", "Blank", running.Slides[1], 0, new Item(), 1);
 
                     foreach (Item item in items)
                         AddSlides(item);
@@ -372,7 +372,7 @@ namespace SongPresenter.App_Code
 
                 //place this code after assigning master slide because if mouse happens to be hovering over the
                 //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
-                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides._Index(dest.Slides.Count), (dest.Slides.Count - start) * step + progress, scheduleItem, dest.Slides.Count - start);
+                AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides[dest.Slides.Count], (dest.Slides.Count - start) * step + progress, scheduleItem, dest.Slides.Count - start);
 
                 //fix bugs
                 for (int i = 1; i <= range.Shapes.Count; i++)

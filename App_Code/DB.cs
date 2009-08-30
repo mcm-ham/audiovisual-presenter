@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.EntityClient;
+using System.Data.Metadata.Edm;
+using System.Reflection;
+using System.Data.SqlServerCe;
+using System.Configuration;
 
 namespace SongPresenter.App_Code
 {
@@ -13,7 +18,19 @@ namespace SongPresenter.App_Code
             get
             {
                 if (_data == null)
-                    _data = new DatabaseEntities();
+                {
+                    //<add name="DatabaseEntities" connectionString="metadata=res://*/App_Code.Model.csdl|res://*/App_Code.Model.ssdl|res://*/App_Code.Model.msl;provider=System.Data.SqlServerCe.3.5;provider connection string=&quot;Data Source=|DataDirectory|\Database.sdf&quot;" providerName="System.Data.EntityClient" />
+
+                    EntityConnection connection = new EntityConnection(
+                        new MetadataWorkspace(
+                            new string[] { "res://*/App_Code.Model.csdl", "res://*/App_Code.Model.ssdl", "res://*/App_Code.Model.msl" },
+                            new Assembly[] { Assembly.GetExecutingAssembly() }
+                        ),
+                        new SqlCeConnection(ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ConnectionString)
+                    );
+                    
+                    _data = new DatabaseEntities(connection);
+                }
                 return _data;
             }
         }
