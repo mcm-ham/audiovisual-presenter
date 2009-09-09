@@ -25,8 +25,8 @@ namespace SongPresenter.App_Code
             {
                 if (_found.HasValue)
                     return _found.Value;
-                
-                if (File.Exists(Filename))
+
+                if (File.Exists(Filename) || IsTemplateNone)
                 {
                     _found = true;
                     return true;
@@ -45,6 +45,11 @@ namespace SongPresenter.App_Code
                 _found = false;
                 return false;
             }
+        }
+
+        public bool IsTemplateNone
+        {
+            get { return Path.GetFileName(Filename).ToLower() == "none.pot"; }
         }
 
         //methods
@@ -70,7 +75,7 @@ namespace SongPresenter.App_Code
             }
 
             return (from i in DB.Instance.Items.Select(i => new { i.Filename, i.Schedule.Date }).Where(i => i.Date >= fromD && i.Date <= toD).ToArray()
-                    where libraries.Any(l => i.Filename.ToLower().Contains("\\" + l + "\\")) == include
+                    where libraries.Any(l => i.Filename.ToLower().Contains("\\" + l + "\\")) == include && !i.Filename.EndsWith("None.pot")
                     group i by System.IO.Path.GetFileNameWithoutExtension(i.Filename) into g
                     select new ItemUsage() {
                         Name = g.Key + "  ", //add whitespace to end to provide gap between label and y-axis
