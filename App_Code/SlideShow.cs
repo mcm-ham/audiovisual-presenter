@@ -62,13 +62,19 @@ namespace SongPresenter.App_Code
                     previousDesigns.Clear();
                     _slides.Clear();
                     if (SlideAdded != null)
-                        SlideAdded(this, new SlideAddedEventArgs(null, 0));
+                        SlideAdded(this, new SlideAddedEventArgs(null, -1));
 
                     running = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, showWindow);
                     AddSlide("", "Blank", running.Slides[1], 0, new Item(), 1);
 
                     foreach (Item item in items)
                         AddSlides(item);
+
+                    if (template != null)
+                    {
+                        template.Close();
+                        template = null;
+                    }
 
                     //ppSaveAsPresentation = 1, ppSaveAsOpenXMLPresentation = 24
                     PP.PpSaveAsFileType filetype = (PP.PpSaveAsFileType)(Util.Parse<double>(app.Version) >= 12 ? 24 : 1);
@@ -227,14 +233,14 @@ namespace SongPresenter.App_Code
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename, progress, scheduleItem, 1);
+                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename, progressEnd, scheduleItem, 1);
             }
             else if (Config.AudioFormats.Contains(filetype))
             {
                 ((PP.Slide)running.Slides._Index(1)).Copy();
                 PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
                 slide.Design = (PP.Design)running.Designs._Index(1);
-                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename, progress, scheduleItem, 1);
+                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename, progressEnd, scheduleItem, 1);
             }
             else if (Config.ImageFormats.Contains(filetype))
             {
@@ -259,29 +265,49 @@ namespace SongPresenter.App_Code
                 slide.Design = (PP.Design)running.Designs._Index(1);
                 slide.FollowMasterBackground = Core.MsoTriState.msoTrue;
                 slide.Comments.Add(0f, 0f, "", "", scheduleItem.Name);
-                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide, progress, scheduleItem, 1);
+                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide, progressEnd, scheduleItem, 1);
+            }
+            else if (Config.PowerPointTemplates.Contains(filetype))
+            {
+                if (template != null)
+                {
+                    template.Close();
+                    template = null;
+                }
+
+                if (!scheduleItem.IsTemplateNone)
+                    template = OpenPresentation(filename);
+
+                if (SlideAdded != null)
+                    SlideAdded(this, new SlideAddedEventArgs(null, progressEnd));
             }
             else if (Config.PowerPointFormats.Contains(filetype))
             {
-                PP.Presentation pres;
-                if (filename.EndsWith(".pptx") && Util.Parse<double>(app.Version) < 12)
-                {
-                    int count = app.Presentations.Count;
-                    System.Diagnostics.Process p = new System.Diagnostics.Process();
-                    p.StartInfo.FileName = filename;
-                    p.Start();
-                    while (count == app.Presentations.Count) { }
-                    pres = (PP.Presentation)app.Presentations._Index(app.Presentations.Count);
-                }
-                else
-                    pres = app.Presentations.Open(filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
-
+                PP.Presentation pres = OpenPresentation(filename);
                 PasteSlidesWithFormatting(running, pres, progress, progressEnd, scheduleItem);
                 pres.Close();
             }
 
             if (IsRunning && !running.FullName.ToLower().EndsWith(".pot"))
                 running.Save();
+        }
+
+        private PP.Presentation OpenPresentation(string filename)
+        {
+            PP.Presentation pres;
+
+            //if 2007 format i.e. pptx and application is Office 2003 or lower need to open via shell to perform conversion to old file format
+            if (filename.EndsWith("x") && Util.Parse<double>(app.Version) < 12)
+            {
+                int count = app.Presentations.Count;
+                System.Diagnostics.Process.Start(filename);
+                while (count == app.Presentations.Count) { }
+                pres = (PP.Presentation)app.Presentations._Index(app.Presentations.Count);
+            }
+            else
+                pres = app.Presentations.Open(filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
+
+            return pres;
         }
 
         public static void RemoveOldPres()
@@ -323,6 +349,7 @@ namespace SongPresenter.App_Code
             return text.Trim();
         }
 
+        PP.Presentation template = null;
         Dictionary<string, int> previousDesigns = new Dictionary<string, int>();
         private void PasteSlidesWithFormatting(PP.Presentation dest, PP.Presentation source, double progress, double progressEnd, Item scheduleItem)
         {
@@ -335,28 +362,29 @@ namespace SongPresenter.App_Code
             {
                 slide.Copy();
                 PP.SlideRange range = dest.Slides.Paste(dest.Slides.Count + 1);
-
+                PP.Design design = (template != null) ? template.Designs[1] : slide.Design;
+                string key = ((template != null) ? template.FullName : source.FullName) + design.Index;
+                
                 //slide master
                 //reuse the same design otherwise, if we copy the design for every slide we end up with a very big file
-                if (!designs.ContainsKey(slide.Design))
+                if (!designs.ContainsKey(design))
                 {
-                    range.Design = slide.Design;
+                    range.Design = design;
 
                     //If presentation is listed twice, the Design is not copied across since it already exists (even though
                     //it doesn't when the same design is used in the same presentation) and therefore we need the index when
                     //it was first added not the current index. Can't persist the designs dictionary between presentations
                     //because even though the Master slide may be the same it's a different instation of the object.
-                    string key = source.FullName + slide.Design.Index;
                     if (!previousDesigns.ContainsKey(key))
                     {
-                        designs.Add(slide.Design, dest.Designs.Count);
+                        designs.Add(design, dest.Designs.Count);
                         previousDesigns.Add(key, dest.Designs.Count);
                     }
                     else
-                        designs.Add(slide.Design, previousDesigns[key]);
+                        designs.Add(design, previousDesigns[key]);
                 }
                 else
-                    range.Design = (PP.Design)dest.Designs._Index(designs[slide.Design]);
+                    range.Design = (PP.Design)dest.Designs._Index(designs[design]);
 
                 //colour scheme
                 if (!schemes.ContainsKey(slide.ColorScheme))
@@ -455,12 +483,11 @@ namespace SongPresenter.App_Code
                 }
             }
 
-            if (Config.InsertBlankSlides)
+            if (Config.InsertBlankSlides && Path.GetFileName(source.FullName).ToLower() != "base.pot")
             {
-                PP.Slide blank = dest.Slides.Add(dest.Slides.Count + 1, PP.PpSlideLayout.ppLayoutBlank);
-                blank.FollowMasterBackground = Core.MsoTriState.msoTrue;
-                blank.Design = (PP.Design)dest.Designs._Index(1);
-                AddSlide("", "Blank", blank, progressEnd, new Item(), 1);
+                PP.Presentation pres = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
+                PasteSlidesWithFormatting(running, pres, progress, progressEnd, scheduleItem);
+                pres.Close();
             }
         }
 
@@ -572,5 +599,6 @@ namespace SongPresenter.App_Code
 
         public Slide NewSlide { get; private set; }
         public double Progress { get; private set; }
+        public bool IsComplete { get; private set; }
     }
 }

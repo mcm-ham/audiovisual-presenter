@@ -174,6 +174,8 @@ namespace SongPresenter
         {
             List<string> files = new List<string>();
             files.AddRange(Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => Path.GetFileName(f)));
+            if (Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*.pot").Any() && "none".Contains(SearchTerms.Text.ToLower()))
+                files.Add("None.pot");
 
             if (SearchTerms.Text != "")
             {
@@ -191,7 +193,7 @@ namespace SongPresenter
                 catch (Exception) { } //windows search 4 not installed
             }
 
-            FileList.ItemsSource = files.Where(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).TrimStart('.').ToLower())).Distinct().OrderBy(f => f);
+            FileList.ItemsSource = files.Where(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).TrimStart('.').ToLower())).Distinct();
 
             if (FileList.Items.Count > 0)
                 FileList.ScrollIntoView(FileList.Items[0]);
@@ -372,6 +374,10 @@ namespace SongPresenter
                 return;
 
             Item item = ScheduleList.SelectedItem as Item;
+
+            if (item.IsTemplateNone)
+                return;
+
             if (!item.IsFound)
             {
                 MessageBox.Show(Labels.MainMessageFileNotFound, "", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -586,13 +592,17 @@ namespace SongPresenter
                         return;
                     }
 
-                    progress.UpdateProgress(e.Progress);
-                    if (e.NewSlide == null)
+                    if (e.Progress < 0)
                     {
                         LiveList.Items.Clear();
                         return;
                     }
+
+                    progress.UpdateProgress(e.Progress);
                 }
+
+                if (e.NewSlide == null)
+                    return;
 
                 int idx = LiveList.Items.Add(e.NewSlide);
 

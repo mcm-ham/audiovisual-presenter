@@ -22,7 +22,7 @@ namespace SongPresenter.App_Code
             get
             {
                 if (_allformats == null)
-                    _allformats = new Collection<string>(PowerPointFormats.Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray());
+                    _allformats = new Collection<string>(PowerPointFormats.Union(PowerPointTemplates).Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray());
                 return _allformats;
             }
         }
@@ -33,8 +33,19 @@ namespace SongPresenter.App_Code
             get
             {
                 if (_powerpoint == null)
-                    _powerpoint = new Collection<string>("ppt,pptx,pps,ppsx".Split(','));
+                    _powerpoint = new Collection<string>("ppt,pps,pptx,ppsx,pptm".Split(','));
                 return _powerpoint;
+            }
+        }
+
+        private static Collection<string> _templates;
+        public static Collection<string> PowerPointTemplates
+        {
+            get
+            {
+                if (_templates == null)
+                    _templates = new Collection<string>("pot,potx,potm".Split(','));
+                return _templates;
             }
         }
 
