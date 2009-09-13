@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Runtime.InteropServices;
 using PP = Microsoft.Office.Interop.PowerPoint;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public class Slide
     {

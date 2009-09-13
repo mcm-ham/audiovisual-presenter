@@ -127,7 +127,7 @@
     <value>Forum:</value>
   </data>
   <data name="AboutHeader" xml:space="preserve">
-    <value>Song Presenter</value>
+    <value>Audiovisual Presenter</value>
   </data>
   <data name="AboutVersionTitle" xml:space="preserve">
     <value>Version</value>
@@ -289,7 +289,7 @@
     <value>Remote control mode can only be enabled once a presentation is started.</value>
   </data>
   <data name="MainWindowTitle" xml:space="preserve">
-    <value>Song Presenter</value>
+    <value>Audiovisual Presenter</value>
   </data>
   <data name="OpenBtnDel" xml:space="preserve">
     <value>Delete</value>

@@ -11,10 +11,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
-using SongPresenter.App_Code;
-using SongPresenter.Resources;
+using Presenter.App_Code;
+using Presenter.Resources;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class ReportsListDialog : Window
     {

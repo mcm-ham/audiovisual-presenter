@@ -11,12 +11,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using SongPresenter.App_Code;
-using SongPresenter.Resources;
+using Presenter.App_Code;
+using Presenter.Resources;
 using System.IO;
 using System.Windows.Controls.DataVisualization.Charting;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class ReportsUsageDialog : Window
     {

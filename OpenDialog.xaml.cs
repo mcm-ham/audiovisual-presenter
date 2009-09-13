@@ -9,10 +9,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using SongPresenter.App_Code;
-using SongPresenter.Resources;
+using Presenter.App_Code;
+using Presenter.Resources;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class OpenDialog : Window
     {

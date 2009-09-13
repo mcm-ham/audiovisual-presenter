@@ -7,11 +7,11 @@ using System.Windows;
 using System.Windows.Threading;
 using System.IO;
 using System.Diagnostics;
-using SongPresenter.App_Code;
+using Presenter.App_Code;
 using System.Windows.Media;
-using SongPresenter.Resources;
+using Presenter.Resources;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class App : Application
     {

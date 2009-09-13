@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SongPresenter.Resources {
+namespace Presenter.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SongPresenter.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SongPresenter.Resources.Labels", typeof(Labels).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Presenter.Resources.Labels", typeof(Labels).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -88,7 +88,7 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Song Presenter.
+        ///   Looks up a localized string similar to Audiovisual Presenter.
         /// </summary>
         public static string AboutHeader {
             get {
@@ -574,7 +574,7 @@ namespace SongPresenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Song Presenter.
+        ///   Looks up a localized string similar to Audiovisual Presenter.
         /// </summary>
         public static string MainWindowTitle {
             get {

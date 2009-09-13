@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Data.SqlServerCe;
 using System.Configuration;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public class DB
     {

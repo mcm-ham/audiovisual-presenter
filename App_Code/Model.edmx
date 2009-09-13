@@ -4,12 +4,12 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="SongPresenter.App_Code.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
-        <EntityContainer Name="SongPresenterApp_CodeStoreContainer">
-          <EntitySet Name="Flags" EntityType="SongPresenter.App_Code.Store.Flags" store:Type="Tables" />
-          <EntitySet Name="Items" EntityType="SongPresenter.App_Code.Store.Items" store:Type="Tables" />
-          <EntitySet Name="Schedules" EntityType="SongPresenter.App_Code.Store.Schedules" store:Type="Tables" />
-          <AssociationSet Name="FK_Schedule_Items" Association="SongPresenter.App_Code.Store.FK_Schedule_Items">
+    <Schema Namespace="Presenter.App_Code.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+        <EntityContainer Name="PresenterApp_CodeStoreContainer">
+          <EntitySet Name="Flags" EntityType="Presenter.App_Code.Store.Flags" store:Type="Tables" />
+          <EntitySet Name="Items" EntityType="Presenter.App_Code.Store.Items" store:Type="Tables" />
+          <EntitySet Name="Schedules" EntityType="Presenter.App_Code.Store.Schedules" store:Type="Tables" />
+          <AssociationSet Name="FK_Schedule_Items" Association="Presenter.App_Code.Store.FK_Schedule_Items">
             <End Role="Schedules" EntitySet="Schedules" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
@@ -41,10 +41,10 @@
           <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="100" />
         </EntityType>
         <Association Name="FK_Schedule_Items">
-          <End Role="Schedules" Type="SongPresenter.App_Code.Store.Schedules" Multiplicity="1">
+          <End Role="Schedules" Type="Presenter.App_Code.Store.Schedules" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Items" Type="SongPresenter.App_Code.Store.Items" Multiplicity="*" />
+          <End Role="Items" Type="Presenter.App_Code.Store.Items" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Schedules">
               <PropertyRef Name="ID" />
@@ -57,16 +57,16 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="SongPresenter.App_Code" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+      <Schema Namespace="Presenter.App_Code" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
         <EntityContainer Name="DatabaseEntities">
-          <EntitySet Name="Items" EntityType="SongPresenter.App_Code.Item" />
-          <EntitySet Name="Schedules" EntityType="SongPresenter.App_Code.Schedule" />
-          <AssociationSet Name="FK_Schedule_Items" Association="SongPresenter.App_Code.FK_Schedule_Items">
+          <EntitySet Name="Items" EntityType="Presenter.App_Code.Item" />
+          <EntitySet Name="Schedules" EntityType="Presenter.App_Code.Schedule" />
+          <AssociationSet Name="FK_Schedule_Items" Association="Presenter.App_Code.FK_Schedule_Items">
             <End Role="Schedules" EntitySet="Schedules" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
-          <EntitySet Name="Flags" EntityType="SongPresenter.App_Code.Flag" />
-          <AssociationSet Name="ItemFlag" Association="SongPresenter.App_Code.ItemFlag">
+          <EntitySet Name="Flags" EntityType="Presenter.App_Code.Flag" />
+          <AssociationSet Name="ItemFlag" Association="Presenter.App_Code.ItemFlag">
             <End Role="Item" EntitySet="Items" />
             <End Role="Flag" EntitySet="Flags" /></AssociationSet></EntityContainer>
         <EntityType Name="Item">
@@ -76,8 +76,8 @@
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="Filename" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
           <Property Name="Ordinal" Type="Int16" Nullable="false" />
-          <NavigationProperty Name="Schedule" Relationship="SongPresenter.App_Code.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
-          <NavigationProperty Name="Flags" Relationship="SongPresenter.App_Code.ItemFlag" FromRole="Item" ToRole="Flag" /></EntityType>
+          <NavigationProperty Name="Schedule" Relationship="Presenter.App_Code.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
+          <NavigationProperty Name="Flags" Relationship="Presenter.App_Code.ItemFlag" FromRole="Item" ToRole="Flag" /></EntityType>
         <EntityType Name="Schedule">
           <Key>
             <PropertyRef Name="ID" />
@@ -85,13 +85,13 @@
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="Date" Type="DateTime" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
-          <NavigationProperty Name="Items" Relationship="SongPresenter.App_Code.FK_Schedule_Items" FromRole="Schedules" ToRole="Items" />
+          <NavigationProperty Name="Items" Relationship="Presenter.App_Code.FK_Schedule_Items" FromRole="Schedules" ToRole="Items" />
         </EntityType>
         <Association Name="FK_Schedule_Items">
-          <End Role="Schedules" Type="SongPresenter.App_Code.Schedule" Multiplicity="1">
+          <End Role="Schedules" Type="Presenter.App_Code.Schedule" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Items" Type="SongPresenter.App_Code.Item" Multiplicity="*" />
+          <End Role="Items" Type="Presenter.App_Code.Item" Multiplicity="*" />
         </Association>
         <EntityType Name="Flag">
           <Key>
@@ -99,11 +99,11 @@
             <PropertyRef Name="ItemID" /></Key>
           <Property Name="Colour" Type="String" Nullable="false" />
           <Property Name="Index" Type="Int16" Nullable="false" />
-          <NavigationProperty Name="Item" Relationship="SongPresenter.App_Code.ItemFlag" FromRole="Flag" ToRole="Item" />
+          <NavigationProperty Name="Item" Relationship="Presenter.App_Code.ItemFlag" FromRole="Flag" ToRole="Item" />
           <Property Name="ItemID" Type="Guid" Nullable="false" /></EntityType>
         <Association Name="ItemFlag">
-          <End Type="SongPresenter.App_Code.Item" Role="Item" Multiplicity="1" />
-          <End Type="SongPresenter.App_Code.Flag" Role="Flag" Multiplicity="*" />
+          <End Type="Presenter.App_Code.Item" Role="Item" Multiplicity="1" />
+          <End Type="Presenter.App_Code.Flag" Role="Flag" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Item">
               <PropertyRef Name="ID" /></Principal>
@@ -113,9 +113,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
-        <EntityContainerMapping StorageEntityContainer="SongPresenterApp_CodeStoreContainer" CdmEntityContainer="DatabaseEntities">
+        <EntityContainerMapping StorageEntityContainer="PresenterApp_CodeStoreContainer" CdmEntityContainer="DatabaseEntities">
           <EntitySetMapping Name="Items">
-            <EntityTypeMapping TypeName="IsTypeOf(SongPresenter.App_Code.Item)">
+            <EntityTypeMapping TypeName="IsTypeOf(Presenter.App_Code.Item)">
               <MappingFragment StoreEntitySet="Items">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Filename" ColumnName="Filename" />
@@ -124,7 +124,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Schedules">
-            <EntityTypeMapping TypeName="IsTypeOf(SongPresenter.App_Code.Schedule)">
+            <EntityTypeMapping TypeName="IsTypeOf(Presenter.App_Code.Schedule)">
               <MappingFragment StoreEntitySet="Schedules">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
@@ -132,7 +132,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="FK_Schedule_Items" TypeName="SongPresenter.App_Code.FK_Schedule_Items" StoreEntitySet="Items">
+          <AssociationSetMapping Name="FK_Schedule_Items" TypeName="Presenter.App_Code.FK_Schedule_Items" StoreEntitySet="Items">
             <EndProperty Name="Schedules">
               <ScalarProperty Name="ID" ColumnName="ScheduleID" />
             </EndProperty>
@@ -141,13 +141,13 @@
             </EndProperty>
           </AssociationSetMapping>
           <EntitySetMapping Name="Flags">
-            <EntityTypeMapping TypeName="IsTypeOf(SongPresenter.App_Code.Flag)">
+            <EntityTypeMapping TypeName="IsTypeOf(Presenter.App_Code.Flag)">
               <MappingFragment StoreEntitySet="Flags">
                 <ScalarProperty Name="ItemID" ColumnName="ItemID" />
                 <ScalarProperty Name="Index" ColumnName="Index" />
                 <ScalarProperty Name="Colour" ColumnName="Colour" />
                 </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <AssociationSetMapping Name="ItemFlag" TypeName="SongPresenter.App_Code.ItemFlag" StoreEntitySet="Flags">
+          <AssociationSetMapping Name="ItemFlag" TypeName="Presenter.App_Code.ItemFlag" StoreEntitySet="Flags">
             <EndProperty Name="Item">
               <ScalarProperty Name="ID" ColumnName="ItemID" /></EndProperty>
             <EndProperty Name="Flag">
@@ -172,13 +172,13 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram Name="Model">
-        <EntityTypeShape EntityType="SongPresenter.App_Code.Item" Width="1.5" PointX="3" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
-        <EntityTypeShape EntityType="SongPresenter.App_Code.Schedule" Width="1.5" PointX="0.75" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
-        <AssociationConnector Association="SongPresenter.App_Code.FK_Schedule_Items" ManuallyRouted="false">
+        <EntityTypeShape EntityType="Presenter.App_Code.Item" Width="1.5" PointX="3" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
+        <EntityTypeShape EntityType="Presenter.App_Code.Schedule" Width="1.5" PointX="0.75" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
+        <AssociationConnector Association="Presenter.App_Code.FK_Schedule_Items" ManuallyRouted="false">
           <ConnectorPoint PointX="2.25" PointY="1.7689925130208335" />
           <ConnectorPoint PointX="3" PointY="1.7689925130208335" /></AssociationConnector>
-        <EntityTypeShape EntityType="SongPresenter.App_Code.Flag" Width="1.5" PointX="0.75" PointY="3.75" Height="1.7879850260416665" />
-        <AssociationConnector Association="SongPresenter.App_Code.ItemFlag">
+        <EntityTypeShape EntityType="Presenter.App_Code.Flag" Width="1.5" PointX="0.75" PointY="3.75" Height="1.7879850260416665" />
+        <AssociationConnector Association="Presenter.App_Code.ItemFlag">
           <ConnectorPoint PointX="3.75" PointY="2.8552864583333331" />
           <ConnectorPoint PointX="3.75" PointY="4.6439925130208337" />
           <ConnectorPoint PointX="2.25" PointY="4.6439925130208337" /></AssociationConnector></Diagram></edmx:Diagrams>

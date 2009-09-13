@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Configuration;
 using System.Windows;
-using SongPresenter.App_Code;
-using SongPresenter.Resources;
+using Presenter.App_Code;
+using Presenter.Resources;
 using Screen = System.Windows.Forms.Screen;
 using System.Collections.Generic;
 using System.Windows.Media;
@@ -11,7 +11,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Shell;
 using System.Linq;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class OptionsDialog : Window
     {

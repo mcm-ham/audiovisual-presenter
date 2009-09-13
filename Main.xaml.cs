@@ -10,10 +10,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using SongPresenter.App_Code;
-using SongPresenter.Resources;
+using Presenter.App_Code;
+using Presenter.Resources;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class Main : Window
     {
