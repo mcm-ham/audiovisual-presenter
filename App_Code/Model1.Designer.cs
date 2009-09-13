@@ -13,7 +13,7 @@
 [assembly: global::System.Data.Objects.DataClasses.EdmRelationshipAttribute("Presenter.App_Code", "ItemFlag", "Item", global::System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(Presenter.App_Code.Item), "Flag", global::System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Presenter.App_Code.Flag))]
 
 // Original file name:
-// Generation date: 13/09/2009 12:37:47 p.m.
+// Generation date: 13/09/2009 2:55:38 p.m.
 namespace Presenter.App_Code
 {
     
@@ -115,12 +115,12 @@ namespace Presenter.App_Code
         }
     }
     /// <summary>
-    /// There are no comments for AudiovisualPresenter.App_Code.Item in the schema.
+    /// There are no comments for Presenter.App_Code.Item in the schema.
     /// </summary>
     /// <KeyProperties>
     /// ID
     /// </KeyProperties>
-    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="AudiovisualPresenter.App_Code", Name="Item")]
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="Presenter.App_Code", Name="Item")]
     [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
     [global::System.Serializable()]
     public partial class Item : global::System.Data.Objects.DataClasses.EntityObject
@@ -211,7 +211,7 @@ namespace Presenter.App_Code
         /// <summary>
         /// There are no comments for Schedule in the schema.
         /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("AudiovisualPresenter.App_Code", "FK_Schedule_Items", "Schedules")]
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("Presenter.App_Code", "FK_Schedule_Items", "Schedules")]
         [global::System.Xml.Serialization.XmlIgnoreAttribute()]
         [global::System.Xml.Serialization.SoapIgnoreAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
@@ -219,11 +219,11 @@ namespace Presenter.App_Code
         {
             get
             {
-                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Schedule>("AudiovisualPresenter.App_Code.FK_Schedule_Items", "Schedules").Value;
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Schedule>("Presenter.App_Code.FK_Schedule_Items", "Schedules").Value;
             }
             set
             {
-                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Schedule>("AudiovisualPresenter.App_Code.FK_Schedule_Items", "Schedules").Value = value;
+                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Schedule>("Presenter.App_Code.FK_Schedule_Items", "Schedules").Value = value;
             }
         }
         /// <summary>
@@ -235,20 +235,20 @@ namespace Presenter.App_Code
         {
             get
             {
-                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Schedule>("AudiovisualPresenter.App_Code.FK_Schedule_Items", "Schedules");
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Schedule>("Presenter.App_Code.FK_Schedule_Items", "Schedules");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Schedule>("AudiovisualPresenter.App_Code.FK_Schedule_Items", "Schedules", value);
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Schedule>("Presenter.App_Code.FK_Schedule_Items", "Schedules", value);
                 }
             }
         }
         /// <summary>
         /// There are no comments for Flags in the schema.
         /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("AudiovisualPresenter.App_Code", "ItemFlag", "Flag")]
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("Presenter.App_Code", "ItemFlag", "Flag")]
         [global::System.Xml.Serialization.XmlIgnoreAttribute()]
         [global::System.Xml.Serialization.SoapIgnoreAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
@@ -256,24 +256,24 @@ namespace Presenter.App_Code
         {
             get
             {
-                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<Flag>("AudiovisualPresenter.App_Code.ItemFlag", "Flag");
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<Flag>("Presenter.App_Code.ItemFlag", "Flag");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<Flag>("AudiovisualPresenter.App_Code.ItemFlag", "Flag", value);
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<Flag>("Presenter.App_Code.ItemFlag", "Flag", value);
                 }
             }
         }
     }
     /// <summary>
-    /// There are no comments for AudiovisualPresenter.App_Code.Schedule in the schema.
+    /// There are no comments for Presenter.App_Code.Schedule in the schema.
     /// </summary>
     /// <KeyProperties>
     /// ID
     /// </KeyProperties>
-    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="AudiovisualPresenter.App_Code", Name="Schedule")]
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="Presenter.App_Code", Name="Schedule")]
     [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
     [global::System.Serializable()]
     public partial class Schedule : global::System.Data.Objects.DataClasses.EntityObject
@@ -364,7 +364,7 @@ namespace Presenter.App_Code
         /// <summary>
         /// There are no comments for Items in the schema.
         /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("AudiovisualPresenter.App_Code", "FK_Schedule_Items", "Items")]
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("Presenter.App_Code", "FK_Schedule_Items", "Items")]
         [global::System.Xml.Serialization.XmlIgnoreAttribute()]
         [global::System.Xml.Serialization.SoapIgnoreAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
@@ -372,25 +372,25 @@ namespace Presenter.App_Code
         {
             get
             {
-                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<Item>("AudiovisualPresenter.App_Code.FK_Schedule_Items", "Items");
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedCollection<Item>("Presenter.App_Code.FK_Schedule_Items", "Items");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<Item>("AudiovisualPresenter.App_Code.FK_Schedule_Items", "Items", value);
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedCollection<Item>("Presenter.App_Code.FK_Schedule_Items", "Items", value);
                 }
             }
         }
     }
     /// <summary>
-    /// There are no comments for AudiovisualPresenter.App_Code.Flag in the schema.
+    /// There are no comments for Presenter.App_Code.Flag in the schema.
     /// </summary>
     /// <KeyProperties>
     /// Index
     /// ItemID
     /// </KeyProperties>
-    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="AudiovisualPresenter.App_Code", Name="Flag")]
+    [global::System.Data.Objects.DataClasses.EdmEntityTypeAttribute(NamespaceName="Presenter.App_Code", Name="Flag")]
     [global::System.Runtime.Serialization.DataContractAttribute(IsReference=true)]
     [global::System.Serializable()]
     public partial class Flag : global::System.Data.Objects.DataClasses.EntityObject
@@ -481,7 +481,7 @@ namespace Presenter.App_Code
         /// <summary>
         /// There are no comments for Item in the schema.
         /// </summary>
-        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("AudiovisualPresenter.App_Code", "ItemFlag", "Item")]
+        [global::System.Data.Objects.DataClasses.EdmRelationshipNavigationPropertyAttribute("Presenter.App_Code", "ItemFlag", "Item")]
         [global::System.Xml.Serialization.XmlIgnoreAttribute()]
         [global::System.Xml.Serialization.SoapIgnoreAttribute()]
         [global::System.Runtime.Serialization.DataMemberAttribute()]
@@ -489,11 +489,11 @@ namespace Presenter.App_Code
         {
             get
             {
-                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("AudiovisualPresenter.App_Code.ItemFlag", "Item").Value;
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("Presenter.App_Code.ItemFlag", "Item").Value;
             }
             set
             {
-                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("AudiovisualPresenter.App_Code.ItemFlag", "Item").Value = value;
+                ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("Presenter.App_Code.ItemFlag", "Item").Value = value;
             }
         }
         /// <summary>
@@ -505,13 +505,13 @@ namespace Presenter.App_Code
         {
             get
             {
-                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("AudiovisualPresenter.App_Code.ItemFlag", "Item");
+                return ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.GetRelatedReference<Item>("Presenter.App_Code.ItemFlag", "Item");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Item>("AudiovisualPresenter.App_Code.ItemFlag", "Item", value);
+                    ((global::System.Data.Objects.DataClasses.IEntityWithRelationships)(this)).RelationshipManager.InitializeRelatedReference<Item>("Presenter.App_Code.ItemFlag", "Item", value);
                 }
             }
         }
