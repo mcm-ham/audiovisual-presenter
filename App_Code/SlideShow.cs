@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Core = Microsoft.Office.Core;
 using PP = Microsoft.Office.Interop.PowerPoint;
-using SongPresenter.Resources;
+using Presenter.Resources;
 using System.Windows;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public class SlideShow
     {

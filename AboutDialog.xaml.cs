@@ -10,10 +10,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using SongPresenter.App_Code;
+using Presenter.App_Code;
 using System.Windows.Navigation;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class AboutDialog : Window
     {

@@ -5,9 +5,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using SongPresenter.App_Code;
+using Presenter.App_Code;
 
-namespace SongPresenter
+namespace Presenter
 {
     public partial class BuildProgress : Window
     {

@@ -10,7 +10,7 @@ using System.Drawing.Imaging;
 using System.Windows;
 using Point = System.Windows.Point;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public static class Util
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public enum SlideType
     {

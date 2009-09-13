@@ -8,7 +8,7 @@ using System.Collections;
 using System.Windows.Media;
 using System.Data;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public partial class Item
     {

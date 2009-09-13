@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public class ScaleValueConverter : IValueConverter
     {

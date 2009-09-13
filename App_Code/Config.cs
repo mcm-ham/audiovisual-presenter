@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Collections;
 using System.Collections.ObjectModel;
 
-namespace SongPresenter.App_Code
+namespace Presenter.App_Code
 {
     public class Config : DependencyObject
     {

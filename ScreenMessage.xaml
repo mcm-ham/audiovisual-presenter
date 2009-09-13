@@ -1,9 +1,9 @@
-﻿<Window x:Class="SongPresenter.ScreenMessage"
+﻿<Window x:Class="Presenter.ScreenMessage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Presenter="clr-namespace:SongPresenter"
-    xmlns:Code="clr-namespace:SongPresenter.App_Code"
-    xmlns:Loc="clr-namespace:SongPresenter.Resources"
+    xmlns:Presenter="clr-namespace:Presenter"
+    xmlns:Code="clr-namespace:Presenter.App_Code"
+    xmlns:Loc="clr-namespace:Presenter.Resources"
     xml:lang="en-US"
     Title="{x:Static Loc:Labels.ShowMessageWindowTitle}" Width="650" SizeToContent="Height" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" KeyDown="Window_KeyDown" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
