@@ -146,7 +146,10 @@ namespace Presenter
 
             if (Directory.Exists(Config.LibraryPath))
             {
-                foreach (var path in Directory.GetDirectories(Config.LibraryPath).Select(p => p.Substring(p.LastIndexOf('\\') + 1)))
+                IEnumerable<string> paths = Directory.GetDirectories(Config.LibraryPath).Select(p => p.Substring(p.LastIndexOf('\\') + 1));
+                if (Directory.GetFiles(Config.LibraryPath).Any(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).ToLower().TrimStart('.'))))
+                    paths = new[] { Labels.MainRootDirName }.Union(paths);
+                foreach (string path in paths)
                     LocationList.Items.Add(path);
                 LocationList.SelectedValue = Config.SelectedLibrary;
                 if (LocationList.SelectedIndex == -1)
@@ -156,10 +159,16 @@ namespace Presenter
             BindFileList();
         }
 
+        protected string GetSelectedPath()
+        {
+            if (LocationList.SelectedValue as string == Labels.MainRootDirName)
+                return Config.LibraryPath.TrimEnd('\\');
+            return Config.LibraryPath + LocationList.SelectedValue;
+        }
         
         protected void BindFileList()
         {
-            if (!Directory.Exists(Config.LibraryPath + LocationList.SelectedValue))
+            if (!Directory.Exists(GetSelectedPath()))
             {
                 FileList.ItemsSource = new string[] { };
                 return;
@@ -173,8 +182,8 @@ namespace Presenter
         protected void searchDelay_Tick(object sender, EventArgs e)
         {
             List<string> files = new List<string>();
-            files.AddRange(Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => Path.GetFileName(f)));
-            if (Directory.GetFiles(Config.LibraryPath + LocationList.SelectedValue, "*.pot").Any() && "none".Contains(SearchTerms.Text.ToLower()))
+            files.AddRange(Directory.GetFiles(GetSelectedPath(), "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => Path.GetFileName(f)));
+            if (Directory.GetFiles(GetSelectedPath(), "*.pot").Any() && "none".Contains(SearchTerms.Text.ToLower()))
                 files.Add("None.pot");
 
             if (SearchTerms.Text != "")
@@ -184,7 +193,7 @@ namespace Presenter
                     using (var connection = new System.Data.OleDb.OleDbConnection("Provider=Search.CollatorDSO;Extended Properties=\"Application=Windows\""))
                     {
                         connection.Open();
-                        var command = new System.Data.OleDb.OleDbCommand("SELECT System.FileName FROM SystemIndex WHERE contains(System.Search.Contents, '\"" + SearchTerms.Text.Replace("\"", "*") + "*\"') AND SCOPE='file:" + Config.LibraryPath + LocationList.SelectedValue + "'", connection);
+                        var command = new System.Data.OleDb.OleDbCommand("SELECT System.FileName FROM SystemIndex WHERE contains(System.Search.Contents, '\"" + SearchTerms.Text.Replace("\"", "*") + "*\"') AND SCOPE='file:" + GetSelectedPath() + "'", connection);
                         var reader = command.ExecuteReader();
                         while (reader.Read())
                             files.Add(reader.GetString(0));
@@ -225,7 +234,7 @@ namespace Presenter
 
             bool running = (Presentation != null && Presentation.IsRunning);
             foreach (string file in FileList.SelectedItems)
-                SelectedSchedule.AddItem(Config.LibraryPath + LocationList.SelectedValue + "\\" + file, !running);
+                SelectedSchedule.AddItem(GetSelectedPath() + "\\" + file, !running);
             BindScheduleList();
 
             if (running)
@@ -240,7 +249,7 @@ namespace Presenter
             if (LocationList.SelectedIndex == -1)
                 return;
 
-            string filename = Config.LibraryPath + LocationList.SelectedValue + "\\" + FileList.SelectedValue;
+            string filename = GetSelectedPath() + "\\" + FileList.SelectedValue;
             if (File.Exists(filename))
                 System.Diagnostics.Process.Start(filename);
         }
@@ -251,7 +260,7 @@ namespace Presenter
                 return;
 
             var proc = new System.Diagnostics.Process();
-            proc.StartInfo.FileName = Config.LibraryPath + LocationList.SelectedValue;
+            proc.StartInfo.FileName = GetSelectedPath();
             proc.StartInfo.UseShellExecute = true;
             proc.Start();
         }
@@ -260,6 +269,8 @@ namespace Presenter
         {
             if (e.Key == Key.Enter)
                 FileSelected();
+            else if (e.Key == Key.Delete)
+                DeleteFile(null, null);
         }
 
         protected void FileList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -289,6 +300,18 @@ namespace Presenter
             catch (Exception) { }
             BindFileList();
         }
+
+        protected void DeleteFile(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(Labels.MainContextDeleteConfirm, "", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                foreach (string file in FileList.SelectedItems.Cast<string>())
+                    File.Delete(GetSelectedPath() + "\\" + file);
+                
+                BindFileList();
+            }
+        }
         #endregion
 
         #region dragdrop
@@ -315,17 +338,20 @@ namespace Presenter
             if (parent.Name == "ScheduleList" || parent.Name == "LiveList")
             {
                 string data = (string)e.Data.GetData(typeof(string));
-                if (!String.IsNullOrEmpty(data)) //adding new
+                if (!String.IsNullOrEmpty(data)) //adding new from filelist
                 {
-                    SelectedSchedule.AddItem(Config.LibraryPath + LocationList.SelectedValue + "\\" + data);
+                    SelectedSchedule.AddItem(GetSelectedPath() + "\\" + data);
                     added++;
                 }
                 else if (e.Data.GetFormats().Contains("FileDrop")) //add new from explorer
                 {
                     string[] files = (string[])e.Data.GetData("FileDrop");
 
-                    if (files.Length == 1 && Directory.Exists(files[0]))
-                        files = Directory.GetFiles(files[0]);
+                    //exapnd directories to include all files within
+                    files = files.Union(files.Where(f => Directory.Exists(f)).SelectMany(d => Directory.GetFiles(d))).ToArray();
+
+                    //filter out invalid files
+                    files = files.Where(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).ToLower().TrimStart('.'))).ToArray();
 
                     foreach (string file in files)
                     {
@@ -344,14 +370,33 @@ namespace Presenter
 
                 if (parent.Name == "LiveList")
                     SelectedSchedule.Items.OrderBy(i => i.Ordinal).Skip(SelectedSchedule.Items.Count - added).ForEach(i => Presentation.AddSlides(i));
+
+                BindScheduleList();
             }
-            else //removing
+            else //if (parent.Name == "FileList")
             {
                 Item data = (Item)e.Data.GetData(typeof(Item));
-                if (data != null)
+                if (data != null) //removing item from schedule
+                {
                     SelectedSchedule.RemoveItem(data);
+                    BindScheduleList();
+                }
+                else  if (e.Data.GetFormats().Contains("FileDrop")) //add files from explorer to library
+                {
+                    string[] files = (string[])e.Data.GetData("FileDrop");
+                    
+                    //exapnd directories to include all files within
+                    files = files.Union(files.Where(f => Directory.Exists(f)).SelectMany(d => Directory.GetFiles(d))).ToArray();
+
+                    //filter out invalid files
+                    files = files.Where(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).ToLower().TrimStart('.'))).ToArray();
+
+                    foreach (string file in files)
+                        File.Copy(file, GetSelectedPath() + "\\" + Path.GetFileName(file));
+
+                    BindFileList();
+                }
             }
-            BindScheduleList();
         }
 
         //gets the object for the element selected (from the point) in the listbox (source)

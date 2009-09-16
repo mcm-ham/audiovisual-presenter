@@ -94,6 +94,7 @@
                                     <MenuItem Header="{x:Static Loc:Labels.MainContextAdd}" Click="AddSelected"/>
                                     <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile2"/>
                                     <MenuItem Header="{x:Static Loc:Labels.MainContextOpenLocation}" Click="OpenLocation2"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextDeleteFile}" Click="DeleteFile"/>
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                         </StackPanel>

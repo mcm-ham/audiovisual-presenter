@@ -367,6 +367,24 @@ namespace Presenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete selected files?.
+        /// </summary>
+        public static string MainContextDeleteConfirm {
+            get {
+                return ResourceManager.GetString("MainContextDeleteConfirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete File.
+        /// </summary>
+        public static string MainContextDeleteFile {
+            get {
+                return ResourceManager.GetString("MainContextDeleteFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open File.
         /// </summary>
         public static string MainContextOpenFile {
@@ -570,6 +588,15 @@ namespace Presenter.Resources {
         public static string MainRemoteNotStart {
             get {
                 return ResourceManager.GetString("MainRemoteNotStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Root.
+        /// </summary>
+        public static string MainRootDirName {
+            get {
+                return ResourceManager.GetString("MainRootDirName", resourceCulture);
             }
         }
         

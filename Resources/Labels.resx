@@ -219,6 +219,12 @@
   <data name="MainContextAdd" xml:space="preserve">
     <value>Add</value>
   </data>
+  <data name="MainContextDeleteConfirm" xml:space="preserve">
+    <value>Are you sure you want to delete selected files?</value>
+  </data>
+  <data name="MainContextDeleteFile" xml:space="preserve">
+    <value>Delete File</value>
+  </data>
   <data name="MainContextOpenFile" xml:space="preserve">
     <value>Open File</value>
   </data>
@@ -287,6 +293,10 @@
   </data>
   <data name="MainRemoteNotStart" xml:space="preserve">
     <value>Remote control mode can only be enabled once a presentation is started.</value>
+  </data>
+  <data name="MainRootDirName" xml:space="preserve">
+    <value>Root</value>
+    <comment>e list of locations to view the files.</comment>
   </data>
   <data name="MainWindowTitle" xml:space="preserve">
     <value>Audiovisual Presenter</value>
