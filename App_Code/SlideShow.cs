@@ -374,7 +374,7 @@ namespace Presenter.App_Code
                     //If presentation is listed twice, the Design is not copied across since it already exists (even though
                     //it doesn't when the same design is used in the same presentation) and therefore we need the index when
                     //it was first added not the current index. Can't persist the designs dictionary between presentations
-                    //because even though the Master slide may be the same it's a different instation of the object.
+                    //because even though the Master slide may be the same it's a different instantiation of the object.
                     if (!previousDesigns.ContainsKey(key))
                     {
                         designs.Add(design, dest.Designs.Count);
@@ -385,6 +385,7 @@ namespace Presenter.App_Code
                 }
                 else
                     range.Design = (PP.Design)dest.Designs._Index(designs[design]);
+
 
                 //colour scheme
                 if (!schemes.ContainsKey(slide.ColorScheme))
@@ -401,9 +402,9 @@ namespace Presenter.App_Code
                 //place this code after assigning master slide because if mouse happens to be hovering over the
                 //spot where this slide will appear a thumbnail image will be immediately generated and will look wrong
                 AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides[dest.Slides.Count], (dest.Slides.Count - start) * step + progress, scheduleItem, dest.Slides.Count - start);
-
+                
                 //fix bugs
-                for (int i = 1; i <= range.Shapes.Count; i++)
+                /*for (int i = 1; i <= range.Shapes.Count; i++)
                 {
                     //fix picture size issue like "How Great Thou Art (A)" on Office 2007 caused after applying Master slide
                     if (slide.Shapes[i].Name.StartsWith("Picture"))
@@ -427,7 +428,11 @@ namespace Presenter.App_Code
                     var align = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
                     if (align == PP.PpParagraphAlignment.ppAlignCenter || align == PP.PpParagraphAlignment.ppAlignLeft || align == PP.PpParagraphAlignment.ppAlignRight || align == PP.PpParagraphAlignment.ppAlignJustify)
                         range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
-                }
+
+                    //fix color not being kept i.e. welcome to work of AMB 
+                    if (slide.Shapes[i].TextFrame.TextRange.Font.Color.RGB != range.Shapes[i].TextFrame.TextRange.Font.Color.RGB)
+                        range.Shapes[i].TextFrame.TextRange.Font.Color.RGB = slide.Shapes[i].TextFrame.TextRange.Font.Color.RGB;
+                }*/
                 
                 if (slide.FollowMasterBackground == Core.MsoTriState.msoTrue)
                     continue;
