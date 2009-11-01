@@ -33,7 +33,7 @@ namespace Presenter
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
             selectionDelay.Interval = TimeSpan.FromMilliseconds(100);
             searchDelay.Tick += new EventHandler(searchDelay_Tick);
-            searchDelay.Interval = TimeSpan.FromMilliseconds(500);
+            searchDelay.Interval = TimeSpan.FromMilliseconds(300);
 
             if (Environment.OSVersion.Version.Major < 6)
                 LiveList.ItemContainerStyle.Triggers.Add(GetLiveListStyle());
@@ -963,6 +963,7 @@ namespace Presenter
 
         protected void PlayMedia(object sender, EventArgs args)
         {
+            
             VideoPlayer.Play();
             VideoPlayer.Volume = (double)volumeSlider.Value;
             PlayPauseBtn.Content = "Pause";

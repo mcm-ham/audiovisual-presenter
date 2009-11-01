@@ -33,7 +33,7 @@ namespace Presenter.App_Code
             get
             {
                 if (_powerpoint == null)
-                    _powerpoint = new Collection<string>("ppt,pps,pptx,ppsx,pptm".Split(','));
+                    _powerpoint = new Collection<string>(ConfigurationManager.AppSettings["PowerPointFormats"].Split(','));
                 return _powerpoint;
             }
         }
@@ -44,7 +44,7 @@ namespace Presenter.App_Code
             get
             {
                 if (_templates == null)
-                    _templates = new Collection<string>("pot,potx,potm".Split(','));
+                    _templates = new Collection<string>(ConfigurationManager.AppSettings["PowerPointTemplates"].Split(','));
                 return _templates;
             }
         }
@@ -55,7 +55,7 @@ namespace Presenter.App_Code
             get
             {
                 if (_image == null)
-                    _image = new Collection<string>("jpg,wmp".Split(','));
+                    _image = new Collection<string>(ConfigurationManager.AppSettings["ImageFormats"].Split(','));
                 return _image;
             }
         }
@@ -67,7 +67,7 @@ namespace Presenter.App_Code
             get
             {
                 if (_video == null)
-                    _video = new Collection<string>("ivf,asf,asx,wm,wmd,wmv,wvx,wmx,wpl,dvr-ms,avi,mov,qt,mpeg,mpg,m1v,mp2,mpa,mpe,mp2v,mp2,vob".Split(','));
+                    _video = new Collection<string>(ConfigurationManager.AppSettings["VideoFormats"].Split(','));
                 return _video;
             }
         }
@@ -78,7 +78,7 @@ namespace Presenter.App_Code
             get
             {
                 if (_audio == null)
-                    _audio = new Collection<string>("cda,aif,aifc,aiff,wax,wma,wav,au,snd,mp3,m3u,mid,midi,rmi".Split(','));
+                    _audio = new Collection<string>(ConfigurationManager.AppSettings["AudioFormats"].Split(','));
                 return _audio;
             }
         }
