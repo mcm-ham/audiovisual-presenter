@@ -702,15 +702,35 @@ namespace Presenter
 
         protected void LiveList_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Down || e.Key == Key.Right)
+            //map all PowerPoint SlideShow shortcut keys
+
+            if (e.Key == Key.Down || e.Key == Key.Right || e.Key == Key.PageDown || e.Key == Key.N || e.Key == Key.Space)
             {
                 Presentation.Next();
                 e.Handled = true;
             }
 
-            if (e.Key == Key.Up || e.Key == Key.Left)
+            if (e.Key == Key.Up || e.Key == Key.Left || e.Key == Key.PageUp || e.Key == Key.P || e.Key == Key.Back)
             {
                 Presentation.Previous();
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.B || e.Key == Key.OemPeriod)
+            {
+                Presentation.ToggleBlank();
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.W || e.Key == Key.OemComma)
+            {
+                Presentation.ToggleWhite();
+                e.Handled = true;
+            }
+
+            if (e.Key == Key.End || e.Key == Key.Escape || e.Key == Key.Subtract || e.Key == Key.Cancel)
+            {
+                Stop_Click(null, null);
                 e.Handled = true;
             }
         }
@@ -895,32 +915,19 @@ namespace Presenter
             CaptureCursor((int)abs.X + 1, (int)abs.Y + 1, (int)(RemotePanel.ActualWidth * dpi.X / 96) - 2, (int)(RemotePanel.ActualHeight * dpi.Y / 96) - 2);
         }
 
-        Rect BoundRect;
-        Rect OldRect;
-
-        public struct Rect
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }
-
-        [DllImport("user32.dll")]
-        static extern bool ClipCursor(ref Rect lpRect);
-        [DllImport("user32.dll")]
-        static extern bool GetClipCursor(ref Rect lpRect);
+        User32.Rect BoundRect;
+        User32.Rect OldRect;
 
         private void ReleaseCursor()
         {
-            ClipCursor(ref OldRect);
+            User32.ClipCursor(ref OldRect);
         }
 
         private void CaptureCursor(int x, int y, int w, int h)
         {
-            GetClipCursor(ref OldRect);
-            BoundRect = new Rect() { Left = x, Top = y, Right = x + w, Bottom = y + h };
-            ClipCursor(ref BoundRect);
+            User32.GetClipCursor(ref OldRect);
+            BoundRect = new User32.Rect() { Left = x, Top = y, Right = x + w, Bottom = y + h };
+            User32.ClipCursor(ref BoundRect);
         }
         #endregion
 

@@ -9,6 +9,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows;
 using Point = System.Windows.Point;
+using System.Runtime.InteropServices;
 
 namespace Presenter.App_Code
 {

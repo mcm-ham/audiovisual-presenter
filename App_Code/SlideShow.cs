@@ -8,6 +8,7 @@ using Core = Microsoft.Office.Core;
 using PP = Microsoft.Office.Interop.PowerPoint;
 using Presenter.Resources;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Presenter.App_Code
 {
@@ -216,6 +217,20 @@ namespace Presenter.App_Code
 
             if (SlideIndexChanged != null)
                 SlideIndexChanged(this, new SlideShowEventArgs(curpos, newpos));
+        }
+
+        public void ToggleBlank()
+        {
+            running.SlideShowWindow.Activate();
+            System.Windows.Forms.SendKeys.SendWait("b");
+            User32.SetForegroundWindow(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
+        }
+
+        public void ToggleWhite()
+        {
+            running.SlideShowWindow.Activate();
+            System.Windows.Forms.SendKeys.SendWait("w");
+            User32.SetForegroundWindow(System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle);
         }
 
         public void AddSlides(Item scheduleItem)
