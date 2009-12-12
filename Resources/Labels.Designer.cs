@@ -720,9 +720,18 @@ namespace Presenter.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Insert blank slide after PowerPoint files.
         /// </summary>
-        public static string OptionsInsertBlanks {
+        public static string OptionsInsertBlankAfterPres {
             get {
-                return ResourceManager.GetString("OptionsInsertBlanks", resourceCulture);
+                return ResourceManager.GetString("OptionsInsertBlankAfterPres", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insert blank slide after Video &amp; Sound files.
+        /// </summary>
+        public static string OptionsInsertBlankAfterVideo {
+            get {
+                return ResourceManager.GetString("OptionsInsertBlankAfterVideo", resourceCulture);
             }
         }
         

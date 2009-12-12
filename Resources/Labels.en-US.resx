@@ -338,8 +338,11 @@
   <data name="OptionsBtnBrowse" xml:space="preserve">
     <value>Browse</value>
   </data>
-  <data name="OptionsInsertBlanks" xml:space="preserve">
+  <data name="OptionsInsertBlankAfterPres" xml:space="preserve">
     <value>Insert blank slide after PowerPoint files</value>
+  </data>
+  <data name="OptionsInsertBlankAfterVideo" xml:space="preserve">
+    <value>Insert blank slide after Video &amp; Sound files</value>
   </data>
   <data name="OptionsLibraryBrowseDesc" xml:space="preserve">
     <value>Please select the root folder containing presentation files located in sub-folders.</value>
