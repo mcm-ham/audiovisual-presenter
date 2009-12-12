@@ -289,10 +289,16 @@ namespace Presenter.App_Code
             set { SaveSetting("SelectedLibrary", value); }
         }
 
-        public static bool InsertBlankSlides
+        public static bool InsertBlankAfterPres
         {
-            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["InsertBlankSlides"]) ?? true; }
-            set { SaveSetting("InsertBlankSlides", value.ToString()); }
+            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["InsertBlankAfterPres"]) ?? true; }
+            set { SaveSetting("InsertBlankAfterPres", value.ToString()); }
+        }
+
+        public static bool InsertBlankAfterVideo
+        {
+            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["InsertBlankAfterVideo"]) ?? true; }
+            set { SaveSetting("InsertBlankAfterVideo", value.ToString()); }
         }
     }
 }

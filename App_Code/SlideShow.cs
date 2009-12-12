@@ -303,6 +303,13 @@ namespace Presenter.App_Code
                 pres.Close();
             }
 
+            if (Config.InsertBlankAfterPres && Config.PowerPointFormats.Contains(filetype) || Config.InsertBlankAfterVideo && Config.VideoFormats.Concat(Config.AudioFormats).Contains(filetype))
+            {
+                PP.Presentation pres = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
+                PasteSlidesWithFormatting(running, pres, progress, progressEnd, scheduleItem);
+                pres.Close();
+            }
+
             if (IsRunning && !running.FullName.ToLower().EndsWith(".pot"))
                 running.Save();
         }
@@ -419,35 +426,38 @@ namespace Presenter.App_Code
                 AddSlide(GetStringSummary(range.Shapes), GetStringSummary(range.NotesPage.Shapes), dest.Slides[dest.Slides.Count], (dest.Slides.Count - start) * step + progress, scheduleItem, dest.Slides.Count - start);
                 
                 //fix bugs
-                /*for (int i = 1; i <= range.Shapes.Count; i++)
+                for (int i = 1; i <= slide.Shapes.Count; i++)
                 {
+                    PP.Shape shape = slide.Shapes[i];
+                    PP.Shape destShape = range.Shapes[i];
+
                     //fix picture size issue like "How Great Thou Art (A)" on Office 2007 caused after applying Master slide
-                    if (slide.Shapes[i].Name.StartsWith("Picture"))
+                    if (shape.Type == Core.MsoShapeType.msoPicture || shape.Type == Core.MsoShapeType.msoPlaceholder)
                     {
-                        range.Shapes[i].LockAspectRatio = Core.MsoTriState.msoFalse;
-                        range.Shapes[i].Width = slide.Shapes[i].Width;
-                        range.Shapes[i].Height = slide.Shapes[i].Height;
-                        range.Shapes[i].Top = slide.Shapes[i].Top;
-                        range.Shapes[i].Left = slide.Shapes[i].Left;
+                        destShape.LockAspectRatio = Core.MsoTriState.msoFalse;
+                        destShape.Width = shape.Width;
+                        destShape.Height = shape.Height;
+                        destShape.Top = shape.Top;
+                        destShape.Left = shape.Left;
                     }
 
-                    if (range.Shapes[i].HasTextFrame != Core.MsoTriState.msoTrue)
+                    if (destShape.HasTextFrame != Core.MsoTriState.msoTrue)
                         continue;
 
-                    //fix font sizes not being kept (TODO: find example)
+                    //fix font sizes not being kept e.g. "Be Thou My Vision" on Office 2007
                     //check that source font size is greater than 0 i.e. "The Grace (7pm only)" on Office XP
-                    if (slide.Shapes[i].TextFrame.TextRange.Font.Size > 0)
-                        range.Shapes[i].TextFrame.TextRange.Font.Size = slide.Shapes[i].TextFrame.TextRange.Font.Size;
+                    if (shape.TextFrame.TextRange.Font.Size > 0)
+                        destShape.TextFrame.TextRange.Font.Size = shape.TextFrame.TextRange.Font.Size;
 
                     //fix alignment on some files like "Alleluia Jesus Is Lord" on Office 2007
-                    var align = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
-                    if (align == PP.PpParagraphAlignment.ppAlignCenter || align == PP.PpParagraphAlignment.ppAlignLeft || align == PP.PpParagraphAlignment.ppAlignRight || align == PP.PpParagraphAlignment.ppAlignJustify)
-                        range.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment = slide.Shapes[i].TextFrame.TextRange.ParagraphFormat.Alignment;
+                    if (destShape.TextFrame.TextRange.ParagraphFormat.Alignment != shape.TextFrame.TextRange.ParagraphFormat.Alignment)
+                        try { destShape.TextFrame.TextRange.ParagraphFormat.Alignment = shape.TextFrame.TextRange.ParagraphFormat.Alignment; }
+                        catch (Exception) { } //catch exception that's thrown on files like "And can it be.ppt"
 
                     //fix color not being kept i.e. welcome to work of AMB 
-                    if (slide.Shapes[i].TextFrame.TextRange.Font.Color.RGB != range.Shapes[i].TextFrame.TextRange.Font.Color.RGB)
-                        range.Shapes[i].TextFrame.TextRange.Font.Color.RGB = slide.Shapes[i].TextFrame.TextRange.Font.Color.RGB;
-                }*/
+                    if (shape.TextFrame.TextRange.Font.Color.RGB != destShape.TextFrame.TextRange.Font.Color.RGB)
+                        destShape.TextFrame.TextRange.Font.Color.RGB = shape.TextFrame.TextRange.Font.Color.RGB;
+                }
                 
                 if (slide.FollowMasterBackground == Core.MsoTriState.msoTrue)
                     continue;
@@ -503,12 +513,12 @@ namespace Presenter.App_Code
                 }
             }
 
-            if (Config.InsertBlankSlides && Path.GetFileName(source.FullName).ToLower() != "base.pot")
+            /*if (Config.InsertBlankAfterPres && Path.GetFileName(source.FullName).ToLower() != "base.pot")
             {
                 PP.Presentation pres = app.Presentations.Open(Environment.CurrentDirectory + "\\base.pot", Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
                 PasteSlidesWithFormatting(running, pres, progress, progressEnd, scheduleItem);
                 pres.Close();
-            }
+            }*/
         }
 
         private void CopySlideBackgroundAsImage(PP.SlideRange dest, PP.Slide source)

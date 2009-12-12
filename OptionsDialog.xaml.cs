@@ -52,7 +52,8 @@ namespace Presenter
                     VerLocation.Items.Add(align);
             VerLocation.SelectedValue = Config.MessengerVerticalPosition.ToString();
 
-            InsertBlanks.IsChecked = Config.InsertBlankSlides;
+            InsertPresBlanks.IsChecked = Config.InsertBlankAfterPres;
+            InsertVideoBlanks.IsChecked = Config.InsertBlankAfterVideo;
             /*
             //enable presenter view
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + Config.PowerpointVersion + @"\PowerPoint\Options", true);
@@ -75,7 +76,8 @@ namespace Presenter
             if (MonitorSelection.SelectedIndex != -1)
                 Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex];
 
-            Config.InsertBlankSlides = InsertBlanks.IsChecked ?? false;
+            Config.InsertBlankAfterPres = InsertPresBlanks.IsChecked ?? false;
+            Config.InsertBlankAfterVideo = InsertVideoBlanks.IsChecked ?? false;
 
             (Owner as Main).BindLocationList();
             this.Close();

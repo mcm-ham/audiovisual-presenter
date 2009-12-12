@@ -66,7 +66,7 @@ namespace Presenter
             foreach (ItemUsage item in list)
             {
                 output.AppendLine(item.Name + @"\line");
-                item.Dates.ForEach(d => output.AppendLine(@"\tab " + d.ToLongDateString() + @"\line"));
+                item.Presentations.ForEach(d => output.AppendLine(@"\tab " + d + @"\line"));
                 output.AppendLine(@"\tab (" + item.Count + @")\line\line ");
             }
 

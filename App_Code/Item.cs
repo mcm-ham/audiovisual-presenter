@@ -74,13 +74,13 @@ namespace Presenter.App_Code
                 include = false;
             }
 
-            return (from i in DB.Instance.Items.Select(i => new { i.Filename, i.Schedule.Date }).Where(i => i.Date >= fromD && i.Date <= toD).ToArray()
+            return (from i in DB.Instance.Items.Select(i => new { i.Filename, i.Schedule.Date, i.Schedule.Name }).Where(i => i.Date >= fromD && i.Date <= toD).ToArray()
                     where libraries.Any(l => i.Filename.ToLower().Contains("\\" + l + "\\")) == include && !i.Filename.EndsWith("None.pot")
                     group i by System.IO.Path.GetFileNameWithoutExtension(i.Filename) into g
                     select new ItemUsage() {
                         Name = g.Key + "  ", //add whitespace to end to provide gap between label and y-axis
                         Count = g.Count(),
-                        Dates = g.Select(i => i.Date).OrderBy(d => d).Distinct().ToArray()
+                        Presentations = g.OrderBy(i => i.Date).Select(i => i.Date.ToLongDateString() + ", " + i.Name).Distinct().ToArray()
                     }).OrderBy(s => s.Count).ThenByDescending(s => s.Name).ToArray();
         }
     }
@@ -89,6 +89,6 @@ namespace Presenter.App_Code
     {
         public int Count { get; set; }
         public string Name { get; set; }
-        public DateTime[] Dates { get; set; }
+        public string[] Presentations { get; set; }
     }
 }

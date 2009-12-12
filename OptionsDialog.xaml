@@ -4,7 +4,7 @@
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.OptionsWindowTitle}" Height="370" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
+    Title="{x:Static Loc:Labels.OptionsWindowTitle}" Height="390" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
         <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="25,14,0,0" Padding="0" Text="{x:Static Loc:Labels.OptionsLibraryPath}" />
         <TextBox Height="23" Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" /> 
@@ -27,7 +27,8 @@
         </StackPanel>
         
         <TextBlock Text="{x:Static Loc:Labels.OptionsPresentionSettings}" Margin="22,250,0,0" VerticalAlignment="Top" />
-        <CheckBox Name="InsertBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlanks}" Margin="22,275,0,0" Height="16" VerticalAlignment="Top" />
+        <CheckBox Name="InsertPresBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterPres}" Margin="22,275,0,0" Height="16" VerticalAlignment="Top" />
+        <CheckBox Name="InsertVideoBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterVideo}" Margin="22,295,0,0" Height="16" VerticalAlignment="Top" />
         
         <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
         <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />

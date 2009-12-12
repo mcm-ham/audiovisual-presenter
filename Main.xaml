@@ -163,7 +163,7 @@
             </ListView.View>
         </ListView>
         
-        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="3" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" />
+        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="3" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" Background="#C0C0C0" />
         
         <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
             <Image Name="PreviewImage" Margin="0,0,20,0" />
