@@ -728,7 +728,7 @@ namespace Presenter
                 e.Handled = true;
             }
 
-            if (e.Key == Key.End || e.Key == Key.Escape || e.Key == Key.Subtract || e.Key == Key.Cancel)
+            if (e.Key == Key.End || e.Key == Key.Escape || e.Key == Key.Cancel)
             {
                 Stop_Click(null, null);
                 e.Handled = true;
