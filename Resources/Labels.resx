@@ -141,6 +141,9 @@
   <data name="AppError" xml:space="preserve">
     <value>An error has occurred and been logged</value>
   </data>
+  <data name="AppImageError" xml:space="preserve">
+    <value>An error occurred processing an image file.</value>
+  </data>
   <data name="AppRequiresOffice" xml:space="preserve">
     <value>This program requires Microsoft Office XP with PowerPoint or greater.</value>
   </data>
@@ -296,7 +299,7 @@
   </data>
   <data name="MainRootDirName" xml:space="preserve">
     <value>Root</value>
-    <comment>e list of locations to view the files.</comment>
+    <comment>The name of the folder to contain the presentations not in sub folders in the library path.</comment>
   </data>
   <data name="MainWindowTitle" xml:space="preserve">
     <value>Audiovisual Presenter</value>

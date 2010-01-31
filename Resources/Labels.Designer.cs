@@ -133,6 +133,15 @@ namespace Presenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred processing an image file..
+        /// </summary>
+        public static string AppImageError {
+            get {
+                return ResourceManager.GetString("AppImageError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This program requires Microsoft Office XP with PowerPoint or greater..
         /// </summary>
         public static string AppRequiresOffice {

@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.Windows;
 using Point = System.Windows.Point;
 using System.Runtime.InteropServices;
+using Presenter.Resources;
 
 namespace Presenter.App_Code
 {
@@ -61,7 +62,12 @@ namespace Presenter.App_Code
         {
             MemoryStream resized = new MemoryStream();
             img.Save(resized, ImageFormat.Jpeg);
-            return resized.ToArray();
+            try { return resized.ToArray(); }
+            catch (ArgumentException)
+            {
+                MessageBox.Show(Labels.AppImageError);
+                return new byte[0];
+            }
         }
 
         public static Image Resize(this Image image, int? width, int? height, System.Drawing.Color? background)
