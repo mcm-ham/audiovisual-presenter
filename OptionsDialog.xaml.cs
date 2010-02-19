@@ -10,6 +10,7 @@ using System.Windows.Data;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Shell;
 using System.Linq;
+using Microsoft.Win32;
 
 namespace Presenter
 {

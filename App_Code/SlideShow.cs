@@ -96,7 +96,7 @@ namespace Presenter.App_Code
                 //}
 
                 //close master slide view
-                PP.DocumentWindow wnd = ((PP.DocumentWindow)app.Windows._Index(1));
+                PP.DocumentWindow wnd = app.Windows[1];
                 wnd.ViewType = PP.PpViewType.ppViewSlide;
                 wnd.ViewType = PP.PpViewType.ppViewNormal;
 
@@ -245,16 +245,16 @@ namespace Presenter.App_Code
             
             if (Config.VideoFormats.Contains(filetype))
             {
-                ((PP.Slide)running.Slides._Index(1)).Copy();
-                PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
-                slide.Design = (PP.Design)running.Designs._Index(1);
+                running.Slides[1].Copy();
+                PP.Slide slide = running.Slides.Paste(running.Slides.Count + 1)[1];
+                slide.Design = running.Designs[1];
                 AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, slide, SlideType.Video, filename, progressEnd, scheduleItem, 1);
             }
             else if (Config.AudioFormats.Contains(filetype))
             {
-                ((PP.Slide)running.Slides._Index(1)).Copy();
-                PP.Slide slide = (PP.Slide)running.Slides.Paste(running.Slides.Count + 1)._Index(1);
-                slide.Design = (PP.Design)running.Designs._Index(1);
+                running.Slides[1].Copy();
+                PP.Slide slide = running.Slides.Paste(running.Slides.Count + 1)[1];
+                slide.Design = running.Designs[1];
                 AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, slide, SlideType.Audio, filename, progressEnd, scheduleItem, 1);
             }
             else if (Config.ImageFormats.Contains(filetype))
@@ -277,7 +277,7 @@ namespace Presenter.App_Code
                     shape.Left = (slide.Master.Width - shape.Width) / 2;
                 if (shape.Height < slide.Master.Height)
                     shape.Top = (slide.Master.Height - shape.Height) / 2;
-                slide.Design = (PP.Design)running.Designs._Index(1);
+                slide.Design = running.Designs[1];
                 slide.FollowMasterBackground = Core.MsoTriState.msoTrue;
                 slide.Comments.Add(0f, 0f, "", "", scheduleItem.Name);
                 AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, slide, progressEnd, scheduleItem, 1);
@@ -324,7 +324,7 @@ namespace Presenter.App_Code
                 int count = app.Presentations.Count;
                 System.Diagnostics.Process.Start(filename);
                 while (count == app.Presentations.Count) { }
-                pres = (PP.Presentation)app.Presentations._Index(app.Presentations.Count);
+                pres = app.Presentations[app.Presentations.Count];
             }
             else
                 pres = app.Presentations.Open(filename, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse, Core.MsoTriState.msoFalse);
@@ -406,7 +406,7 @@ namespace Presenter.App_Code
                         designs.Add(design, previousDesigns[key]);
                 }
                 else
-                    range.Design = (PP.Design)dest.Designs._Index(designs[design]);
+                    range.Design = dest.Designs[designs[design]];
 
 
                 //colour scheme
@@ -416,7 +416,7 @@ namespace Presenter.App_Code
                     schemes.Add(slide.ColorScheme, dest.ColorSchemes.Count);
                 }
                 else
-                    range.ColorScheme = (PP.ColorScheme)dest.ColorSchemes._Index(schemes[slide.ColorScheme]);
+                    range.ColorScheme = dest.ColorSchemes[schemes[slide.ColorScheme]];
 
                 //required for the "Hide background graphics" property
                 range.DisplayMasterShapes = slide.DisplayMasterShapes;

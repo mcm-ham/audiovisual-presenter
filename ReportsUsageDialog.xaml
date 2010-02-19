@@ -1,7 +1,6 @@
 ﻿<Window x:Class="Presenter.ReportsUsageDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:my="http://schemas.microsoft.com/wpf/2008/toolkit"
     xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
@@ -26,9 +25,9 @@
 
             <Grid Margin="0,30,0,10">
                 <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,0,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelFrom}" />
-                <my:DatePicker Name="FromDate" Height="23" Margin="35,0,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <DatePicker Name="FromDate" Height="23" Margin="35,0,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
                 <TextBlock Height="28" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,36,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelTo}" />
-                <my:DatePicker Name="ToDate" Height="23" Margin="35,36,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <DatePicker Name="ToDate" Height="23" Margin="35,36,0,0" Width="150" VerticalAlignment="Top" HorizontalAlignment="Left" />
                 <Button Padding="2" HorizontalAlignment="Left" Margin="0,66,0,0" Name="button1" VerticalAlignment="Top" MinWidth="75" Click="Generate"  Content="{x:Static Loc:Labels.ReportsUsageGenerateBtn}" />
                 <Button Padding="2" HorizontalAlignment="Left" Margin="85,66,0,0" Name="button2" VerticalAlignment="Top" MinWidth="75" Click="Download"  Content="{x:Static Loc:Labels.ReportsUsageDownloadBtn}" />
             </Grid>

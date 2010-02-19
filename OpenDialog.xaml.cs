@@ -40,9 +40,10 @@ namespace Presenter
         private void monthCalendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
             DatePreview.Text = monthCalendar.SelectedDate.HasValue ? monthCalendar.SelectedDate.Value.ToLongDateString() : "";
+            monthCalendar.DisplayDateChanged += new EventHandler<CalendarDateChangedEventArgs>(monthCalendar_DisplayDateChanged);
         }
 
-        private void monthCalendar_DisplayDateChanged(object sender, Microsoft.Windows.Controls.CalendarDateChangedEventArgs e)
+        private void monthCalendar_DisplayDateChanged(object sender, CalendarDateChangedEventArgs e)
         {
             _mth = e.AddedDate ?? DateTime.Now;
             BindScheduleList();

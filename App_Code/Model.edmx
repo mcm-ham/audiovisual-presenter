@@ -1,15 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Presenter.App_Code.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
-        <EntityContainer Name="PresenterApp_CodeStoreContainer">
-          <EntitySet Name="Flags" EntityType="Presenter.App_Code.Store.Flags" store:Type="Tables" />
-          <EntitySet Name="Items" EntityType="Presenter.App_Code.Store.Items" store:Type="Tables" />
-          <EntitySet Name="Schedules" EntityType="Presenter.App_Code.Store.Schedules" store:Type="Tables" />
-          <AssociationSet Name="FK_Schedule_Items" Association="Presenter.App_Code.Store.FK_Schedule_Items">
+      <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="DatabaseModelStoreContainer">
+          <EntitySet Name="Flags" EntityType="DatabaseModel.Store.Flags" store:Type="Tables" />
+          <EntitySet Name="Items" EntityType="DatabaseModel.Store.Items" store:Type="Tables" />
+          <EntitySet Name="Schedules" EntityType="DatabaseModel.Store.Schedules" store:Type="Tables" />
+          <AssociationSet Name="FK_Item_Flags" Association="DatabaseModel.Store.FK_Item_Flags">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Flags" EntitySet="Flags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Items" Association="DatabaseModel.Store.FK_Schedule_Items">
             <End Role="Schedules" EntitySet="Schedules" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
@@ -40,11 +44,25 @@
           <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="100" />
         </EntityType>
-        <Association Name="FK_Schedule_Items">
-          <End Role="Schedules" Type="Presenter.App_Code.Store.Schedules" Multiplicity="1">
+        <Association Name="FK_Item_Flags">
+          <End Role="Items" Type="DatabaseModel.Store.Items" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Items" Type="Presenter.App_Code.Store.Items" Multiplicity="*" />
+          <End Role="Flags" Type="DatabaseModel.Store.Flags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Flags">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Items">
+          <End Role="Schedules" Type="DatabaseModel.Store.Schedules" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Items" Type="DatabaseModel.Store.Items" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Schedules">
               <PropertyRef Name="ID" />
@@ -54,30 +72,45 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="Presenter.App_Code" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
-        <EntityContainer Name="DatabaseEntities">
-          <EntitySet Name="Items" EntityType="Presenter.App_Code.Item" />
-          <EntitySet Name="Schedules" EntityType="Presenter.App_Code.Schedule" />
-          <AssociationSet Name="FK_Schedule_Items" Association="Presenter.App_Code.FK_Schedule_Items">
+      <Schema Namespace="DatabaseModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="DatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Flags" EntityType="DatabaseModel.Flag" />
+          <EntitySet Name="Items" EntityType="DatabaseModel.Item" />
+          <EntitySet Name="Schedules" EntityType="DatabaseModel.Schedule" />
+          <AssociationSet Name="FK_Item_Flags" Association="DatabaseModel.FK_Item_Flags">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Flags" EntitySet="Flags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Items" Association="DatabaseModel.FK_Schedule_Items">
             <End Role="Schedules" EntitySet="Schedules" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
-          <EntitySet Name="Flags" EntityType="Presenter.App_Code.Flag" />
-          <AssociationSet Name="ItemFlag" Association="Presenter.App_Code.ItemFlag">
-            <End Role="Item" EntitySet="Items" />
-            <End Role="Flag" EntitySet="Flags" /></AssociationSet></EntityContainer>
+        </EntityContainer>
+        <EntityType Name="Flag">
+          <Key>
+            <PropertyRef Name="ItemID" />
+            <PropertyRef Name="Index" />
+          </Key>
+          <Property Name="ItemID" Type="Guid" Nullable="false" />
+          <Property Name="Colour" Type="String" Nullable="false" MaxLength="30" Unicode="true" FixedLength="false" />
+          <Property Name="Index" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Item" Relationship="DatabaseModel.FK_Item_Flags" FromRole="Flags" ToRole="Items" />
+        </EntityType>
         <EntityType Name="Item">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="Filename" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="ScheduleID" Type="Guid" Nullable="false" />
+          <Property Name="Filename" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
           <Property Name="Ordinal" Type="Int16" Nullable="false" />
-          <NavigationProperty Name="Schedule" Relationship="Presenter.App_Code.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
-          <NavigationProperty Name="Flags" Relationship="Presenter.App_Code.ItemFlag" FromRole="Item" ToRole="Flag" /></EntityType>
+          <NavigationProperty Name="Flags" Relationship="DatabaseModel.FK_Item_Flags" FromRole="Items" ToRole="Flags" />
+          <NavigationProperty Name="Schedule" Relationship="DatabaseModel.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
+        </EntityType>
         <EntityType Name="Schedule">
           <Key>
             <PropertyRef Name="ID" />
@@ -85,102 +118,91 @@
           <Property Name="ID" Type="Guid" Nullable="false" />
           <Property Name="Date" Type="DateTime" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
-          <NavigationProperty Name="Items" Relationship="Presenter.App_Code.FK_Schedule_Items" FromRole="Schedules" ToRole="Items" />
+          <NavigationProperty Name="Items" Relationship="DatabaseModel.FK_Schedule_Items" FromRole="Schedules" ToRole="Items" />
         </EntityType>
-        <Association Name="FK_Schedule_Items">
-          <End Role="Schedules" Type="Presenter.App_Code.Schedule" Multiplicity="1">
+        <Association Name="FK_Item_Flags">
+          <End Role="Items" Type="DatabaseModel.Item" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Items" Type="Presenter.App_Code.Item" Multiplicity="*" />
-        </Association>
-        <EntityType Name="Flag">
-          <Key>
-            <PropertyRef Name="Index" />
-            <PropertyRef Name="ItemID" /></Key>
-          <Property Name="Colour" Type="String" Nullable="false" />
-          <Property Name="Index" Type="Int16" Nullable="false" />
-          <NavigationProperty Name="Item" Relationship="Presenter.App_Code.ItemFlag" FromRole="Flag" ToRole="Item" />
-          <Property Name="ItemID" Type="Guid" Nullable="false" /></EntityType>
-        <Association Name="ItemFlag">
-          <End Type="Presenter.App_Code.Item" Role="Item" Multiplicity="1" />
-          <End Type="Presenter.App_Code.Flag" Role="Flag" Multiplicity="*" />
+          <End Role="Flags" Type="DatabaseModel.Flag" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Item">
-              <PropertyRef Name="ID" /></Principal>
-            <Dependent Role="Flag">
-              <PropertyRef Name="ItemID" /></Dependent></ReferentialConstraint></Association></Schema>
+            <Principal Role="Items">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Flags">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Items">
+          <End Role="Schedules" Type="DatabaseModel.Schedule" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Items" Type="DatabaseModel.Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedules">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Items">
+              <PropertyRef Name="ScheduleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
-        <EntityContainerMapping StorageEntityContainer="PresenterApp_CodeStoreContainer" CdmEntityContainer="DatabaseEntities">
-          <EntitySetMapping Name="Items">
-            <EntityTypeMapping TypeName="IsTypeOf(Presenter.App_Code.Item)">
-              <MappingFragment StoreEntitySet="Items">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Filename" ColumnName="Filename" />
-                <ScalarProperty Name="Ordinal" ColumnName="Ordinal" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Schedules">
-            <EntityTypeMapping TypeName="IsTypeOf(Presenter.App_Code.Schedule)">
-              <MappingFragment StoreEntitySet="Schedules">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <AssociationSetMapping Name="FK_Schedule_Items" TypeName="Presenter.App_Code.FK_Schedule_Items" StoreEntitySet="Items">
-            <EndProperty Name="Schedules">
-              <ScalarProperty Name="ID" ColumnName="ScheduleID" />
-            </EndProperty>
-            <EndProperty Name="Items">
-              <ScalarProperty Name="ID" ColumnName="ID" />
-            </EndProperty>
-          </AssociationSetMapping>
-          <EntitySetMapping Name="Flags">
-            <EntityTypeMapping TypeName="IsTypeOf(Presenter.App_Code.Flag)">
-              <MappingFragment StoreEntitySet="Flags">
-                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-                <ScalarProperty Name="Index" ColumnName="Index" />
-                <ScalarProperty Name="Colour" ColumnName="Colour" />
-                </MappingFragment></EntityTypeMapping></EntitySetMapping>
-          <AssociationSetMapping Name="ItemFlag" TypeName="Presenter.App_Code.ItemFlag" StoreEntitySet="Flags">
-            <EndProperty Name="Item">
-              <ScalarProperty Name="ID" ColumnName="ItemID" /></EndProperty>
-            <EndProperty Name="Flag">
-              <ScalarProperty Name="ItemID" ColumnName="ItemID" />
-              <ScalarProperty Name="Index" ColumnName="Index" />
-              </EndProperty></AssociationSetMapping></EntityContainerMapping>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DatabaseModelStoreContainer" CdmEntityContainer="DatabaseEntities">
+          <EntitySetMapping Name="Flags"><EntityTypeMapping TypeName="DatabaseModel.Flag"><MappingFragment StoreEntitySet="Flags">
+            <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+            <ScalarProperty Name="Colour" ColumnName="Colour" />
+            <ScalarProperty Name="Index" ColumnName="Index" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Items"><EntityTypeMapping TypeName="DatabaseModel.Item"><MappingFragment StoreEntitySet="Items">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ScheduleID" ColumnName="ScheduleID" />
+            <ScalarProperty Name="Filename" ColumnName="Filename" />
+            <ScalarProperty Name="Ordinal" ColumnName="Ordinal" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Schedules"><EntityTypeMapping TypeName="DatabaseModel.Schedule"><MappingFragment StoreEntitySet="Schedules">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="Date" ColumnName="Date" />
+            <ScalarProperty Name="Name" ColumnName="Name" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+        </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
-    <edmx:Connection>
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
       </DesignerInfoPropertySet>
-    </edmx:Connection>
-    <edmx:Options>
+    </Connection>
+    <Options>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
       </DesignerInfoPropertySet>
-    </edmx:Options>
+    </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <edmx:Diagrams>
+    <Diagrams>
       <Diagram Name="Model">
-        <EntityTypeShape EntityType="Presenter.App_Code.Item" Width="1.5" PointX="3" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
-        <EntityTypeShape EntityType="Presenter.App_Code.Schedule" Width="1.5" PointX="0.75" PointY="0.875" Height="1.787985026041667" IsExpanded="true" />
-        <AssociationConnector Association="Presenter.App_Code.FK_Schedule_Items" ManuallyRouted="false">
-          <ConnectorPoint PointX="2.25" PointY="1.7689925130208335" />
-          <ConnectorPoint PointX="3" PointY="1.7689925130208335" /></AssociationConnector>
-        <EntityTypeShape EntityType="Presenter.App_Code.Flag" Width="1.5" PointX="0.75" PointY="3.75" Height="1.7879850260416665" />
-        <AssociationConnector Association="Presenter.App_Code.ItemFlag">
-          <ConnectorPoint PointX="3.75" PointY="2.8552864583333331" />
-          <ConnectorPoint PointX="3.75" PointY="4.6439925130208337" />
-          <ConnectorPoint PointX="2.25" PointY="4.6439925130208337" /></AssociationConnector></Diagram></edmx:Diagrams>
-  </edmx:Designer>
+        <EntityTypeShape EntityType="DatabaseModel.Flag" Width="1.5" PointX="5.25" PointY="1.125" Height="1.7879850260416672" IsExpanded="true" />
+        <EntityTypeShape EntityType="DatabaseModel.Item" Width="1.5" PointX="3" PointY="0.875" Height="2.1725878906249996" IsExpanded="true" />
+        <EntityTypeShape EntityType="DatabaseModel.Schedule" Width="1.5" PointX="0.75" PointY="1.125" Height="1.7879850260416665" IsExpanded="true" />
+        <AssociationConnector Association="DatabaseModel.FK_Item_Flags" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="2.0189925130208337" />
+          <ConnectorPoint PointX="5.25" PointY="2.0189925130208337" />
+        </AssociationConnector>
+        <AssociationConnector Association="DatabaseModel.FK_Schedule_Items" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="2.0189925130208333" />
+          <ConnectorPoint PointX="3" PointY="2.0189925130208333" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
 </edmx:Edmx>
