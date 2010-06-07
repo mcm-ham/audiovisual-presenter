@@ -132,6 +132,11 @@ namespace Presenter.App_Code
             }
         }
 
+        public static System.Windows.Forms.Screen PrimaryScreen
+        {
+            get { return System.Windows.Forms.Screen.PrimaryScreen; }
+        }
+
         private static System.Windows.Forms.Screen _screen;
         public static System.Windows.Forms.Screen ProjectorScreen
         {

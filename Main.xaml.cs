@@ -238,10 +238,10 @@ namespace Presenter
             {
                 Slide s = LiveList.SelectedItem as Slide;
                 int hwnd = (s.Type == SlideType.PowerPoint) ? s.Presentation.SlideShowWindow.HWND : fullscreen.HWND;
-                User32.SetWindowTopmost(hwnd);
+                User32.SetWindowPos(hwnd, User32.HWND_TOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
                 Presentation.AddSlides(SelectedSchedule.Items.OrderBy(i => i.Ordinal).Last());
                 LiveList.ScrollIntoView(LiveList.Items[LiveList.Items.Count - 1]);
-                User32.SetWindowNotTopmost(hwnd);
+                User32.SetWindowPos(hwnd, User32.HWND_NOTOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
         }
 
@@ -703,13 +703,13 @@ namespace Presenter
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
             {
                 ShowMedia(Presentation.Slides[idx]);
-                User32.SendWindowToFront(fullscreen.HWND);
+                User32.SetWindowPos(fullscreen.HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             else
             {
                 HideMedia();
                 fullscreen.HideWindow();
-                User32.SendWindowToFront(Presentation.Slides[idx].Presentation.SlideShowWindow.HWND);
+                User32.SetWindowPos(Presentation.Slides[idx].Presentation.SlideShowWindow.HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);                
 
                 if (idx == -1)
                     return;
@@ -908,7 +908,7 @@ namespace Presenter
             _selectedSlide.Presentation.Application.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
             if (_selectedSlide.Presentation.Windows.Count == 0)
                 _selectedSlide.Presentation.NewWindow();
-            _selectedSlide.Presentation.Application.Activate();
+            User32.SetWindowPos(_selectedSlide.Presentation.Application.HWND, User32.HWND_TOP, Config.PrimaryScreen.WorkingArea.Left + (int)(Config.PrimaryScreen.WorkingArea.Width * 0.05), Config.PrimaryScreen.WorkingArea.Top + +(int)(Config.PrimaryScreen.WorkingArea.Height * 0.05), (int)(Config.PrimaryScreen.WorkingArea.Width * 0.9), +(int)(Config.PrimaryScreen.WorkingArea.Height * 0.9), 0);
             _selectedSlide.Presentation.Windows[1].Activate();
             _selectedSlide.PSlide.Select();
         }

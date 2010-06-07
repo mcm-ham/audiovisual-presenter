@@ -18,32 +18,15 @@ public class User32
     [DllImport("user32.dll")]
     public static extern bool GetClipCursor(ref Rect lpRect);
 
+    public const uint SWP_NOACTIVATE = 0x0010;
+    public const uint SWP_NOSIZE = 0x0001;
+    public const int HWND_TOP = 0;
+    public const int HWND_BACK = 1;
+    public const int HWND_TOPMOST = -1;
+    public const int HWND_NOTOPMOST = -2;
+
     [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-    private static extern bool SetWindowPos(int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-    [DllImport("user32.dll")]
-    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    private const uint SWP_NOACTIVATE = 0x0010;
-    private const uint SWP_NOSIZE = 0x0001;
-    private const int HWND_TOP = 0;
-    private const int HWND_TOPMOST = -1;
-    private const int HWND_NOTOPMOST = -2;
-
-    public static void SendWindowToFront(int hwnd)
-    {
-        SetWindowPos(hwnd, HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE);
-    }
-
-    public static void SetWindowTopmost(int hwnd)
-    {
-        SetWindowPos(hwnd, HWND_TOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE);
-    }
-
-    public static void SetWindowNotTopmost(int hwnd)
-    {
-        SetWindowPos(hwnd, HWND_NOTOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE);
-    }
+    public static extern bool SetWindowPos(int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 }
 
 [ComImport, Guid("56FDF342-FD6D-11D0-958A-006097C9A090"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
