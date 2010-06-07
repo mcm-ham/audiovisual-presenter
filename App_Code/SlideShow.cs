@@ -104,7 +104,7 @@ namespace Presenter.App_Code
             try
             {
                 slide.Presentation.SlideShowWindow.View.GotoSlide(slide.ItemIndex);
-                User32.SendWindowToFront(slide.Presentation.SlideShowWindow.HWND);
+                User32.SetWindowPos(slide.Presentation.SlideShowWindow.HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             catch (COMException ex)
             {
