@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Configuration;
 using System.Windows;
+using System.Windows.Media;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using Presenter.App_Code;
 using Presenter.Resources;
 using Screen = System.Windows.Forms.Screen;
-using System.Collections.Generic;
-using System.Windows.Media;
-using System.Windows.Data;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using Microsoft.WindowsAPICodePack.Shell;
-using System.Linq;
-using Microsoft.Win32;
 
 namespace Presenter
 {
@@ -20,7 +15,7 @@ namespace Presenter
         {
             InitializeComponent();
             Background = new SolidColorBrush(Config.BackgroundColour);
-
+            
             LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"] ?? "My Documents\\Library\\";
 
             for (int i = 0; i < Screen.AllScreens.Length; i++)

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Presenter.App_Code;
 using Presenter.Resources;
@@ -31,7 +31,7 @@ namespace Presenter
 
             timer.Tick += new EventHandler(timer_Tick);
             selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
-            selectionDelay.Interval = TimeSpan.FromMilliseconds(100);
+            selectionDelay.Interval = TimeSpan.FromMilliseconds(200);
             searchDelay.Tick += new EventHandler(searchDelay_Tick);
             searchDelay.Interval = TimeSpan.FromMilliseconds(300);
 
@@ -56,7 +56,6 @@ namespace Presenter
 
                 if (Presentation != null)
                     Presentation.Stop();
-                SlideShow.RemoveOldPres();
             }
         }
 
@@ -146,7 +145,7 @@ namespace Presenter
 
             if (Directory.Exists(Config.LibraryPath))
             {
-                IEnumerable<string> paths = Directory.GetDirectories(Config.LibraryPath).Select(p => p.Substring(p.LastIndexOf('\\') + 1));
+                IEnumerable<string> paths = Directory.GetDirectories(Config.LibraryPath).Select(p => Path.GetFileName(p));
                 if (Directory.GetFiles(Config.LibraryPath).Any(f => Config.SupportedFileTypes.Contains(Path.GetExtension(f).ToLower().TrimStart('.'))))
                     paths = new[] { Labels.MainRootDirName }.Union(paths);
                 foreach (string path in paths)
@@ -182,7 +181,7 @@ namespace Presenter
         protected void searchDelay_Tick(object sender, EventArgs e)
         {
             List<string> files = new List<string>();
-            files.AddRange(Directory.GetFiles(GetSelectedPath(), "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => Path.GetFileName(f)));
+            files.AddRange(Directory.GetFiles(GetSelectedPath(), "*" + SearchTerms.Text.Replace(" ", "*") + "*").Select(f => Path.GetFileName(f)).OrderBy(n => n));
             if (Directory.GetFiles(GetSelectedPath(), "*.pot").Any() && "none".Contains(SearchTerms.Text.ToLower()))
                 files.Add("None.pot");
 
@@ -231,16 +230,18 @@ namespace Presenter
                     return;
             }
 
-
-            bool running = (Presentation != null && Presentation.IsRunning);
             foreach (string file in FileList.SelectedItems)
-                SelectedSchedule.AddItem(GetSelectedPath() + "\\" + file, !running);
+                SelectedSchedule.AddItem(GetSelectedPath() + "\\" + file);
             BindScheduleList();
 
-            if (running)
+            if (Presentation != null && Presentation.IsRunning)
             {
+                Slide s = LiveList.SelectedItem as Slide;
+                int hwnd = (s.Type == SlideType.PowerPoint) ? s.Presentation.SlideShowWindow.HWND : fullscreen.HWND;
+                User32.SetWindowTopmost(hwnd);
                 Presentation.AddSlides(SelectedSchedule.Items.OrderBy(i => i.Ordinal).Last());
                 LiveList.ScrollIntoView(LiveList.Items[LiveList.Items.Count - 1]);
+                User32.SetWindowNotTopmost(hwnd);
             }
         }
 
@@ -460,6 +461,18 @@ namespace Presenter
             ScheduleList.SelectedIndex = idx;
         }
 
+        protected void DuplicateFile(object sender, RoutedEventArgs e)
+        {
+            var selected = ScheduleList.SelectedItem;
+            foreach (Item item in ScheduleList.SelectedItems)
+            {
+                SelectedSchedule.AddItem(item.Filename);
+                SelectedSchedule.ReOrder(SelectedSchedule.Items.Last(), item);
+            }
+            BindScheduleList();
+            ScheduleList.SelectedItem = selected;
+        }
+
         private void ScheduleList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -476,7 +489,7 @@ namespace Presenter
         {
             if (Presentation != null && Presentation.IsRunning)
             {
-                Presentation.Previous();
+                Presentation.Previous(LiveList.SelectedItem as Slide);
                 return;
             }
 
@@ -495,7 +508,7 @@ namespace Presenter
         {
             if (Presentation != null && Presentation.IsRunning)
             {
-                Presentation.Next();
+                Presentation.Next(LiveList.SelectedItem as Slide);
                 return;
             }
 
@@ -536,6 +549,7 @@ namespace Presenter
                 return;
             }
 
+            fullscreen = new FullscreenWindow();
             StartBtn.Visibility = Visibility.Collapsed;
             StopBtn.Visibility = Visibility.Visible;
             Interval.Visibility = Visibility.Visible;
@@ -582,14 +596,15 @@ namespace Presenter
             Dispatcher.Invoke(new Action(() => {
                 progress.Close();
                 progress = null;
+                fullscreen.Topmost = false;
             }));
         }
 
         protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var sl = ((sender as ListViewItem).DataContext as Slide);
-            if (System.IO.File.Exists(sl.Preview))
-                PreviewImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(sl.Preview)));
+            if (sl.Preview != null)
+                SetPreview(PreviewImage, sl.Preview);
         }
 
         protected void Stop_Click(object sender, RoutedEventArgs e)
@@ -617,9 +632,14 @@ namespace Presenter
             RefreshBtn.Visibility = Visibility.Visible;
             RemoveBtn.Visibility = Visibility.Visible;
             LocationList.Margin = new Thickness(81, 94, 80, 0);
-            PreviewImage.Source = null;
-            CurrentImage.Source = null;
+            PreviewImage.Background = new SolidColorBrush(Colors.Black);
+            CurrentImage.Background = new SolidColorBrush(Colors.Black);
             HideMedia();
+            if (fullscreen != null)
+            {
+                fullscreen.Close();
+                fullscreen = null;
+            }
             if (Presentation != null)
                 Presentation.Stop();
         }
@@ -663,8 +683,9 @@ namespace Presenter
 
         protected void Presentation_SlideShowEnd(object sender, EventArgs e)
         {
+            //if triggered by powerpoint slideshow being closed not thru presenter, execute stop down on background thread to prevent freeze
             if (Presentation != null && Presentation.IsRunning)
-                Dispatcher.Invoke(new Action(() => Stop_Click(null, null)));
+                Dispatcher.BeginInvoke(new Action(() => Stop_Click(null, null)), DispatcherPriority.Background);
         }
 
         private int previdx = 0;
@@ -680,16 +701,21 @@ namespace Presenter
             }
 
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
-                ShowMedia(Presentation.Slides[idx].Filename);
+            {
+                ShowMedia(Presentation.Slides[idx]);
+                User32.SendWindowToFront(fullscreen.HWND);
+            }
             else
             {
                 HideMedia();
+                fullscreen.HideWindow();
+                User32.SendWindowToFront(Presentation.Slides[idx].Presentation.SlideShowWindow.HWND);
 
                 if (idx == -1)
                     return;
 
-                if (Presentation.Slides.Length > idx && !String.IsNullOrEmpty(Presentation.Slides[idx].Preview))
-                    CurrentImage.SetValue(Image.SourceProperty, new System.Windows.Media.Imaging.BitmapImage(new Uri(Presentation.Slides[idx].Preview)));
+                if (Presentation.Slides.Length > idx && Presentation.Slides[idx].Preview != null)
+                    SetPreview(CurrentImage, Presentation.Slides[idx].Preview);
 
                 //autoscroll
                 if (idx > previdx)
@@ -700,33 +726,43 @@ namespace Presenter
             }
         }
 
+        protected void SetPreview(Border preview, BitmapSource image)
+        {
+            preview.Background = new ImageBrush(image);
+            double x = (333 - image.PixelWidth) / 2.0;
+            double y = (250 - image.PixelHeight) / 2.0;
+            preview.BorderThickness = new Thickness(x, y, x, y);
+        }
+
         protected void LiveList_KeyDown(object sender, KeyEventArgs e)
         {
             //map all PowerPoint SlideShow shortcut keys
 
             if (e.Key == Key.Down || e.Key == Key.Right || e.Key == Key.PageDown || e.Key == Key.N || e.Key == Key.Space)
             {
-                Presentation.Next();
+                Presentation.Next(LiveList.SelectedItem as Slide);
                 e.Handled = true;
             }
 
             if (e.Key == Key.Up || e.Key == Key.Left || e.Key == Key.PageUp || e.Key == Key.P || e.Key == Key.Back)
             {
-                Presentation.Previous();
+                Presentation.Previous(LiveList.SelectedItem as Slide);
                 e.Handled = true;
             }
 
             if (e.Key == Key.B || e.Key == Key.OemPeriod)
             {
-                Presentation.ToggleBlank();
+                fullscreen.ShowBlank();
+                this.Focus();
                 e.Handled = true;
             }
 
-            if (e.Key == Key.W || e.Key == Key.OemComma)
+            /*if (e.Key == Key.W || e.Key == Key.OemComma)
             {
-                Presentation.ToggleWhite();
+                fullscreen.ShowBlank();
+                this.Focus();
                 e.Handled = true;
-            }
+            }*/
 
             if (e.Key == Key.End || e.Key == Key.Escape || e.Key == Key.Cancel)
             {
@@ -780,8 +816,11 @@ namespace Presenter
         protected void selectionDelay_Tick(object sender, EventArgs e)
         {
             selectionDelay.Stop();
+            if (LiveList.SelectedItem == null)
+                return;
 
-            Presentation.GoTo(LiveList.SelectedItem as Slide);
+            if ((LiveList.SelectedItem as Slide).Type == SlideType.PowerPoint)
+                Presentation.GoTo(LiveList.SelectedItem as Slide);
             Presentation_SlideIndexChanged(Presentation, new SlideShowEventArgs(LiveList.SelectedIndex + 1, LiveList.SelectedIndex + 1));
         }
 
@@ -830,6 +869,7 @@ namespace Presenter
 
             Style style = new Style();
             style.Setters.Add(new EventSetter(ListViewItem.MouseEnterEvent, new MouseEventHandler(SlideListViewItem_MouseEnter)));
+            style.Setters.Add(new EventSetter(ListViewItem.PreviewMouseRightButtonDownEvent, new MouseButtonEventHandler(SlideListViewItem_MouseRightButtonDown)));
             if (Environment.OSVersion.Version.Major < 6)
                 style.Triggers.Add(GetLiveListStyle());
 
@@ -855,6 +895,33 @@ namespace Presenter
             trigger.Value = true;
             trigger.Setters.Add(setter);
             return trigger;
+        }
+
+        private Slide _selectedSlide = null;
+        protected void EditPres(object sender, RoutedEventArgs e)
+        {
+            if (_selectedSlide == null || _selectedSlide.Type != SlideType.PowerPoint)
+            {
+                MessageBox.Show(Labels.MainContextEditError, "", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            _selectedSlide.Presentation.Application.Visible = Microsoft.Office.Core.MsoTriState.msoTrue;
+            if (_selectedSlide.Presentation.Windows.Count == 0)
+                _selectedSlide.Presentation.NewWindow();
+            _selectedSlide.Presentation.Application.Activate();
+            _selectedSlide.Presentation.Windows[1].Activate();
+            _selectedSlide.PSlide.Select();
+        }
+
+        protected void SlideListViewItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _selectedSlide = (sender as ListViewItem).DataContext as Slide;
+            e.Handled = true; //prevent right click from selecting
+        }
+
+        protected void LiveList_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true; //prevent double click from selecting two different slides in quick succession if list auto scrolls in between
         }
 
         #endregion
@@ -936,17 +1003,31 @@ namespace Presenter
         bool _timeDragging = false;
         bool _editingTime = false;
         TimeSpan? _initEditTime = null;
-        FullscreenVideo fullscreen;
-        protected void ShowMedia(string path)
+        FullscreenWindow fullscreen = null;
+        protected void ShowMedia(Slide slide)
         {
             HideMedia();
-            CurrentImage.Visibility = Visibility.Collapsed;
-            VideoPanel.Visibility = Visibility.Visible;
-            mediaPosTimer = new DispatcherTimer();
-            mediaPosTimer.Interval = TimeSpan.FromMilliseconds(100);
-            mediaPosTimer.Tick += new EventHandler(mediaPosTimer_Tick);
-            VideoPlayer.Open(new Uri(path, UriKind.Absolute));
-            PlayMedia(null, null);
+            if (slide.Type == SlideType.Blank)
+            {
+                fullscreen.ShowBlank();
+                this.Focus();
+            }
+            else if (slide.Type == SlideType.Image)
+            {
+                SetPreview(CurrentImage, slide.Preview);
+                fullscreen.Show(slide.Image);
+                this.Focus();
+            }
+            else
+            {
+                CurrentImage.Visibility = Visibility.Collapsed;
+                VideoPanel.Visibility = Visibility.Visible;
+                mediaPosTimer = new DispatcherTimer();
+                mediaPosTimer.Interval = TimeSpan.FromMilliseconds(100);
+                mediaPosTimer.Tick += new EventHandler(mediaPosTimer_Tick);
+                VideoPlayer.Open(new Uri(slide.Filename, UriKind.Absolute));
+                PlayMedia(null, null);
+            }
         }
 
         protected void HideMedia()
@@ -959,12 +1040,6 @@ namespace Presenter
                 StopMedia(null, null);
                 VideoPlayer.Close();
                 mediaPosTimer = null;
-
-                if (fullscreen != null)
-                {
-                    fullscreen.Close();
-                    fullscreen = null;
-                }
             }
         }
 
@@ -1006,8 +1081,7 @@ namespace Presenter
 
             if (VideoPlayer.HasVideo)
             {
-                if (fullscreen == null)
-                    fullscreen = new FullscreenVideo(VideoPlayer);
+                fullscreen.Show(VideoPlayer);
 
                 VideoDisplay.Visibility = Visibility.Visible;
 
@@ -1102,12 +1176,28 @@ namespace Presenter
 
         private void GridSplitter_LayoutUpdated(object sender, EventArgs e)
         {
-            //on startup videodisplay is zero which we con't want to set otherwise it will never be bigger than zero
-            //previewpanel is set to collapse so height can be zero while mediacontrols will still have a height
+            PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[1].ActualHeight - 60);
+
+            //if height is zero, then control height will be set to zero and can never be multiplied by a ratio to increase in height
+            if (PreviewPanel.ActualHeight <= 0)
+                return;
+
+            double ratio = PreviewPanel.ActualHeight / PreviewImage.ActualHeight;
+
+            //if height is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
+            if (PreviewImage.Height * ratio < 1.0)
+                return;
+
+            PreviewImage.Height *= ratio;
+            PreviewImage.Width *= ratio;
+
+            CurrentImage.Height *= ratio;
+            CurrentImage.Width *= ratio;
+
             if (VideoDisplay.ActualHeight <= 0 || MediaControls.ActualHeight > PreviewPanel.ActualHeight)
                 return;
 
-            double ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight) / VideoDisplay.ActualHeight;
+            ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight) / VideoDisplay.ActualHeight;
             VideoDisplay.Height *= ratio;
             VideoDisplay.Width *= ratio;
         }

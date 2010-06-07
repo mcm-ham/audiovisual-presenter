@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AboutDesc" xml:space="preserve">
     <value>For queries, suggestions or bug fixes please contact us at:</value>
@@ -228,6 +228,12 @@
   <data name="MainContextDeleteFile" xml:space="preserve">
     <value>Delete File</value>
   </data>
+  <data name="MainContextDuplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="MainContextEditError" xml:space="preserve">
+    <value>Only PowerPoint presentations can be edited during a live session.</value>
+  </data>
   <data name="MainContextOpenFile" xml:space="preserve">
     <value>Open File</value>
   </data>
@@ -245,6 +251,9 @@
   </data>
   <data name="MainHeaderOrder" xml:space="preserve">
     <value>Presentation Order</value>
+  </data>
+  <data name="MainLabelLiveEdit" xml:space="preserve">
+    <value>Edit</value>
   </data>
   <data name="MainLabelLiveJump" xml:space="preserve">
     <value>Jump</value>

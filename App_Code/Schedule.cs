@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Objects;
-using System.Linq;
-using System.Text;
 using System.IO;
+using System.Linq;
 
 namespace Presenter.App_Code
 {
@@ -18,14 +15,6 @@ namespace Presenter.App_Code
         //methods
         public void Save()
         {
-            Save(true);
-        }
-
-        private void Save(bool removeExistingPres)
-        {
-            if (removeExistingPres)
-                SlideShow.RemoveOldPres();
-
             if (EntityState == EntityState.Detached)
             {
                 ID = Guid.NewGuid();
@@ -41,11 +30,6 @@ namespace Presenter.App_Code
         /// <returns>Returns 0 if successful or 1 if the file is not supported</returns>
         public int AddItem(string filename)
         {
-            return AddItem(filename, true);
-        }
-
-        public int AddItem(string filename, bool removeExistingPres)
-        {
             string ext = System.IO.Path.GetExtension(filename).TrimStart('.').ToLower();
             if (!Config.SupportedFileTypes.Contains(ext))
                 return 1;
@@ -55,7 +39,7 @@ namespace Presenter.App_Code
                 Filename = filename,
                 Ordinal = (short)((Items.Max(i => (short?)i.Ordinal) ?? -1) + 1)
             });
-            Save(removeExistingPres);
+            Save();
             return 0;
         }
 
@@ -112,12 +96,6 @@ namespace Presenter.App_Code
         public static void DeleteSchedule(Guid id)
         {
             var schedule = LoadSchedule(id);
-
-            //if presentations are kept, then remove saved presentation when schedule is deleted
-            string path = Config.PresentationPath + schedule.DisplayName + ".ppt";
-            if (File.Exists(path))
-                File.Delete(path);
-
             DB.Instance.DeleteObject(schedule);
             DB.Instance.SaveChanges();
         }
