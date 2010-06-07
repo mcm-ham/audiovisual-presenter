@@ -1,17 +1,17 @@
-﻿<Window x:Class="Presenter.FullscreenVideo"
+﻿<Window x:Class="Presenter.FullscreenWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
     xml:lang="en-US"
-    Title="FullscreenVideo" WindowStyle="None" Topmost="True" Width="0" Height="0" ShowInTaskbar="False" Background="Black" Loaded="Window_Loaded" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
-    <Grid>
+    Title="FullscreenWindow" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" Background="Black" Loaded="Window_Loaded" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
+    <Grid Name="FullscreenGrid">
         <Grid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="{x:Static Loc:Labels.FullscreenVideoClose}" Click="Close"/>
             </ContextMenu>
         </Grid.ContextMenu>
-        <Rectangle Name="VideoPanel" Width="640" Height="480">
+        <Rectangle Name="VideoPanel" Width="640" Height="480" Visibility="Collapsed">
             <Rectangle.Fill>
                 <DrawingBrush>
                     <DrawingBrush.Drawing>
@@ -24,5 +24,6 @@
                 </DrawingBrush>
             </Rectangle.Fill>
         </Rectangle>
+        <Image Name="ImageDisplay" Visibility="Collapsed" />
     </Grid>
 </Window>

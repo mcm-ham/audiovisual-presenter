@@ -7,8 +7,10 @@ namespace Presenter.App_Code
 {
     public enum SlideType
     {
+        Blank,
         PowerPoint,
         Video,
-        Audio
+        Audio,
+        Image
     }
 }

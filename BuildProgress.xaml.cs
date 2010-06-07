@@ -3,8 +3,8 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shell;
 using System.Windows.Threading;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using Presenter.App_Code;
 
 namespace Presenter
@@ -19,8 +19,8 @@ namespace Presenter
 
         protected void BuildProgress_Closing(object sender, CancelEventArgs e)
         {
-            if (TaskbarManager.IsPlatformSupported)
-                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+            if (this.Owner.TaskbarItemInfo != null)
+                this.Owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
         }
 
         protected void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -31,8 +31,9 @@ namespace Presenter
 
         public void UpdateProgress(double progress)
         {
-            if (TaskbarManager.IsPlatformSupported)
-                TaskbarManager.Instance.SetProgressValue((int)(progress * 100), 100);
+            if (this.Owner.TaskbarItemInfo == null)
+                this.Owner.TaskbarItemInfo = new TaskbarItemInfo() { ProgressState = TaskbarItemProgressState.Normal };
+            this.Owner.TaskbarItemInfo.ProgressValue = progress;
             Dispatcher.BeginInvoke(new Action(() => { Progress.SetValue(ProgressBar.ValueProperty, progress); }), DispatcherPriority.Background, null);
         }
 

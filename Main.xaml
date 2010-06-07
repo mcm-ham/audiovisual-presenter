@@ -9,7 +9,7 @@
     <Window.Resources>
         <Code:ScaleValueConverter x:Key="ScaleValueConverter" />
     </Window.Resources>
-    <Grid>
+    <Grid Name="Grid1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Name="col1" />
             <ColumnDefinition Name="col2" />
@@ -127,6 +127,7 @@
                                 <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile"/>
                                 <MenuItem Header="{x:Static Loc:Labels.MainContextOpenLocation}" Click="OpenLocation"/>
                                 <MenuItem Header="{x:Static Loc:Labels.MainContextRemove}" Click="RemoveFile"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextDuplicate}" Click="DuplicateFile"/>
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>
@@ -134,10 +135,12 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <ListView x:Name="LiveList" Grid.Column="1" Grid.Row="0" Margin="12,128,12,10" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown">
+        <ListView x:Name="LiveList" Grid.Column="1" Grid.Row="0" Margin="12,128,12,10" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown" PreviewMouseDoubleClick="LiveList_PreviewMouseDoubleClick">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
+                    <!-- new styles also need to be added to HightlightRow -->
                     <EventSetter Event="MouseEnter" Handler="SlideListViewItem_MouseEnter" />
+                    <EventSetter Event="PreviewMouseRightButtonDown" Handler="SlideListViewItem_MouseRightButtonDown" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>
@@ -161,13 +164,18 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="{x:Static Loc:Labels.MainLabelLiveEdit}" Click="EditPres"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
         </ListView>
         
         <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="3" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" Background="#C0C0C0" />
         
         <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
-            <Image Name="PreviewImage" Margin="0,0,20,0" />
-            <Image Name="CurrentImage" />
+            <Border Name="PreviewImage" BorderBrush="Black" Margin="0,0,20,0" Width="333" Height="250" />
+            <Border Name="CurrentImage" BorderBrush="Black" Width="333" Height="250" />
 
             <StackPanel Name="VideoPanel" Visibility="Collapsed">
                 <Rectangle Name="VideoDisplay" Height="220" Visibility="Hidden">

@@ -21,8 +21,8 @@ namespace Presenter.App_Code
         {
             get
             {
-                if (_allformats == null)
-                    _allformats = new Collection<string>(PowerPointFormats.Union(PowerPointTemplates).Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray());
+                if (_allformats == null) //.Union(PowerPointTemplates)
+                    _allformats = new Collection<string>(PowerPointFormats.Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray());
                 return _allformats;
             }
         }
@@ -38,7 +38,7 @@ namespace Presenter.App_Code
             }
         }
 
-        private static Collection<string> _templates;
+        /*private static Collection<string> _templates;
         public static Collection<string> PowerPointTemplates
         {
             get
@@ -47,7 +47,7 @@ namespace Presenter.App_Code
                     _templates = new Collection<string>(ConfigurationManager.AppSettings["PowerPointTemplates"].Split(','));
                 return _templates;
             }
-        }
+        }*/
 
         private static Collection<string> _image;
         public static Collection<string> ImageFormats
@@ -113,14 +113,15 @@ namespace Presenter.App_Code
                                 res = Path.GetFullPath(res);
                         }
                         _path = res.TrimEnd('\\') + "\\";
+                        if (!Directory.Exists(_path))
+                            Directory.CreateDirectory(_path);
                     }
                     catch (Exception)
                     {
                         _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Library\\";
+                        if (!Directory.Exists(_path))
+                            Directory.CreateDirectory(_path);
                     }
-
-                    if (!Directory.Exists(_path))
-                        Directory.CreateDirectory(_path);
                 }
                 return _path;
             }
@@ -196,22 +197,6 @@ namespace Presenter.App_Code
                 if (!Directory.Exists(temp))
                     Directory.CreateDirectory(temp);
                 return temp;
-            }
-        }
-
-        public static bool KeepPresentations
-        {
-            get { return Util.Parse<bool>(ConfigurationManager.AppSettings["KeepPresentations"]); }
-        }
-
-        public static string PresentationPath
-        {
-            get
-            {
-                string path = ConfigurationManager.AppSettings["PresentationPath"] ?? "Library\\Presentations\\";
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-                return Path.GetFullPath(path);
             }
         }
 
