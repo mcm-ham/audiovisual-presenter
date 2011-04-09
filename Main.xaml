@@ -88,7 +88,7 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <!-- set width to 0.9 of containing listbox so that context menu works anywhere along listboxitem and to 0.9 to not unecessarily cause scroll bar to appear -->
-                            <TextBlock Text="{Binding}" MinWidth="{Binding ElementName=FileList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.88}" />
+                            <TextBlock Text="{Binding}" MinWidth="{Binding ElementName=FileList, Path=ActualWidth, Converter={StaticResource ScaleValueConverter}, ConverterParameter=0.88}" ToolTip="{Binding}" ToolTipOpening="LibraryToolTipOpening" />
                             <StackPanel.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="{x:Static Loc:Labels.MainContextAdd}" Click="AddSelected"/>
@@ -151,14 +151,14 @@
                     <GridViewColumn Width="50" Header="{x:Static Loc:Labels.MainLabelLiveJump}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBox Text="{Binding Path=JumpIndex}" Width="35" Height="17" FontSize="10" Padding="0" />
+                                <TextBox Text="{Binding Path=JumpIndex}" Width="35" Height="17" FontSize="10" Padding="0" ToolTip="{x:Static Loc:Labels.MainTooltipJumpText}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Width="25">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Height="17" Content="  " Click="HightlightRow" />
+                                <Button Height="17" Content="  " Click="HightlightRow" ToolTip="{x:Static Loc:Labels.MainTooltipHighlightBtn}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -171,7 +171,7 @@
             </ListView.ContextMenu>
         </ListView>
         
-        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="3" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" Background="#C0C0C0" />
+        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="2" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" Background="#828790" />
         
         <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
             <Border Name="PreviewImage" BorderBrush="Black" Margin="0,0,20,0" Width="333" Height="250" />
@@ -212,8 +212,9 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="12">
             <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Start_Click" />
             <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Stop_Click" Visibility="Collapsed" />
-            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="TimerStart_Click" Visibility="Collapsed" />
-            <TextBox Name="Interval" Padding="2" Margin="0,0,12,0" Width="35" Visibility="Collapsed" TextChanged="Interval_TextChanged" />
+            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="TimerStart_Click" Visibility="Collapsed" ToolTip="{x:Static Loc:Labels.MainTooltipTimer}" />
+            <TextBox Name="Interval" Padding="2" Margin="0,0,12,0" Width="35" Visibility="Collapsed" TextChanged="Interval_TextChanged" ToolTip="{x:Static Loc:Labels.MainTooltipTimerSec}" />
+            <CheckBox Name="UseSlideTimings" Content="{x:Static Loc:Labels.MainChkbxUseTimings}" ToolTip="{x:Static Loc:Labels.MainTooltipUseTimings}" Checked="UseSlideTimingsChanged" Unchecked="UseSlideTimingsChanged" VerticalAlignment="Center" Visibility="Collapsed" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Margin="12">
             <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="RemoveFile" IsEnabled="False" />

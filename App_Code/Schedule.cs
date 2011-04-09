@@ -93,6 +93,14 @@ namespace Presenter.App_Code
             return DB.Instance.Schedules.Where(s => s.Date >= start && s.Date < end).OrderBy(s => s.Date).ThenBy(s => s.Name);
         }
 
+        /// <summary>
+        /// Load all schedules
+        /// </summary>
+        public static IQueryable<Schedule> LoadSchedules()
+        {
+            return DB.Instance.Schedules.OrderBy(s => s.Date).ThenBy(s => s.Name);
+        }
+
         public static void DeleteSchedule(Guid id)
         {
             var schedule = LoadSchedule(id);

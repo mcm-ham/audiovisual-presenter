@@ -26,28 +26,6 @@ namespace Presenter
                     MonitorSelection.SelectedIndex = i;
             }
 
-            for (double i = 20; i < 60; i += 2)
-                FontSizeList.Items.Add(i.ToString());
-            FontSizeList.SelectedValue = Config.MessengerFontSize.ToString();
-
-            foreach (FontFamily fontFamily in Fonts.SystemFontFamilies)
-                FontFamilyList.Items.Add(fontFamily.Source);
-            FontFamilyList.SelectedValue = Config.MessengerFontFamily.Source;
-
-            foreach (var color in typeof(Colors).GetProperties())
-                FontColorList.Items.Add(color.Name);
-            FontColorList.SelectedValue = Config.MessengerFontColourName;
-
-            foreach (string align in Enum.GetNames(typeof(HorizontalAlignment)))
-                if (align != "Stretch")
-                    HorLocation.Items.Add(align);
-            HorLocation.SelectedValue = Config.MessengerHorizontalPosition.ToString();
-
-            foreach (string align in Enum.GetNames(typeof(VerticalAlignment)))
-                if (align != "Stretch")
-                    VerLocation.Items.Add(align);
-            VerLocation.SelectedValue = Config.MessengerVerticalPosition.ToString();
-
             InsertPresBlanks.IsChecked = Config.InsertBlankAfterPres;
             InsertVideoBlanks.IsChecked = Config.InsertBlankAfterVideo;
             /*
@@ -56,24 +34,23 @@ namespace Presenter
             if (Util.Parse<int>(key.GetValue("UseMonMgr")) != 1)
                 key.SetValue("UseMonMgr", 1);
             */
+
+            for (double i = 10; i <= 15; i++)
+                FontSize.Items.Add(i);
+            FontSize.SelectedValue = Config.FontSize;
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            double size = Util.Parse<double>(FontSizeList.SelectedValue);
-            FontFamily family = new FontFamily(FontFamilyList.SelectedValue.ToString());
-            HorizontalAlignment posx = Util.Parse<HorizontalAlignment>(HorLocation.SelectedValue);
-            VerticalAlignment posy = Util.Parse<VerticalAlignment>(VerLocation.SelectedValue);
-
             Config.LibraryPath = LibraryPath.Text;
-            Config.SaveMessengerFont(size, family, (FontColorList.SelectedValue ?? "").ToString());
-            Config.SaveMessengerLocation(posy, posx);
 
             if (MonitorSelection.SelectedIndex != -1)
                 Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex];
 
             Config.InsertBlankAfterPres = InsertPresBlanks.IsChecked ?? false;
             Config.InsertBlankAfterVideo = InsertVideoBlanks.IsChecked ?? false;
+            
+            Config.FontSize = (double)FontSize.SelectedValue;
 
             (Owner as Main).BindLocationList();
             this.Close();

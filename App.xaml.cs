@@ -43,13 +43,9 @@ namespace Presenter
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server Compact Edition\v3.5", false);
-            if (key == null || Util.Parse<int>(key.GetValue("ServicePackLevel")) < 1)
+            var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server Compact Edition\v4.0", false);
+            if (key == null) // || Util.Parse<int>(key.GetValue("ServicePackLevel")) < 2)
                 throw new Exception(Labels.AppRequiresSql);
-
-            key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MediaPlayer\PlayerUpgrade", false);
-            if (key == null || Util.Parse<int>((key.GetValue("PlayerVersion") ?? "").ToString().Split(',').FirstOrDefault()) < 10)
-                MessageBox.Show(Labels.AppRequiresWMP, "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
             key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office");
             bool found = false;
@@ -81,9 +77,40 @@ namespace Presenter
             if (!found)
                 throw new Exception(Labels.AppRequiresOffice);
 
-            Config.FontSize = SystemFonts.MessageFontSize;
+            Config.FontSize = Util.Parse<double?>(ConfigurationManager.AppSettings["FontSize"]) ?? SystemFonts.MessageFontSize;
 
             base.OnStartup(e);
+
+            //accessing database causes 3 or 4 sec delay so place in background thread, useful preloading for when planner is opened
+            new Action(() =>
+            {
+                //determine if it's a new installation by whether there are any schedules loaded or not
+                //if Presenter 0.9.9, will be running sql compact 3.5 that will need to be upgraded to 4.0
+                bool isnew = true;
+                try { isnew = !Schedule.LoadSchedules().Any(); }
+                catch (Exception ex)
+                {
+                    if (ex.GetBaseException().Message == "The database file has been created by an earlier version of SQL Server Compact. Please upgrade using SqlCeEngine.Upgrade() method.")
+                    {
+                        var engine = new System.Data.SqlServerCe.SqlCeEngine(ConfigurationManager.ConnectionStrings["DatabaseConnectionString"].ConnectionString);
+                        engine.Upgrade();
+                        engine.Compact(null);
+                        isnew = !Schedule.LoadSchedules().Any();
+                    }
+                    else
+                        throw ex;
+                }
+
+                //gives warning that videos won't work without WMP10, not a requirement so only display if a new installation
+                if (isnew)
+                {
+                    key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\MediaPlayer\PlayerUpgrade", false);
+                    if (key == null || Util.Parse<int>((key.GetValue("PlayerVersion") ?? "").ToString().Split(',').FirstOrDefault()) < 10)
+                    if (!Application.Current.Dispatcher.CheckAccess())
+                        Application.Current.Dispatcher.Invoke(new Action(() => { MessageBox.Show(MainWindow, Labels.AppRequiresWMP, "", MessageBoxButton.OK, MessageBoxImage.Exclamation); }));
+                        
+                }
+            }).BeginInvoke(null, null);
         }
     }
 }
