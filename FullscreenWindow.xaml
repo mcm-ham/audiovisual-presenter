@@ -4,13 +4,13 @@
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
     xml:lang="en-US"
-    Title="FullscreenWindow" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" Background="Black" Loaded="Window_Loaded" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
+    Title="FullscreenWindow" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="{x:Static Loc:Labels.FullscreenVideoClose}" Click="Close"/>
+        </ContextMenu>
+    </Window.ContextMenu>
     <Grid Name="FullscreenGrid">
-        <Grid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="{x:Static Loc:Labels.FullscreenVideoClose}" Click="Close"/>
-            </ContextMenu>
-        </Grid.ContextMenu>
         <Rectangle Name="VideoPanel" Width="640" Height="480" Visibility="Collapsed">
             <Rectangle.Fill>
                 <DrawingBrush>

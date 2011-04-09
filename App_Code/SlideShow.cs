@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Presenter.Resources;
 using Core = Microsoft.Office.Core;
 using PP = Microsoft.Office.Interop.PowerPoint;
@@ -30,17 +34,24 @@ namespace Presenter.App_Code
                 IsRunning = true;
 
                 app = new PP.Application();
-                app.ShowWindowsInTaskbar = Core.MsoTriState.msoFalse;
+                if (Util.Parse<double>(app.Version) < 14)
+                    app.ShowWindowsInTaskbar = Core.MsoTriState.msoFalse;
                 app.SlideShowEnd += new PP.EApplication_SlideShowEndEventHandler(app_SlideShowEnd);
 
                 _slides.Clear();
                 if (SlideAdded != null)
                     SlideAdded(this, new SlideAddedEventArgs(null, -1));
 
-                AddSlide("", "Blank", null, SlideType.Blank, "", 0, new Item(), 1);
+                AddSlide("", "Blank", null, null, SlideType.Blank, "", 0, new Item(), 1);
 
                 foreach (Item item in items)
                     AddSlides(item);
+
+                AddSlide("", "Blank", null, null, SlideType.Blank, "", 0, new Item(), 1);
+
+                //don't enable event until after all slideshows have started to prevent the slideshow window popping up on top during start
+                app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+                new Action(() => { while (IsRunning) { System.Threading.Thread.Sleep(50); app.Presentations.Cast<PP.Presentation>().ToList().ForEach(p => { if (p.SlideShowWindow().View.State == PP.PpSlideShowState.ppSlideShowDone) app_SlideShowNextSlide(p.SlideShowWindow()); }); } }).BeginInvoke(null, null);
             }
             catch (Exception ex)
             {
@@ -53,19 +64,71 @@ namespace Presenter.App_Code
             }
         }
 
+        /// <summary>
+        /// Update the UseSlideTimings property for running slideshows.
+        /// </summary>
+        public void UpdateSlideTimings()
+        {
+            app.SlideShowNextSlide -= new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+            foreach (var p in GetPresentations())
+            {
+                if (!Config.UseSlideTimings)
+                    p.Slides.Range().SlideShowTransition.AdvanceOnTime = Core.MsoTriState.msoFalse;
+                else
+                    p.Slides.Cast<PP.Slide>().ToList().ForEach(ss => ss.SlideShowTransition.AdvanceOnTime = Slides.Where(s => s.PSlide == ss).Select(s => (Core.MsoTriState?)s.AdvanceOnTime).FirstOrDefault() ?? Core.MsoTriState.msoTrue);
+            }
+            app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+        }
+
+        private void app_SlideShowNextSlide(PP.SlideShowWindow Wn)
+        {
+            if (SlideIndexChanged == null)
+                return;
+            
+            //logic to handle slideshow using timings reaching end, go to first slide of next slideshow
+            if (Wn.View.State == PP.PpSlideShowState.ppSlideShowDone)
+            {
+                Slide slide = Slides.FirstOrDefault(s => s.PSlide == Wn.Presentation.Slides[Wn.Presentation.Slides.Count]);
+                if (slide != null)
+                {
+                    app.SlideShowNextSlide -= new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+                    //to change slideshow state from ppSlideShowDone so this method does not continuously run
+                    Wn.View.Last();
+                    //if first slide of next slideshow has timings, go to slide in order to reset timings to allow it to advance (view reset timings method seemed to have no effect)
+                    if (Slides[slide.SlideIndex].PSlide != null)
+                        GoTo(Slides[slide.SlideIndex]);
+                    app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+                    Application.Current.Dispatcher.Invoke(new Action(() => { SlideIndexChanged(this, new SlideShowEventArgs(-1, slide.SlideIndex + 1)); }));
+                }
+            }
+            else
+            {
+                Slide slide = Slides.FirstOrDefault(s => s.PSlide == Wn.View.Slide);
+                if (slide != null)
+                    Application.Current.Dispatcher.Invoke(new Action(() => { SlideIndexChanged(this, new SlideShowEventArgs(-1, slide.SlideIndex)); }));
+            }
+        }
+
         private void app_SlideShowEnd(PP.Presentation Pres)
         {
             if (SlideShowEnd != null)
                 SlideShowEnd(this, new EventArgs());
         }
 
-        private void AddSlide(string text, string comments, PP.Presentation pres, SlideType type, string filename, double progress, Item scheduleItem, int itemIndex)
+        public PP.Presentation[] GetPresentations()
         {
-            Slide s = new Slide(type, filename) { Text = text, Comment = comments, Presentation = pres, SlideIndex = _slides.Count + 1, ScheduleItem = scheduleItem, ItemIndex = itemIndex };
+            return Slides.Where(s => s.Presentation != null).Select(s => s.Presentation).Distinct().ToArray();
+        }
+
+        private Slide AddSlide(string text, string comments, PP.Presentation pres, Process process, SlideType type, string filename, double progress, Item scheduleItem, int itemIndex)
+        {
+            Slide s = new Slide(type, filename) { Text = text, Comment = comments, Presentation = pres, Process = process, SlideIndex = _slides.Count + 1, ScheduleItem = scheduleItem, ItemIndex = itemIndex };
             _slides.Add(s);
 
             if (SlideAdded != null)
                 SlideAdded(this, new SlideAddedEventArgs(s, progress));
+
+            return s;
         }
 
         public void Stop()
@@ -73,16 +136,15 @@ namespace Presenter.App_Code
             if (!IsRunning)
                 return;
 
-            PP.Presentation[] list = Slides.Where(s => s.Presentation != null).Select(s => s.Presentation).Distinct().ToArray();
-
-            foreach (PP.Presentation pres in list)
+            foreach (PP.Presentation pres in GetPresentations())
             {
-                try { pres.SlideShowWindow.View.Exit(); }
+                try { pres.SlideShowWindow().View.Exit(); }
                 catch (InvalidCastException) { }
                 catch (COMException) { }
             }
 
             Slides.ForEach(s => s.Presentation = null);
+            Util.SlideShowWindows.Clear();
 
             //needs to be called before calling running.close() otherwise when slideshowend event fires it will
             //call this code leading to an eternal loop
@@ -100,11 +162,11 @@ namespace Presenter.App_Code
         {
             if (slide == null)
                 return;
-            
+
             try
             {
-                slide.Presentation.SlideShowWindow.View.GotoSlide(slide.ItemIndex);
-                User32.SetWindowPos(slide.Presentation.SlideShowWindow.HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+                slide.Presentation.SlideShowWindow().View.GotoSlide(slide.ItemIndex);
+                User32.SetWindowPos(slide.Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             catch (COMException ex)
             {
@@ -120,54 +182,62 @@ namespace Presenter.App_Code
 
         public void Next(Slide slide)
         {
-            int pos = Slides.FindIndex(s => s.SlideIndex == slide.SlideIndex) + 1;
-            if (pos == Slides.Length)
-                return;
+            int pos = slide.SlideIndex;
 
-            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow.View.CurrentShowPosition == slide.Presentation.Slides.Count)
+            //minus one from slide.Presentation.Slides.Count due to extra slide added at end that allowed slide animation on first slide
+            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition >= (slide.Presentation.Slides.Count - 1) && slide.Presentation.SlideShowWindow().View.GetClickIndex() >= slide.Presentation.SlideShowWindow().View.GetClickCount())
             {
-                if (Slides[pos].Type == SlideType.PowerPoint)
-                    Slides[pos].Presentation.SlideShowWindow.View.GotoSlide(Slides[pos].ItemIndex);
+                if (pos == Slides.Length)
+                    return;
+                Slide nextSlide = Slides[pos];
 
                 if (SlideIndexChanged != null)
                     SlideIndexChanged(this, new SlideShowEventArgs(pos, pos + 1));
+
+                //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
+                if (Slides[pos].Type == SlideType.PowerPoint)
+                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.ItemIndex);
                 return;
             }
 
-            int pcurpos = slide.Presentation.SlideShowWindow.View.CurrentShowPosition;
+            int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
             if (pcurpos > slide.Presentation.Slides.Count)
                 return;
-            slide.Presentation.SlideShowWindow.View.Next();
-            int pnewpos = slide.Presentation.SlideShowWindow.View.CurrentShowPosition;
-            
+
+            slide.Presentation.SlideShowWindow().View.Next();
+            int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
+
             if (SlideIndexChanged != null)
                 SlideIndexChanged(this, new SlideShowEventArgs(pos, pos + (pnewpos - pcurpos)));
         }
 
         public void Previous(Slide slide)
         {
-            int pos = Slides.FindIndex(s => s.SlideIndex == slide.SlideIndex) + 1;
-            if (pos == 1)
-                return;
+            int pos = slide.SlideIndex;
 
-            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow.View.CurrentShowPosition == 1)
+            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition == 1 && slide.Presentation.SlideShowWindow().View.GetClickIndex() <= 0)
             {
-                if (Slides[pos - 2].Type == SlideType.PowerPoint)
-                    Slides[pos - 2].Presentation.SlideShowWindow.View.GotoSlide(Slides[pos - 2].ItemIndex);
+                if (pos == 1)
+                    return;
+                Slide prevSlide = Slides[pos - 2]; //
 
                 if (SlideIndexChanged != null)
                     SlideIndexChanged(this, new SlideShowEventArgs(pos, pos - 1));
+
+                if (prevSlide.Type == SlideType.PowerPoint)
+                    prevSlide.Presentation.SlideShowWindow().View.GotoSlide(prevSlide.ItemIndex);
                 return;
             }
 
-            int pcurpos = slide.Presentation.SlideShowWindow.View.CurrentShowPosition;
-            slide.Presentation.SlideShowWindow.View.Previous();
-            int pnewpos = slide.Presentation.SlideShowWindow.View.CurrentShowPosition;
+            int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
+            slide.Presentation.SlideShowWindow().View.Previous();
+            int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
 
             if (SlideIndexChanged != null)
                 SlideIndexChanged(this, new SlideShowEventArgs(pos, pos + (pnewpos - pcurpos)));
         }
 
+        private PP.Presentation template;
         public void AddSlides(Item scheduleItem)
         {
             if (!scheduleItem.IsFound || !IsRunning)
@@ -180,17 +250,17 @@ namespace Presenter.App_Code
             
             if (Config.VideoFormats.Contains(filetype))
             {
-                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, null, SlideType.Video, filename, progressEnd, scheduleItem, 1);
+                AddSlide(scheduleItem.Name, Labels.SlideShowVideoLabel, null, null, SlideType.Video, filename, progressEnd, scheduleItem, 1);
             }
             else if (Config.AudioFormats.Contains(filetype))
             {
-                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, null, SlideType.Audio, filename, progressEnd, scheduleItem, 1);
+                AddSlide(scheduleItem.Name, Labels.SlideShowAudioLabel, null, null, SlideType.Audio, filename, progressEnd, scheduleItem, 1);
             }
             else if (Config.ImageFormats.Contains(filetype))
             {
-                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, null, SlideType.Image, filename, progressEnd, scheduleItem, 1);
+                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, null, null, SlideType.Image, filename, progressEnd, scheduleItem, 1);
             }
-            /*else if (Config.PowerPointTemplates.Contains(filetype))
+            else if (Config.PowerPointTemplates.Contains(filetype))
             {
                 if (template != null)
                 {
@@ -203,31 +273,71 @@ namespace Presenter.App_Code
 
                 if (SlideAdded != null)
                     SlideAdded(this, new SlideAddedEventArgs(null, progressEnd));
-            }*/
+            }
             else if (Config.PowerPointFormats.Contains(filetype))
             {
                 PP.Presentation pres = OpenPresentation(filename);
 
-                for (int i = 1; i <= pres.Slides.Count; i++)
-                    AddSlide(GetStringSummary(pres.Slides[i].Shapes), GetStringSummary(pres.Slides[i].NotesPage.Shapes), pres, SlideType.PowerPoint, "", progressEnd, scheduleItem, i);
+                if (template != null)
+                    pres.Slides.Range().Design = template.Designs[1];
 
-                pres.SlideShowSettings.AdvanceMode = PP.PpSlideShowAdvanceMode.ppSlideShowManualAdvance;
+                for (int i = 1; i <= pres.Slides.Count; i++)
+                {
+                    var _slide = AddSlide(GetStringSummary(pres.Slides[i].Shapes), GetStringSummary(pres.Slides[i].NotesPage.Shapes), pres, null, SlideType.PowerPoint, "", progressEnd, scheduleItem, i);
+                    _slide.AnimationCount = pres.Slides[i].TimeLine.MainSequence.Cast<PP.Effect>().Sum(e => e.Timing.TriggerType == PP.MsoAnimTriggerType.msoAnimTriggerOnPageClick ? 1 : 0);
+                    _slide.AdvanceOnTime = pres.Slides[i].SlideShowTransition.AdvanceOnTime;
+                }
+                    
+                pres.SlideShowSettings.AdvanceMode = PP.PpSlideShowAdvanceMode.ppSlideShowUseSlideTimings;
+                if (!Config.UseSlideTimings)
+                    pres.Slides.Range().SlideShowTransition.AdvanceOnTime = Core.MsoTriState.msoFalse;
+
                 if (!IsRunning)
                 {
                     pres.Close();
                     return;
                 }
+                    
                 pres.SlideShowSettings.Run();
+                Util.SlideShowWindows[pres] = pres.SlideShowWindow;
+                pres.SlideShowWindow().View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
 
                 var taskbarList = (ITaskbarList)new CTaskbarList();
                 taskbarList.HrInit();
-                taskbarList.DeleteTab(new IntPtr(pres.SlideShowWindow.HWND));
+                taskbarList.DeleteTab(new IntPtr(pres.SlideShowWindow().HWND));
             }
 
             if (Config.InsertBlankAfterPres && Config.PowerPointFormats.Contains(filetype) || Config.InsertBlankAfterVideo && Config.VideoFormats.Concat(Config.AudioFormats).Contains(filetype))
             {
-                AddSlide("", "Blank", null, SlideType.Blank, "", progressEnd, new Item(), 1);
+                AddSlide("", "Blank", null, null, SlideType.Blank, "", progressEnd, new Item(), 1);
             }
+
+            System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                Slides.Where(s => s.ScheduleItem == scheduleItem).ForEach(s => {
+
+                    if (s.Type == SlideType.Image)
+                    {
+                        s.Image = RetrieveImage(filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
+                        s.Preview = RetrieveImage(filename, 333, 250);
+                    }
+                    else if (s.Type == SlideType.PowerPoint)
+                    {
+                        string path = SlideShow.ExportToImage(s, s.SlideIndex, "-preview", 333, 250);
+                        if (path != "")
+                            s.Preview = new BitmapImage(new Uri(path));
+                    }
+
+                });
+            }), System.Windows.Threading.DispatcherPriority.Background);
+        }
+
+        private BitmapSource RetrieveImage(string filename, int width, int height)
+        {
+            var photo = BitmapDecoder.Create(new Uri(filename), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None).Frames[0];
+            if (photo.Width < width && photo.Height < height)
+                return photo;
+            double scale = Math.Min(width / photo.Width, height / photo.Height);
+            return BitmapFrame.Create(new TransformedBitmap(photo, new ScaleTransform(scale * 96 / photo.DpiX, scale * 96 / photo.DpiY, 0, 0)));
         }
 
         private PP.Presentation OpenPresentation(string filename)
@@ -277,11 +387,8 @@ namespace Presenter.App_Code
         /// <param name="width">The width of the desired image, set to -1 to use slide width</param>
         /// <param name="height">The height of the desired image, set to -1 to use height width</param>
         /// <returns>The file path to the created image of slide</returns>
-        public static string ExportToImage(object slide, int idx, string suffix, int width, int height)
+        public static string ExportToImage(Slide slide, int idx, string suffix, int width, int height)
         {
-            if (slide as PP.Slide == null)
-                return "";
-
             string temp;
 
             for (int i = 0; true; i++)
@@ -298,9 +405,9 @@ namespace Presenter.App_Code
                 if (!File.Exists(temp))
                     break;
             }
-
+            
             //if powerpoint closed, will throw error
-            (slide as PP.Slide).Export(temp, "PNG", width, height);
+            slide.PSlide.Export(temp, "PNG", width, height);
 
             return temp;
         }

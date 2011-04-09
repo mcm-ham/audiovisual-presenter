@@ -4,6 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
+using Point = System.Windows.Point;
+using PP = Microsoft.Office.Interop.PowerPoint;
 
 namespace Presenter.App_Code
 {
@@ -96,6 +101,60 @@ namespace Presenter.App_Code
                 return (T)element;
 
             return GetAncestorByType<T>(VisualTreeHelper.GetParent(element));
+        }
+
+        
+        public static Image Resize(this Image image, int? width, int? height, int trim = 0)
+        {
+            if (width == null && height == null)
+                return image;
+
+            int w = (width == null) ? image.Width : width.Value + trim;
+            int h = (height == null) ? image.Height : height.Value + trim;
+            float desiredRatio = (float)w / h;
+            float scale, posx, posy;
+            float ratio = (float)image.Width / image.Height;
+
+            if (image.Width < w && image.Height < h)
+            {
+                scale = 1f;
+                posy = (h - image.Height) / 2f;
+                posx = (w - image.Width) / 2f;
+            }
+            else if (ratio > desiredRatio)
+            {
+                scale = (float)w / image.Width;
+                posy = (h - (image.Height * scale)) / 2f;
+                posx = 0f;
+            }
+            else
+            {
+                scale = (float)h / image.Height;
+                posx = (w - (image.Width * scale)) / 2f;
+                posy = 0f;
+            }
+
+            Image resizedImage = new Bitmap(w - trim, h - trim);
+            Graphics g = Graphics.FromImage(resizedImage);
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+            g.DrawImage(image, posx - trim / 2, posy - trim / 2, image.Width * scale, image.Height * scale);
+
+            return resizedImage;
+        }
+        
+        public static Dictionary<PP.Presentation, PP.SlideShowWindow> SlideShowWindows = new Dictionary<PP.Presentation, PP.SlideShowWindow>();
+        /// <summary>
+        /// Workaround for PowerPoint 2010 bug where property returns the last slideshowwindow instead of the slideshowwindow belonging to specified presentation.
+        /// </summary>
+        public static PP.SlideShowWindow SlideShowWindow(this PP.Presentation key)
+        {
+            PP.SlideShowWindow wnd;
+            if (SlideShowWindows.TryGetValue(key, out wnd))
+                return wnd;
+            return key.SlideShowWindow;
         }
     }
 }

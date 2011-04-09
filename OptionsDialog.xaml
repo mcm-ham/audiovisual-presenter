@@ -4,32 +4,22 @@
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
     xml:lang="en-US"
-    Title="{x:Static Loc:Labels.OptionsWindowTitle}" Height="390" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
+    Title="{x:Static Loc:Labels.OptionsWindowTitle}" Height="350" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeProperty}">
     <Grid>
         <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="25,14,0,0" Padding="0" Text="{x:Static Loc:Labels.OptionsLibraryPath}" />
         <TextBox Height="23" Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" /> 
         <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" MinWidth="75" Padding="2" VerticalAlignment="Top" HorizontalAlignment="Left" />
         
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="22,80,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
-        <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,105,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="25,75,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
+        <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,96,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
         
-        <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerLabel}" Height="23" Margin="22,150,0,0" VerticalAlignment="Top" />
-        <StackPanel Orientation="Horizontal" Margin="22,175,0,0" VerticalAlignment="Top">
-            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerFont}" Width="60" VerticalAlignment="Center" />
-            <ComboBox Name="FontSizeList" Height="23" Width="40" Margin="10,0,0,0" />
-            <ComboBox Name="FontFamilyList" Height="23" Width="100" Margin="10,0,0,0" />
-            <ComboBox Name="FontColorList" Height="23" Width="100" Margin="10,0,0,0" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="22,205,0,0" VerticalAlignment="Top">
-            <TextBlock Text="{x:Static Loc:Labels.OptionsMessengerPosition}" Width="60" VerticalAlignment="Center" />
-            <ComboBox Name="VerLocation" Height="23" Width="100" Margin="10,0,0,0" />
-            <ComboBox Name="HorLocation" Height="23" Width="100" Margin="10,0,0,0" />
-        </StackPanel>
-        
-        <TextBlock Text="{x:Static Loc:Labels.OptionsPresentionSettings}" Margin="22,250,0,0" VerticalAlignment="Top" />
-        <CheckBox Name="InsertPresBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterPres}" Margin="22,275,0,0" Height="16" VerticalAlignment="Top" />
-        <CheckBox Name="InsertVideoBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterVideo}" Margin="22,295,0,0" Height="16" VerticalAlignment="Top" />
-        
+        <TextBlock Text="{x:Static Loc:Labels.OptionsPresentionSettings}" Margin="26,208,-1,0" VerticalAlignment="Top" />
+        <CheckBox Name="InsertPresBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterPres}" Margin="25,230,0,0" Height="16" VerticalAlignment="Top" />
+        <CheckBox Name="InsertVideoBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterVideo}" Margin="25,252,0,0" Height="16" VerticalAlignment="Top" />
+
+        <TextBlock Text="{x:Static Loc:Labels.OptionsFontSize}" Margin="25,142,0,0" VerticalAlignment="Top" />
+        <ComboBox Name="FontSize" Height="23" Width="135" Margin="25,164,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+
         <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
         <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
     </Grid>

@@ -21,8 +21,8 @@ namespace Presenter.App_Code
         {
             get
             {
-                if (_allformats == null) //.Union(PowerPointTemplates)
-                    _allformats = new Collection<string>(PowerPointFormats.Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).ToArray());
+                if (_allformats == null)
+                    _allformats = new Collection<string>(PowerPointFormats.Union(ImageFormats).Union(VideoFormats).Union(AudioFormats).Union(PowerPointTemplates).ToArray());
                 return _allformats;
             }
         }
@@ -38,7 +38,7 @@ namespace Presenter.App_Code
             }
         }
 
-        /*private static Collection<string> _templates;
+        private static Collection<string> _templates;
         public static Collection<string> PowerPointTemplates
         {
             get
@@ -47,7 +47,7 @@ namespace Presenter.App_Code
                     _templates = new Collection<string>(ConfigurationManager.AppSettings["PowerPointTemplates"].Split(','));
                 return _templates;
             }
-        }*/
+        }
 
         private static Collection<string> _image;
         public static Collection<string> ImageFormats
@@ -87,7 +87,11 @@ namespace Presenter.App_Code
         public static double FontSize
         {
             get { return (double)instance.GetValue(FontSizeProperty); }
-            set { instance.SetValue(FontSizeProperty, value); }
+            set
+            {
+                instance.SetValue(FontSizeProperty, value);
+                SaveSetting("FontSize", value.ToString());
+            }
         }
 
         private static string _path;
@@ -180,6 +184,15 @@ namespace Presenter.App_Code
             {
                 try { return (Color)ColorConverter.ConvertFromString(ConfigurationManager.AppSettings["AppColour"]); }
                 catch (Exception) { return Colors.White; }
+            }
+        }
+
+        public static Color ScreenBlankColour
+        {
+            get
+            {
+                try { return (Color)ColorConverter.ConvertFromString(ConfigurationManager.AppSettings["ScreenBlankColour"]); }
+                catch (Exception) { return Colors.Black; }
             }
         }
 
@@ -289,6 +302,12 @@ namespace Presenter.App_Code
         {
             get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["InsertBlankAfterVideo"]) ?? true; }
             set { SaveSetting("InsertBlankAfterVideo", value.ToString()); }
+        }
+
+        public static bool UseSlideTimings
+        {
+            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["UseSlideTimings"]) ?? true; }
+            set { SaveSetting("UseSlideTimings", value.ToString()); }
         }
     }
 }

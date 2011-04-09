@@ -10,7 +10,7 @@
         <StackPanel Margin="10">
             <TextBlock Text="{x:Static Loc:Labels.ShowMessageDesc}" Margin="0,0,0,10" />
             <TextBox Name="MessageValue" Width="610" Height="25" HorizontalAlignment="Left" Margin="0,0,0,10" />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                 <CheckBox Name="TimerEnabled" VerticalAlignment="Center" Margin="0,0,10,0" Click="TimerEnabled_Click" />
                 <TextBlock Text="{x:Static Loc:Labels.ShowMessageAddTimerStart}" VerticalAlignment="Center" Margin="0,0,10,0" />
                 <ComboBox Name="TimerType" Width="100" VerticalAlignment="Center" SelectionChanged="ComboBox_SelectionChanged" Margin="0,0,10,0" IsEnabled="False">
@@ -20,7 +20,22 @@
                 <TextBlock Name="TimeDesc" Text="{x:Static Loc:Labels.ShowMessageAddTimerMiddle1}" VerticalAlignment="Center" Margin="0,0,10,0" />
                 <TextBox Name="TimeValue" Width="100" VerticalAlignment="Center" Text="10" Margin="0,0,10,0" IsEnabled="False" />
             </StackPanel>
-            <Button Name="ShowBtn" MinWidth="75" Padding="2" HorizontalAlignment="Left" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" />
+            <TextBlock Text="{x:Static Loc:Labels.ShowMessageSettingsLabel}" Height="23" Margin="0,0,0,0" VerticalAlignment="Top" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Top">
+                <TextBlock Text="{x:Static Loc:Labels.ShowMessageFont}" Width="60" VerticalAlignment="Center" />
+                <ComboBox Name="FontSizeList" Height="23" Width="40" Margin="10,0,0,0" />
+                <ComboBox Name="FontFamilyList" Height="23" Width="100" Margin="10,0,0,0" />
+                <ComboBox Name="FontColorList" Height="23" Width="100" Margin="10,0,0,0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20" VerticalAlignment="Top">
+                <TextBlock Text="{x:Static Loc:Labels.ShowMessagePosition}" Width="60" VerticalAlignment="Center" />
+                <ComboBox Name="VerLocation" Height="23" Width="100" Margin="10,0,0,0" />
+                <ComboBox Name="HorLocation" Height="23" Width="100" Margin="10,0,0,0" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="ShowBtn" MinWidth="75" Padding="2" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" Margin="0,0,10,0" />
+                <Button Name="CancelBtn" MinWidth="75" Padding="2" Content="{x:Static Loc:Labels.GenericCancel}" Click="Cancel_Click" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

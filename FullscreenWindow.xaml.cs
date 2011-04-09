@@ -25,9 +25,10 @@ namespace Presenter
         public FullscreenWindow()
         {
             InitializeComponent();
-            this.Left = Config.ProjectorScreen.WorkingArea.Left;
-            this.Top = Config.ProjectorScreen.WorkingArea.Top;
-            this.Topmost = true;
+            Background = new SolidColorBrush(Config.ScreenBlankColour);
+            Left = Config.ProjectorScreen.WorkingArea.Left;
+            Top = Config.ProjectorScreen.WorkingArea.Top;
+            Topmost = true;
             Show();
         }
 

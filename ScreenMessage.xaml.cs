@@ -22,6 +22,28 @@ namespace Presenter
         {
             InitializeComponent();
             Background = new SolidColorBrush(Config.BackgroundColour);
+
+            for (double i = 20; i < 60; i += 2)
+                FontSizeList.Items.Add(i.ToString());
+            FontSizeList.SelectedValue = Config.MessengerFontSize.ToString();
+
+            foreach (FontFamily fontFamily in Fonts.SystemFontFamilies)
+                FontFamilyList.Items.Add(fontFamily.Source);
+            FontFamilyList.SelectedValue = Config.MessengerFontFamily.Source;
+
+            foreach (var color in typeof(Colors).GetProperties())
+                FontColorList.Items.Add(color.Name);
+            FontColorList.SelectedValue = Config.MessengerFontColourName;
+
+            foreach (string align in Enum.GetNames(typeof(HorizontalAlignment)))
+                if (align != "Stretch")
+                    HorLocation.Items.Add(align);
+            HorLocation.SelectedValue = Config.MessengerHorizontalPosition.ToString();
+
+            foreach (string align in Enum.GetNames(typeof(VerticalAlignment)))
+                if (align != "Stretch")
+                    VerLocation.Items.Add(align);
+            VerLocation.SelectedValue = Config.MessengerVerticalPosition.ToString();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -37,13 +59,20 @@ namespace Presenter
 
         private void Show_Click(object sender, RoutedEventArgs e)
         {
+            double size = Util.Parse<double>(FontSizeList.SelectedValue);
+            FontFamily family = new FontFamily(FontFamilyList.SelectedValue.ToString());
+            HorizontalAlignment posx = Util.Parse<HorizontalAlignment>(HorLocation.SelectedValue);
+            VerticalAlignment posy = Util.Parse<VerticalAlignment>(VerLocation.SelectedValue);
+
+            Config.SaveMessengerFont(size, family, (FontColorList.SelectedValue ?? "").ToString());
+            Config.SaveMessengerLocation(posy, posx);
+
             if (MessageValue.Text == "" && !(TimerEnabled.IsChecked ?? false))
             {
                 this.Close();
                 return;
             }
 
-            
             StackPanel panel = new StackPanel();
             string initMessage = MessageValue.Text.Trim();
             TextBlock messageLabel = new TextBlock() { Text = initMessage, Foreground = new SolidColorBrush(Config.MessengerFontColour), FontSize = Config.MessengerFontSize, FontFamily = Config.MessengerFontFamily, TextWrapping = TextWrapping.Wrap };
@@ -112,6 +141,11 @@ namespace Presenter
                 messageLabel.Text = String.Format(initMessage, TimeSpan.FromSeconds(countUp ? elasped : endTime - elasped).FormatTimeSpan(false));
             }
 
+            this.Close();
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
 
