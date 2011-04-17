@@ -725,7 +725,10 @@ namespace Presenter
                 if (p == Presentation.Slides[idx].Presentation)
                     p.SlideShowWindow.View.State = PP.PpSlideShowState.ppSlideShowRunning;
                 else
-                    p.SlideShowWindow.View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
+                {
+                    p.SlideShowWindow.View.GotoSlide(p.Slides.Count);
+                    //p.SlideShowWindow.View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
+                }
             }
             //Presentation.GetPresentations().Where(p => p != Presentation.Slides[idx].Presentation).ForEach(p => p.SlideShowWindow().View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen);
 

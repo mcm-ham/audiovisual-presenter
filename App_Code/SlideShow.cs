@@ -184,25 +184,42 @@ namespace Presenter.App_Code
         {
             int pos = slide.SlideIndex;
 
+            //GetClickIndex only available on office 2007 or higher so allow click to proceed (shows end of slideshow message) then switch to next presentation
+            bool finishedCurrent = false;
+            if (slide.Type == SlideType.PowerPoint && Util.Parse<double>(app.Version) >= 12)
+                finishedCurrent = slide.Presentation.SlideShowWindow().View.GetClickIndex() >= slide.Presentation.SlideShowWindow().View.GetClickCount();
+            
             //minus one from slide.Presentation.Slides.Count due to extra slide added at end that allowed slide animation on first slide
-            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition >= (slide.Presentation.Slides.Count - 1) && slide.Presentation.SlideShowWindow().View.GetClickIndex() >= slide.Presentation.SlideShowWindow().View.GetClickCount())
+            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition >= (slide.Presentation.Slides.Count - 1) && finishedCurrent)
             {
                 if (pos == Slides.Length)
                     return;
-                Slide nextSlide = Slides[pos];
 
                 if (SlideIndexChanged != null)
                     SlideIndexChanged(this, new SlideShowEventArgs(pos, pos + 1));
 
                 //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
-                if (Slides[pos].Type == SlideType.PowerPoint)
+                Slide nextSlide = Slides[pos];
+                if (nextSlide.Type == SlideType.PowerPoint)
                     nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.ItemIndex);
                 return;
             }
 
             int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
             if (pcurpos > slide.Presentation.Slides.Count)
+            {
+                if (pos == Slides.Length)
+                    return;
+
+                if (SlideIndexChanged != null)
+                    SlideIndexChanged(this, new SlideShowEventArgs(pos, pos + 1));
+
+                //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
+                Slide nextSlide = Slides[pos];
+                if (nextSlide.Type == SlideType.PowerPoint)
+                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.ItemIndex);
                 return;
+            }
 
             slide.Presentation.SlideShowWindow().View.Next();
             int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
@@ -215,15 +232,20 @@ namespace Presenter.App_Code
         {
             int pos = slide.SlideIndex;
 
-            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition == 1 && slide.Presentation.SlideShowWindow().View.GetClickIndex() <= 0)
+            //GetClickIndex only available on office 2007 or higher, so clicking to previous animations on first slide is not supported
+            int clickIndex = 0;
+            if (slide.Type == SlideType.PowerPoint && Util.Parse<double>(app.Version) >= 12)
+                clickIndex = slide.Presentation.SlideShowWindow().View.GetClickIndex();
+
+            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition == 1 && clickIndex <= 0)
             {
                 if (pos == 1)
                     return;
-                Slide prevSlide = Slides[pos - 2]; //
 
                 if (SlideIndexChanged != null)
                     SlideIndexChanged(this, new SlideShowEventArgs(pos, pos - 1));
 
+                Slide prevSlide = Slides[pos - 2];
                 if (prevSlide.Type == SlideType.PowerPoint)
                     prevSlide.Presentation.SlideShowWindow().View.GotoSlide(prevSlide.ItemIndex);
                 return;
@@ -287,7 +309,7 @@ namespace Presenter.App_Code
                     _slide.AnimationCount = pres.Slides[i].TimeLine.MainSequence.Cast<PP.Effect>().Sum(e => e.Timing.TriggerType == PP.MsoAnimTriggerType.msoAnimTriggerOnPageClick ? 1 : 0);
                     _slide.AdvanceOnTime = pres.Slides[i].SlideShowTransition.AdvanceOnTime;
                 }
-                    
+                
                 pres.SlideShowSettings.AdvanceMode = PP.PpSlideShowAdvanceMode.ppSlideShowUseSlideTimings;
                 if (!Config.UseSlideTimings)
                     pres.Slides.Range().SlideShowTransition.AdvanceOnTime = Core.MsoTriState.msoFalse;
@@ -300,7 +322,12 @@ namespace Presenter.App_Code
                     
                 pres.SlideShowSettings.Run();
                 Util.SlideShowWindows[pres] = pres.SlideShowWindow;
-                pres.SlideShowWindow().View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
+
+                var slide = pres.Slides.Add(pres.Slides.Count + 1, PP.PpSlideLayout.ppLayoutBlank);
+                slide.FollowMasterBackground = Core.MsoTriState.msoFalse;
+                slide.Background.Fill.ForeColor.RGB = Util.ToOle(Config.ScreenBlankColour);
+                slide.Background.Fill.Solid();
+                //pres.SlideShowWindow().View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
 
                 var taskbarList = (ITaskbarList)new CTaskbarList();
                 taskbarList.HrInit();
