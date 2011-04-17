@@ -21,24 +21,29 @@ namespace Presenter
             e.Handled = true;
 
             // Process unhandled exception
-            Exception ex = e.Exception.GetBaseException();
+            LogError(e.Exception);
+            
+            MessageBox.Show(Labels.AppError + ":" + Environment.NewLine + e.Exception.GetBaseException().Message, "Presenter", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            //if main window is not open when error is thrown, close application otherwise only way to close it will be via task manager
+            if (this.MainWindow == null || this.MainWindow.Visibility != Visibility.Visible)
+                Environment.Exit(1);
+        }
+
+        public static void LogError(Exception ex)
+        {
+            ex = ex.GetBaseException();
             string stacktrace = ex.StackTrace;
             if (stacktrace.Length > 500 && stacktrace.IndexOf(" at ", 500) != -1)
                 stacktrace = stacktrace.Substring(0, stacktrace.IndexOf("at", 500));
 
             string path = Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath) + "\\error.log";
-            StreamWriter log = new StreamWriter(File.Open(path, FileMode.Append));
-            log.WriteLine("Date: " + DateTime.Now);
-            log.WriteLine("Type: " + ex.GetType().Name);
-            log.WriteLine("Error: " + ex.Message + Environment.NewLine + "StackTrace:" + Environment.NewLine + stacktrace + Environment.NewLine);
-            log.Flush();
-            log.Close();
-            
-            MessageBox.Show(Labels.AppError + ":" + Environment.NewLine + ex.Message, "Presenter", MessageBoxButton.OK, MessageBoxImage.Error);
-
-            //if main window is not open when error is thrown, close application otherwise only way to close it will be via task manager
-            if (this.MainWindow == null || this.MainWindow.Visibility != Visibility.Visible)
-                Environment.Exit(1);
+            using (StreamWriter log = new StreamWriter(File.Open(path, FileMode.Append)))
+            {
+                log.WriteLine("Date: " + DateTime.Now);
+                log.WriteLine("Type: " + ex.GetType().Name);
+                log.WriteLine("Error: " + ex.Message + Environment.NewLine + "StackTrace:" + Environment.NewLine + stacktrace + Environment.NewLine);
+            }
         }
 
         protected override void OnStartup(StartupEventArgs e)
