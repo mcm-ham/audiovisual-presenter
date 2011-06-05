@@ -83,7 +83,7 @@
             <Button Name="RefreshBtn" MinWidth="52" Padding="2" Margin="0,94,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
             <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,128,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
             <TextBox Name="SearchTerms" Height="23" Margin="81,128,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
-            <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="FileList_MouseDoubleClick" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended">
+            <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" MouseDoubleClick="FileList_MouseDoubleClick" SelectionChanged="FileList_SelectionChanged" PreviewMouseMove="DragDrop_MouseMove" AllowDrop="True" Drop="DragDrop_DropHandler" SelectionMode="Extended">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -108,7 +108,7 @@
 
         <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="0" FontSize="20" Padding="0" />
         <TextBlock Name="ScheduleName" Grid.Column="1" Grid.Row="0" Height="28" Margin="12,98,12,0" VerticalAlignment="Top" Padding="0"/>
-        <ListBox Name="ScheduleList" Grid.Column="1" Grid.RowSpan="2" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DropDrop_MouseMove" AllowDrop="True" Drop="DropDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
+        <ListBox Name="ScheduleList" Grid.Column="1" Grid.RowSpan="2" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" MouseDoubleClick="ScheduleList_MouseDoubleClick" PreviewMouseMove="DragDrop_MouseMove" AllowDrop="True" Drop="DragDrop_DropHandler" SelectionMode="Extended" SelectionChanged="ScheduleList_SelectionChanged">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Style.Triggers>
@@ -135,12 +135,13 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <ListView x:Name="LiveList" Grid.Column="1" Grid.Row="0" Margin="12,128,12,10" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DropDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown" PreviewMouseDoubleClick="LiveList_PreviewMouseDoubleClick">
+        <ListView x:Name="LiveList" Grid.Column="1" Grid.Row="0" Margin="12,128,12,10" Visibility="Hidden" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" AllowDrop="True" Drop="DragDrop_DropHandler" PreviewKeyDown="LiveList_KeyDown" PreviewMouseDoubleClick="LiveList_PreviewMouseDoubleClick">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <!-- new styles also need to be added to HightlightRow -->
                     <EventSetter Event="MouseEnter" Handler="SlideListViewItem_MouseEnter" />
                     <EventSetter Event="PreviewMouseRightButtonDown" Handler="SlideListViewItem_MouseRightButtonDown" />
+                    <EventSetter Event="Selected" Handler="SlideListViewItem_Selected"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>

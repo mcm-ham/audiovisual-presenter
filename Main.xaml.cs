@@ -325,7 +325,7 @@ namespace Presenter
 
         #region dragdrop
         bool _dragging = false;
-        private void DropDrop_MouseMove(object sender, MouseEventArgs e)
+        private void DragDrop_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed && !_dragging)
             {
@@ -339,7 +339,7 @@ namespace Presenter
                 _dragging = false;
         }
 
-        private void DropDrop_DropHandler(object sender, DragEventArgs e)
+        private void DragDrop_DropHandler(object sender, DragEventArgs e)
         {
             ListBox parent = (ListBox)sender;
             int added = 0;
@@ -972,6 +972,11 @@ namespace Presenter
         protected void LiveList_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true; //prevent double click from selecting two different slides in quick succession if list auto scrolls in between
+        }
+
+        protected void SlideListViewItem_Selected(object sender, RoutedEventArgs e)
+        {
+            LiveList.ReleaseMouseCapture(); //if mouse is not fully released when list jumps or mouse is moved, the next item the mouse is over is selected, this prevents the mouse from selecting anything else until the mouse is re-clicked
         }
 
         protected void UseSlideTimingsChanged(object sender, RoutedEventArgs e)
