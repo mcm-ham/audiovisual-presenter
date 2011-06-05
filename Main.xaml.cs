@@ -19,7 +19,6 @@ namespace Presenter
     public partial class Main : Window
     {
         DispatcherTimer timer = new DispatcherTimer();
-        DispatcherTimer selectionDelay = new DispatcherTimer();
         DispatcherTimer searchDelay = new DispatcherTimer();
 
         public Main()
@@ -31,8 +30,6 @@ namespace Presenter
             BindLocationList();
 
             timer.Tick += new EventHandler(timer_Tick);
-            selectionDelay.Tick += new EventHandler(selectionDelay_Tick);
-            selectionDelay.Interval = TimeSpan.FromMilliseconds(100);
             searchDelay.Tick += new EventHandler(searchDelay_Tick);
             searchDelay.Interval = TimeSpan.FromMilliseconds(300);
             VideoPlayer.MediaEnded += new EventHandler(VideoPlayer_MediaEnded);
@@ -853,15 +850,6 @@ namespace Presenter
 
         protected void LiveList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //The timer is necessary to allow the selection event to complete first, otherwise if changing slide
-            //takes a while (e.g. animation delay) and the mouse is moved it will automatically select
-            //new index even though the mouse wasn't clicked.
-            selectionDelay.Start();
-        }
-
-        protected void selectionDelay_Tick(object sender, EventArgs e)
-        {
-            selectionDelay.Stop();
             if (LiveList.SelectedItem == null)
                 return;
 
