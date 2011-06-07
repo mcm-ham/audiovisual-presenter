@@ -50,8 +50,25 @@ namespace Presenter.App_Code
                 AddSlide("", "Blank", null, null, SlideType.Blank, "", 0, new Item(), 1);
 
                 //don't enable event until after all slideshows have started to prevent the slideshow window popping up on top during start
-                app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
-                new Action(() => { while (IsRunning) { System.Threading.Thread.Sleep(50); app.Presentations.Cast<PP.Presentation>().ToList().ForEach(p => { if (p.SlideShowWindow().View.State == PP.PpSlideShowState.ppSlideShowDone) app_SlideShowNextSlide(p.SlideShowWindow()); }); } }).BeginInvoke(null, null);
+                //now enabled in AddSlides method since don't want event triggered when adding slides during presentation, so event is removed then added
+                //app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+                
+                new Action(() => {
+                    //TODOo improve logic
+                    while (IsRunning)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                        foreach (var p in app.Presentations.Cast<PP.Presentation>())
+                        {
+                            try
+                            {
+                                if (p.SlideShowWindow().View.State == PP.PpSlideShowState.ppSlideShowDone)
+                                    app_SlideShowNextSlide(p.SlideShowWindow());
+                            }
+                            catch (Exception) { }
+                        }
+                    }
+                }).BeginInvoke(null, null);
             }
             catch (Exception ex)
             {
@@ -319,7 +336,9 @@ namespace Presenter.App_Code
                     pres.Close();
                     return;
                 }
-                    
+                
+                app.SlideShowNextSlide -= new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
+
                 pres.SlideShowSettings.Run();
                 Util.SlideShowWindows[pres] = pres.SlideShowWindow;
 
@@ -327,11 +346,13 @@ namespace Presenter.App_Code
                 slide.FollowMasterBackground = Core.MsoTriState.msoFalse;
                 slide.Background.Fill.ForeColor.RGB = Util.ToOle(Config.ScreenBlankColour);
                 slide.Background.Fill.Solid();
-                //pres.SlideShowWindow().View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
+                pres.SlideShowWindow.View.GotoSlide(pres.Slides.Count);
 
                 var taskbarList = (ITaskbarList)new CTaskbarList();
                 taskbarList.HrInit();
                 taskbarList.DeleteTab(new IntPtr(pres.SlideShowWindow().HWND));
+
+                app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
             }
 
             if (Config.InsertBlankAfterPres && Config.PowerPointFormats.Contains(filetype) || Config.InsertBlankAfterVideo && Config.VideoFormats.Concat(Config.AudioFormats).Contains(filetype))

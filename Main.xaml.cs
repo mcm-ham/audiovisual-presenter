@@ -716,18 +716,12 @@ namespace Presenter
                 LiveList.SelectionChanged += new SelectionChangedEventHandler(LiveList_SelectionChanged);
             }
 
-            //TODO: improve logic
-            foreach (var p in Presentation.GetPresentations())
+            if (Presentation.Slides[idx].Presentation != Presentation.Slides[previdx].Presentation)
             {
-                if (p == Presentation.Slides[idx].Presentation)
-                    p.SlideShowWindow.View.State = PP.PpSlideShowState.ppSlideShowRunning;
-                else
-                {
+                var p = Presentation.Slides[previdx].Presentation;
+                if (p != null)
                     p.SlideShowWindow.View.GotoSlide(p.Slides.Count);
-                    //p.SlideShowWindow.View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen;
-                }
             }
-            //Presentation.GetPresentations().Where(p => p != Presentation.Slides[idx].Presentation).ForEach(p => p.SlideShowWindow().View.State = Config.ScreenBlankColour == Colors.White ? PP.PpSlideShowState.ppSlideShowWhiteScreen : PP.PpSlideShowState.ppSlideShowBlackScreen);
 
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
             {
