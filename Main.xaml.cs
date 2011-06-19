@@ -231,6 +231,7 @@ namespace Presenter
 
             foreach (string file in FileList.SelectedItems)
                 SelectedSchedule.AddItem(GetSelectedPath() + "\\" + file);
+            SelectedSchedule.Save();
             BindScheduleList();
 
             if (Presentation != null && Presentation.IsRunning)
@@ -347,7 +348,13 @@ namespace Presenter
                 if (!String.IsNullOrEmpty(data)) //adding new from filelist
                 {
                     SelectedSchedule.AddItem(GetSelectedPath() + "\\" + data);
+                    SelectedSchedule.Save();
                     added++;
+
+                    //support insertion of presentation where mouse cursor is when dragging from filelist
+                    Item source = SelectedSchedule.Items.Last();
+                    Item dest = GetObjectDataFromPoint(parent, e.GetPosition(parent)) as Item;
+                    SelectedSchedule.ReOrder(source, dest);
                 }
                 else if (e.Data.GetFormats().Contains("FileDrop")) //add new from explorer
                 {
@@ -365,6 +372,7 @@ namespace Presenter
                         if (res == 0) //successful
                             added++;
                     }
+                    SelectedSchedule.Save();
                 }
                 else if (parent.Name != "LiveList") //reordering
                 {
@@ -459,8 +467,7 @@ namespace Presenter
         protected void RemoveFile(object sender, RoutedEventArgs e)
         {
             int idx = ScheduleList.SelectedIndex;
-            foreach (Item item in ScheduleList.SelectedItems)
-                SelectedSchedule.RemoveItem(item);
+            SelectedSchedule.RemoveItems(ScheduleList.SelectedItems.Cast<Item>());
             BindScheduleList();
             idx = Math.Min(idx, ScheduleList.Items.Count - 1);
             ScheduleList.SelectedIndex = idx;
@@ -720,7 +727,7 @@ namespace Presenter
             {
                 var p = Presentation.Slides[previdx].Presentation;
                 if (p != null)
-                    p.SlideShowWindow.View.GotoSlide(p.Slides.Count);
+                    p.SlideShowWindow().View.GotoSlide(p.Slides.Count);
             }
 
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
@@ -739,14 +746,14 @@ namespace Presenter
 
                 if (Presentation.Slides.Length > idx)
                     SetPreview(CurrentImage, Presentation.Slides[idx].Preview);
-
-                //autoscroll
-                if (idx > previdx)
-                    LiveList.ScrollIntoView(LiveList.Items[Math.Min(LiveList.Items.Count - 1, idx + 5)]);
-                else
-                    LiveList.ScrollIntoView(LiveList.Items[Math.Max(0, idx - 5)]);
-                previdx = idx;
             }
+
+            //autoscroll
+            if (idx > previdx)
+                LiveList.ScrollIntoView(LiveList.Items[Math.Min(LiveList.Items.Count - 1, idx + 5)]);
+            else
+                LiveList.ScrollIntoView(LiveList.Items[Math.Max(0, idx - 5)]);
+            previdx = idx;
         }
 
         protected void SetPreview(Border preview, BitmapSource image)

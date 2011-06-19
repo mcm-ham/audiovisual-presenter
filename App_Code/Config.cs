@@ -33,7 +33,11 @@ namespace Presenter.App_Code
             get
             {
                 if (_powerpoint == null)
+                {
+                    if (ConfigurationManager.AppSettings["PowerPointFormats"] == null)
+                        SaveSetting("PowerPointFormats", "ppt,pps,pptx,ppsx,pptm");
                     _powerpoint = new Collection<string>(ConfigurationManager.AppSettings["PowerPointFormats"].Split(','));
+                }
                 return _powerpoint;
             }
         }
@@ -44,7 +48,11 @@ namespace Presenter.App_Code
             get
             {
                 if (_templates == null)
+                {
+                    if (ConfigurationManager.AppSettings["PowerPointTemplates"] == null)
+                        SaveSetting("PowerPointTemplates", "pot,potx,potm");
                     _templates = new Collection<string>(ConfigurationManager.AppSettings["PowerPointTemplates"].Split(','));
+                }
                 return _templates;
             }
         }
@@ -55,7 +63,11 @@ namespace Presenter.App_Code
             get
             {
                 if (_image == null)
+                {
+                    if (ConfigurationManager.AppSettings["ImageFormats"] == null)
+                        SaveSetting("ImageFormats", "jpg,jpeg,wmp");
                     _image = new Collection<string>(ConfigurationManager.AppSettings["ImageFormats"].Split(','));
+                }
                 return _image;
             }
         }
@@ -67,7 +79,11 @@ namespace Presenter.App_Code
             get
             {
                 if (_video == null)
+                {
+                    if (ConfigurationManager.AppSettings["VideoFormats"] == null)
+                        SaveSetting("VideoFormats", "dvr-ms,wtv,mpeg,mpg,m1v,m2v,mod,mpa,mpe,ifo,vob,mp4,m4v,mp4v,3gp,3gpp,3g2,3gp2,m2ts,m2t,mts,ts,tts,mov,avi,wmv,asf,wm,wmd,flv");
                     _video = new Collection<string>(ConfigurationManager.AppSettings["VideoFormats"].Split(','));
+                }
                 return _video;
             }
         }
@@ -78,7 +94,11 @@ namespace Presenter.App_Code
             get
             {
                 if (_audio == null)
+                {
+                    if (ConfigurationManager.AppSettings["AudioFormats"] == null)
+                        SaveSetting("AudioFormats", "mid,rmi,midi,m4a,wav,snd,au,aif,aifc,aiff,wma,mp2,mp3,adts,adt,aac");
                     _audio = new Collection<string>(ConfigurationManager.AppSettings["AudioFormats"].Split(','));
+                }
                 return _audio;
             }
         }

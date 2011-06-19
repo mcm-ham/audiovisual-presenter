@@ -54,7 +54,7 @@ namespace Presenter.App_Code
                 //app.SlideShowNextSlide += new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
                 
                 new Action(() => {
-                    //TODOo improve logic
+                    //TODO improve logic
                     while (IsRunning)
                     {
                         System.Threading.Thread.Sleep(100);
@@ -346,7 +346,10 @@ namespace Presenter.App_Code
                 slide.FollowMasterBackground = Core.MsoTriState.msoFalse;
                 slide.Background.Fill.ForeColor.RGB = Util.ToOle(Config.ScreenBlankColour);
                 slide.Background.Fill.Solid();
-                pres.SlideShowWindow.View.GotoSlide(pres.Slides.Count);
+                pres.SlideShowWindow().View.GotoSlide(pres.Slides.Count);
+                
+                //ensure presenter has focus otherwise if ppt has focus and user moves scrollwheel over presenter expecting the listview to scroll it will actually change slides instead and can end slideshow unexpectedly
+                System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.MainWindow.Activate(); }));
 
                 var taskbarList = (ITaskbarList)new CTaskbarList();
                 taskbarList.HrInit();

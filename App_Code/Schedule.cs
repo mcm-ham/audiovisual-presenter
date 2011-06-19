@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Presenter.App_Code
 {
@@ -25,7 +26,7 @@ namespace Presenter.App_Code
         }
 
         /// <summary>
-        /// Adds an item to schedule and saves back to the database immediately.
+        /// Adds an item to schedule (does not save back to the database immediately).
         /// </summary>
         /// <returns>Returns 0 if successful or 1 if the file is not supported</returns>
         public int AddItem(string filename)
@@ -39,7 +40,6 @@ namespace Presenter.App_Code
                 Filename = filename,
                 Ordinal = (short)((Items.Max(i => (short?)i.Ordinal) ?? -1) + 1)
             });
-            Save();
             return 0;
         }
 
@@ -54,26 +54,31 @@ namespace Presenter.App_Code
             DB.Instance.SaveChanges();
         }
 
+        public void RemoveItems(IEnumerable<Item> items)
+        {
+            foreach (var item in items)
+                DB.Instance.Items.DeleteObject(item);
+
+            ReOrder(null, null);
+        }
+
+        /// <summary>
+        /// Change the order so that source is moved to where dest now occupies or last if dest is null
+        /// </summary>
         public void ReOrder(Item source, Item dest)
         {
-            if (source == null)
-                return;
-
-            short destIdx = (dest == null) ? (short)(Items.Count - 1) : Items.FirstOrDefault(i => i.ID == dest.ID).Ordinal;
-            var list = Items.ToDictionary(i => i.Ordinal);
-            
-            if (destIdx < source.Ordinal)
+            short idx = 0;
+            foreach (var item in Items.OrderBy(i => i.Ordinal))
             {
-                for (short j = destIdx; j < source.Ordinal; j++)
-                    list[j].Ordinal++;
+                if (item == source || item.EntityState == System.Data.EntityState.Deleted)
+                    continue;
+                if (item == dest && source != null)
+                    source.Ordinal = idx++;
+                item.Ordinal = idx++;
             }
-            else if (destIdx > source.Ordinal)
-            {
-                for (short j = (short)(source.Ordinal + 1); j <= destIdx; j++)
-                    list[j].Ordinal--;
-            }
+            if (source != null && dest == null && source.EntityState != System.Data.EntityState.Deleted)
+                source.Ordinal = idx;
 
-            source.Ordinal = destIdx;
             Save();
         }
 
