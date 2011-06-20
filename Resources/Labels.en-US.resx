@@ -144,6 +144,9 @@
   <data name="AppImageError" xml:space="preserve">
     <value>An error occurred processing an image file.</value>
   </data>
+  <data name="AppRequiresExtendedDesktop" xml:space="preserve">
+    <value>This application requires windows to be set up with extended desktop instead of clone mode for dual display. For details see: 'http://www.microsoft.com/athome/organization/twomonitors.aspx'.</value>
+  </data>
   <data name="AppRequiresOffice" xml:space="preserve">
     <value>This program requires Microsoft Office XP with PowerPoint or greater.</value>
   </data>
