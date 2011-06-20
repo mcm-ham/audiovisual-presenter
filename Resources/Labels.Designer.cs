@@ -142,7 +142,7 @@ namespace Presenter.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This application requires windows to be set up with extended desktop instead of clone mode for dual display. For details see: &apos;http://www.microsoft.com/athome/organization/twomonitors.aspx&apos;..
+        ///   Looks up a localized string similar to Warning this program is designed for a dual display system set up with extended desktop. For details see: &apos;http://www.microsoft.com/athome/organization/twomonitors.aspx&apos;..
         /// </summary>
         public static string AppRequiresExtendedDesktop {
             get {

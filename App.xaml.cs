@@ -113,20 +113,6 @@ namespace Presenter
                     if (key == null || Util.Parse<int>((key.GetValue("PlayerVersion") ?? "").ToString().Split(',').FirstOrDefault()) < 10)
                     if (!Application.Current.Dispatcher.CheckAccess())
                         Application.Current.Dispatcher.Invoke(new Action(() => { MessageBox.Show(MainWindow, Labels.AppRequiresWMP, "", MessageBoxButton.OK, MessageBoxImage.Exclamation); }));
-
-                    var dd = new User32.DISPLAY_DEVICE();
-                    dd.cb = System.Runtime.InteropServices.Marshal.SizeOf(dd);
-                    uint defMon = 0;
-                    int monCount = 0;
-                    while (User32.EnumDisplayDevices(null, defMon, ref dd, 0))
-                    {
-                        if (dd.DeviceID != "")
-                            monCount++;
-                        defMon++;
-                    }
-
-                    if (monCount > 1 && System.Windows.Forms.Screen.AllScreens.Length == 1)
-                        Application.Current.Dispatcher.Invoke(new Action(() => { MessageBox.Show(MainWindow, Labels.AppRequiresExtendedDesktop, "", MessageBoxButton.OK, MessageBoxImage.Exclamation); }));
                 }
             }).BeginInvoke(null, null);
         }
