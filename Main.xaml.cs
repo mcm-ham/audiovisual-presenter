@@ -561,6 +561,9 @@ namespace Presenter
                 return;
             }
 
+            if (System.Windows.Forms.Screen.AllScreens.Length == 1)
+                MessageBox.Show(Labels.AppRequiresExtendedDesktop, "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
             fullscreen = new FullscreenWindow();
             StartBtn.Visibility = Visibility.Collapsed;
             StopBtn.Visibility = Visibility.Visible;
