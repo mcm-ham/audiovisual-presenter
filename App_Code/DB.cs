@@ -19,7 +19,7 @@ namespace Presenter.App_Code
             {
                 if (_data == null)
                 {
-                    //<add name="DatabaseEntities" connectionString="metadata=res://*/App_Code.Model.csdl|res://*/App_Code.Model.ssdl|res://*/App_Code.Model.msl;provider=System.Data.SqlServerCe.3.5;provider connection string=&quot;Data Source=|DataDirectory|\Database.sdf&quot;" providerName="System.Data.EntityClient" />
+                    //<add name="DatabaseEntities" connectionString="metadata=res://*/App_Code.Model.csdl|res://*/App_Code.Model.ssdl|res://*/App_Code.Model.msl;provider=System.Data.SqlServerCe.4.0;provider connection string=&quot;Data Source=|DataDirectory|\Database.sdf&quot;" providerName="System.Data.EntityClient" />
 
                     EntityConnection connection = new EntityConnection(
                         new MetadataWorkspace(

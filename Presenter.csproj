@@ -134,9 +134,9 @@
     <Compile Include="App_Code\Flag.cs" />
     <Compile Include="App_Code\Item.cs" />
     <Compile Include="App_Code\Model.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>Model.edmx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="App_Code\Schedule.cs" />
     <Compile Include="App_Code\Slide.cs" />
@@ -189,10 +189,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <EntityDeploy Include="App_Code\Model.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model.Designer.cs</LastGenOutput>
-    </EntityDeploy>
     <None Include="base.pot">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -324,6 +320,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Library\Videos\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="App_Code\Model.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model.Designer.cs</LastGenOutput>
+    </EntityDeploy>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
