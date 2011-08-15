@@ -50,9 +50,13 @@ namespace Presenter.App_Code
 
         public static int FindIndex<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            for (int i = 0; i < source.Count(); i++)
-                if (predicate.Invoke(source.ElementAt(i)))
-                    return i;
+            int idx = 0;
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                    return idx;
+                idx++;
+            }
             return -1;
         }
 
