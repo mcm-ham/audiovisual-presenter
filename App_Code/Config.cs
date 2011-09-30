@@ -329,5 +329,14 @@ namespace Presenter.App_Code
             get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["UseSlideTimings"]) ?? true; }
             set { SaveSetting("UseSlideTimings", value.ToString()); }
         }
+
+        /// <summary>
+        /// Specifies the location of the slide preview panel. Set to true for it to appear on the right, or false for it to appear along the bottom.
+        /// </summary>
+        public static bool SlidePreviewBottom
+        {
+            get { return Util.Parse<bool>(ConfigurationManager.AppSettings["SlidePreviewBottom"]); }
+            set { SaveSetting("SlidePreviewBottom", value.ToString()); }
+        }
     }
 }
