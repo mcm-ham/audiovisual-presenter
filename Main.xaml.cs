@@ -1337,7 +1337,7 @@ namespace Presenter
                 //if height is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
                 if (PreviewImage.Height * ratio < 1.0)
                     return;
-
+                
                 PreviewImage.Height *= ratio;
                 PreviewImage.Width *= ratio;
 
@@ -1347,7 +1347,7 @@ namespace Presenter
                 if (VideoDisplay.ActualHeight <= 0 || MediaControls.ActualHeight > PreviewPanel.ActualHeight)
                     return;
 
-                ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight - 5) / VideoDisplay.ActualHeight;
+                ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight) / VideoDisplay.ActualHeight;
                 VideoDisplay.Height *= ratio;
                 VideoDisplay.Width *= ratio;
             }

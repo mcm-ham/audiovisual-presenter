@@ -331,11 +331,12 @@ namespace Presenter.App_Code
         }
 
         /// <summary>
-        /// Specifies the location of the slide preview panel. Set to true for it to appear on the right, or false for it to appear along the bottom.
+        /// Specifies the location of the slide preview panel. Set to true for it to appear on the right, or false for it to
+        /// appear along the bottom. The default value is false for wide screen monitors, true if not.
         /// </summary>
         public static bool SlidePreviewBottom
         {
-            get { return Util.Parse<bool>(ConfigurationManager.AppSettings["SlidePreviewBottom"]); }
+            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["SlidePreviewBottom"]) ?? (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / (double)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height < 1.5); }
             set { SaveSetting("SlidePreviewBottom", value.ToString()); }
         }
     }
