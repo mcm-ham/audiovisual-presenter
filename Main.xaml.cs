@@ -655,6 +655,29 @@ namespace Presenter
                 progress = null;
                 fullscreen.Topmost = false;
             }));
+
+            var worker = new System.ComponentModel.BackgroundWorker();
+            worker.DoWork += (sen, ev) => {
+                Presentation.Slides.ForEach(s =>
+                {
+                    if (s.Type == SlideType.Image)
+                    {
+                        Dispatcher.BeginInvoke(new Action(() => {
+                            s.Image = SlideShow.RetrieveImage(s.Filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
+                            s.Preview = SlideShow.RetrieveImage(s.Filename, 333, 250);
+                        }));
+                    }
+                    else if (s.Type == SlideType.PowerPoint)
+                    {
+                        if (s.ItemIndex == 1)
+                            s.Presentation.SlideShowWindow().View.GotoSlide(s.Presentation.Slides.Count);
+                        string path = SlideShow.ExportToImage(s, s.SlideIndex, "-preview", 333, 250);
+                        if (path != "")
+                            Dispatcher.BeginInvoke(new Action(() => { s.Preview = new BitmapImage(new Uri(path)); }));
+                    }
+                });
+            };
+            worker.RunWorkerAsync();
         }
 
         protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
