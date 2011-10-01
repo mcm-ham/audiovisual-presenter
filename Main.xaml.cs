@@ -658,23 +658,11 @@ namespace Presenter
 
             var worker = new System.ComponentModel.BackgroundWorker();
             worker.DoWork += (sen, ev) => {
-                Presentation.Slides.ForEach(s =>
+                Presentation.Slides.Where(s => s.Type == SlideType.PowerPoint).ForEach(s =>
                 {
-                    if (s.Type == SlideType.Image)
-                    {
-                        Dispatcher.BeginInvoke(new Action(() => {
-                            s.Image = SlideShow.RetrieveImage(s.Filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
-                            s.Preview = SlideShow.RetrieveImage(s.Filename, 333, 250);
-                        }));
-                    }
-                    else if (s.Type == SlideType.PowerPoint)
-                    {
-                        if (s.ItemIndex == 1)
-                            s.Presentation.SlideShowWindow().View.GotoSlide(s.Presentation.Slides.Count);
-                        string path = SlideShow.ExportToImage(s, s.SlideIndex, "-preview", 333, 250);
-                        if (path != "")
-                            Dispatcher.BeginInvoke(new Action(() => { s.Preview = new BitmapImage(new Uri(path)); }));
-                    }
+                    string path = SlideShow.ExportToImage(s, s.SlideIndex, "-preview", 333, 250);
+                    if (path != "")
+                        Dispatcher.BeginInvoke(new Action(() => { s.Preview = new BitmapImage(new Uri(path)); }));
                 });
             };
             worker.RunWorkerAsync();
@@ -791,7 +779,7 @@ namespace Presenter
             {
                 var p = Presentation.Slides[previdx].Presentation;
                 if (p != null)
-                    p.SlideShowWindow().View.GotoSlide(p.Slides.Count);
+                    p.SlideShowWindow().View.GotoSlide(1);
             }
 
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
@@ -828,9 +816,19 @@ namespace Presenter
                 return;
             }
             preview.Background = new ImageBrush(image);
-            double x = (333 - image.PixelWidth) / 2.0;
-            double y = (250 - image.PixelHeight) / 2.0;
-            preview.BorderThickness = new Thickness(x, y, x, y);
+
+            var widthRatio = image.PixelWidth / preview.ActualWidth;
+            var heightRatio = image.PixelHeight / preview.ActualHeight;
+            if (widthRatio > heightRatio)
+            {
+                var y = (preview.ActualHeight - image.PixelHeight / widthRatio) / 2.0;
+                preview.BorderThickness = new Thickness(0, y, 0, y);
+            }
+            else
+            {
+                var x = (preview.ActualWidth - image.PixelWidth / heightRatio) / 2.0;
+                preview.BorderThickness = new Thickness(x, 0, x, 0);
+            }
         }
 
         protected void LiveList_KeyDown(object sender, KeyEventArgs e)

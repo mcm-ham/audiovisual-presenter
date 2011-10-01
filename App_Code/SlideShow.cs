@@ -183,7 +183,7 @@ namespace Presenter.App_Code
 
             try
             {
-                slide.Presentation.SlideShowWindow().View.GotoSlide(slide.ItemIndex);
+                slide.Presentation.SlideShowWindow().View.GotoSlide(slide.PSlide.SlideIndex);
                 User32.SetWindowPos(slide.Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             catch (COMException ex)
@@ -219,7 +219,7 @@ namespace Presenter.App_Code
                 //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
                 Slide nextSlide = Slides[pos];
                 if (nextSlide.Type == SlideType.PowerPoint)
-                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.ItemIndex);
+                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.PSlide.SlideIndex);
                 return;
             }
 
@@ -235,7 +235,7 @@ namespace Presenter.App_Code
                 //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
                 Slide nextSlide = Slides[pos];
                 if (nextSlide.Type == SlideType.PowerPoint)
-                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.ItemIndex);
+                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.PSlide.SlideIndex);
                 return;
             }
 
@@ -265,7 +265,7 @@ namespace Presenter.App_Code
 
                 Slide prevSlide = Slides[pos - 2];
                 if (prevSlide.Type == SlideType.PowerPoint)
-                    prevSlide.Presentation.SlideShowWindow().View.GotoSlide(prevSlide.ItemIndex);
+                    prevSlide.Presentation.SlideShowWindow().View.GotoSlide(prevSlide.PSlide.SlideIndex);
                 return;
             }
 
@@ -298,7 +298,11 @@ namespace Presenter.App_Code
             }
             else if (Config.ImageFormats.Contains(filetype))
             {
-                AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, null, null, SlideType.Image, filename, progressEnd, scheduleItem, 1);
+                var s = AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, null, null, SlideType.Image, filename, progressEnd, scheduleItem, 1);
+                Application.Current.Dispatcher.BeginInvoke(new Action(() => {
+                    s.Image = SlideShow.RetrieveImage(s.Filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
+                    s.Preview = SlideShow.RetrieveImage(s.Filename, 333, 250);
+                }));
             }
             else if (Config.PowerPointTemplates.Contains(filetype))
             {
@@ -340,13 +344,14 @@ namespace Presenter.App_Code
 
                 app.SlideShowNextSlide -= new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
 
-                pres.SlideShowSettings.Run();
-                Util.SlideShowWindows[pres] = pres.SlideShowWindow;
-
-                var slide = pres.Slides.Add(pres.Slides.Count + 1, PP.PpSlideLayout.ppLayoutBlank);
+                var slide = pres.Slides.Add(1, PP.PpSlideLayout.ppLayoutBlank);
                 slide.FollowMasterBackground = Core.MsoTriState.msoFalse;
                 slide.Background.Fill.ForeColor.RGB = Util.ToOle(Config.ScreenBlankColour);
                 slide.Background.Fill.Solid();
+                slide.SlideShowTransition.EntryEffect = PP.PpEntryEffect.ppEffectNone;
+
+                pres.SlideShowSettings.Run();
+                Util.SlideShowWindows[pres] = pres.SlideShowWindow;
 
                 //ensure presenter has focus otherwise if ppt has focus and user moves scrollwheel over presenter expecting the listview to scroll it will actually change slides instead and can end slideshow unexpectedly
                 System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.MainWindow.Activate(); }));

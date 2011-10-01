@@ -189,9 +189,6 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="base.pot">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="error.log">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

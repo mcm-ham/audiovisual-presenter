@@ -80,7 +80,7 @@ namespace Presenter.App_Code
         {
             get
             {
-                try { return Presentation.Slides[ItemIndex]; }
+                try { return Presentation.Slides[ItemIndex + 1]; }
                 catch (Exception) { return null; }
             }
         }
