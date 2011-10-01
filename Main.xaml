@@ -13,13 +13,14 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Name="col1" />
             <ColumnDefinition Name="col2" />
+            <ColumnDefinition Name="col3" Width="0" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="310" />
+            <RowDefinition Name="row1" />
+            <RowDefinition Name="row2" Height="310" />
         </Grid.RowDefinitions>
         
-        <ToolBar VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Row="0">
+        <ToolBar VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.Row="0">
             <Button Click="Planner_Click" VerticalAlignment="Top">
                 <StackPanel>
                     <Image Width="32" Source="icons/calendar_date.png" HorizontalAlignment="Center" />
@@ -171,15 +172,16 @@
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>
-        
+
         <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="2" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" Background="#828790" />
+        <GridSplitter Name="GridSplitter2" ResizeDirection="Columns" Width="2" HorizontalAlignment="Left" Margin="0,128,0,45" Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Stretch" LayoutUpdated="GridSplitter_LayoutUpdated" Visibility="Hidden" Background="#828790" />
         
         <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" Visibility="Hidden">
             <Border Name="PreviewImage" BorderBrush="Black" Margin="0,0,20,0" Width="333" Height="250" />
             <Border Name="CurrentImage" BorderBrush="Black" Width="333" Height="250" />
 
             <StackPanel Name="VideoPanel" Visibility="Collapsed">
-                <Rectangle Name="VideoDisplay" Height="220" Visibility="Hidden">
+                <Rectangle Name="VideoDisplay" Width="333" Height="220" Visibility="Hidden">
                     <Rectangle.Fill>
                         <DrawingBrush>
                             <DrawingBrush.Drawing>
@@ -195,18 +197,18 @@
                         </DrawingBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-                <StackPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
-                    <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="5" />
-                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="5" />
+                <WrapPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal" Margin="0,5,0,0">
+                    <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="0,0,5,0" />
+                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="0,0,5,0" />
 
-                    <TextBlock VerticalAlignment="Center" Margin="5" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" />
-                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="60"/>
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" />
+                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="50"/>
 
-                    <TextBlock Margin="5" VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
-                    <TextBox Name="currentTime" Width="40" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" />
-                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="100" />
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
+                    <TextBox Name="currentTime" Width="30" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" />
+                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="60" />
                     <TextBlock Name="totalTime" VerticalAlignment="Center" />
-                </StackPanel>
+                </WrapPanel>
             </StackPanel>
         </StackPanel>
         
@@ -223,7 +225,7 @@
             <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Down_Click" IsEnabled="False" />
         </StackPanel>
 
-        <Grid Name="RemotePanel" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Hidden" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">
+        <Grid Name="RemotePanel" Grid.ColumnSpan="3" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Hidden" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">
             <Rectangle Fill="White" Stroke="Black" StrokeDashCap="Square" StrokeThickness="2" />
             <TextBlock Text="{x:Static Loc:Labels.MainDescRemote}" Padding="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" />
         </Grid>
