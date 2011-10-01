@@ -315,7 +315,7 @@ namespace Presenter.App_Code
             }
             else if (Config.PowerPointFormats.Contains(filetype))
             {
-                PP.Presentation pres = OpenPresentation(filename);
+                var pres = OpenPresentation(filename);
 
                 if (template != null)
                     pres.Slides.Range().Design = template.Designs[1];
@@ -326,7 +326,7 @@ namespace Presenter.App_Code
                     _slide.AnimationCount = pres.Slides[i].TimeLine.MainSequence.Cast<PP.Effect>().Sum(e => e.Timing.TriggerType == PP.MsoAnimTriggerType.msoAnimTriggerOnPageClick ? 1 : 0);
                     _slide.AdvanceOnTime = pres.Slides[i].SlideShowTransition.AdvanceOnTime;
                 }
-                
+
                 pres.SlideShowSettings.AdvanceMode = PP.PpSlideShowAdvanceMode.ppSlideShowUseSlideTimings;
                 if (!Config.UseSlideTimings)
                     pres.Slides.Range().SlideShowTransition.AdvanceOnTime = Core.MsoTriState.msoFalse;
@@ -336,7 +336,7 @@ namespace Presenter.App_Code
                     pres.Close();
                     return;
                 }
-                
+
                 app.SlideShowNextSlide -= new PP.EApplication_SlideShowNextSlideEventHandler(app_SlideShowNextSlide);
 
                 pres.SlideShowSettings.Run();
@@ -346,8 +346,7 @@ namespace Presenter.App_Code
                 slide.FollowMasterBackground = Core.MsoTriState.msoFalse;
                 slide.Background.Fill.ForeColor.RGB = Util.ToOle(Config.ScreenBlankColour);
                 slide.Background.Fill.Solid();
-                pres.SlideShowWindow().View.GotoSlide(pres.Slides.Count);
-                
+
                 //ensure presenter has focus otherwise if ppt has focus and user moves scrollwheel over presenter expecting the listview to scroll it will actually change slides instead and can end slideshow unexpectedly
                 System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.MainWindow.Activate(); }));
 
@@ -362,27 +361,9 @@ namespace Presenter.App_Code
             {
                 AddSlide("", "Blank", null, null, SlideType.Blank, "", progressEnd, new Item(), 1);
             }
-
-            System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                Slides.Where(s => s.ScheduleItem == scheduleItem).ForEach(s => {
-
-                    if (s.Type == SlideType.Image)
-                    {
-                        s.Image = RetrieveImage(filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
-                        s.Preview = RetrieveImage(filename, 333, 250);
-                    }
-                    else if (s.Type == SlideType.PowerPoint)
-                    {
-                        string path = SlideShow.ExportToImage(s, s.SlideIndex, "-preview", 333, 250);
-                        if (path != "")
-                            s.Preview = new BitmapImage(new Uri(path));
-                    }
-
-                });
-            }), System.Windows.Threading.DispatcherPriority.Background);
         }
 
-        private BitmapSource RetrieveImage(string filename, int width, int height)
+        public static BitmapSource RetrieveImage(string filename, int width, int height)
         {
             var photo = BitmapDecoder.Create(new Uri(filename), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.None).Frames[0];
             if (photo.Width < width && photo.Height < height)
