@@ -398,6 +398,9 @@
   <data name="OptionsPresentionSettings" xml:space="preserve">
     <value>Presentation Settings</value>
   </data>
+  <data name="OptionsShowPreviewBottom" xml:space="preserve">
+    <value>Show slide previews along bottom</value>
+  </data>
   <data name="OptionsSlideDelay" xml:space="preserve">
     <value>Slide Preview Popup Delay (sec)</value>
   </data>

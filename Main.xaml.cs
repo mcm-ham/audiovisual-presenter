@@ -571,9 +571,8 @@ namespace Presenter
             UseSlideTimings.Visibility = Visibility.Visible;
             TimerBtn.Visibility = Visibility.Visible;
             Expander1.Visibility = Visibility.Visible;
-            PreviewPanel.Visibility = Visibility.Visible;
-            GridSplitter1.Visibility = Visibility.Visible;
             ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Hidden); //needs to be hidden and not collapsed because FileList binds to it
+            PreviewPanel.Visibility = Visibility.Visible;
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Visible);
             LiveList.SelectedIndex = 0;
             PrevBtn.Content = Labels.MainBtnPrev;
@@ -589,6 +588,44 @@ namespace Presenter
 
             double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
+            if (!Config.SlidePreviewBottom)
+            {
+                col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(350, GridUnitType.Pixel));
+                widthIncrease -= 350;
+                Grid.SetRowSpan(LiveList, 2);
+                Grid.SetColumn(PreviewPanel, 2);
+                Grid.SetRow(PreviewPanel, 0);
+                Grid.SetRowSpan(PreviewPanel, 2);
+                PreviewPanel.VerticalAlignment = VerticalAlignment.Top;
+                PreviewPanel.HorizontalAlignment = HorizontalAlignment.Right;
+                PreviewPanel.Orientation = Orientation.Vertical;
+                PreviewPanel.MaxHeight = Double.PositiveInfinity;
+                PreviewPanel.MaxWidth = 350;
+                PreviewPanel.Height = Double.NaN;
+                PreviewPanel.Margin = new Thickness(0, 128, 10, 0);
+                PreviewImage.Margin = new Thickness(0, 0, 0, 20);
+                LiveList.Margin = new Thickness(12, 128, 12, 46);
+                GridSplitter2.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(0, GridUnitType.Pixel));
+                Grid.SetRowSpan(LiveList, 1);
+                Grid.SetColumn(PreviewPanel, 1);
+                Grid.SetRow(PreviewPanel, 1);
+                Grid.SetRowSpan(PreviewPanel, 1);
+                PreviewPanel.VerticalAlignment = VerticalAlignment.Bottom;
+                PreviewPanel.HorizontalAlignment = HorizontalAlignment.Left;
+                PreviewPanel.Orientation = Orientation.Horizontal;
+                PreviewPanel.MaxHeight = 250;
+                PreviewPanel.MaxWidth = Double.PositiveInfinity;
+                PreviewPanel.Width = Double.NaN;
+                PreviewPanel.Margin = new Thickness(12, 10, 0, 45);
+                PreviewImage.Margin = new Thickness(0, 0, 20, 0);
+                LiveList.Margin = new Thickness(12, 128, 12, 10);
+
+                GridSplitter1.Visibility = Visibility.Visible;
+            }
             ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.74;
             ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
 
@@ -599,7 +636,7 @@ namespace Presenter
                 Presentation.SlideShowEnd += new EventHandler(Presentation_SlideShowEnd);
                 Presentation.SlideAdded += new EventHandler<SlideAddedEventArgs>(Presentation_SlideAdded);
             }
-
+            
             new Action(() => Presentation.Start(SelectedSchedule)).BeginInvoke(SlideShowStarted, null);
             progress = new BuildProgress();
             progress.Owner = this;
@@ -638,6 +675,7 @@ namespace Presenter
             GridSplitter1.Visibility = Visibility.Hidden;
             LibraryGrid.Visibility = Visibility.Visible;
             Expander1.Content = "<";
+            col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(0, GridUnitType.Pixel));
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength((this.ActualWidth - 20) / 2, GridUnitType.Pixel));
             ScheduleList.SetValue(ListBox.VisibilityProperty, Visibility.Visible);
             LiveList.SetValue(ListView.VisibilityProperty, Visibility.Collapsed);
@@ -1153,8 +1191,17 @@ namespace Presenter
 
                 VideoDisplay.Visibility = Visibility.Visible;
 
-                double ratio = VideoDisplay.Height / VideoPlayer.NaturalVideoHeight;
-                VideoDisplay.Width = VideoPlayer.NaturalVideoWidth * ratio;
+                double ratio;
+                if (Config.SlidePreviewBottom)
+                {
+                    ratio = VideoDisplay.Height / VideoPlayer.NaturalVideoHeight;
+                    VideoDisplay.Width = VideoPlayer.NaturalVideoWidth * ratio;
+                }
+                else
+                {
+                    ratio = VideoDisplay.Width / VideoPlayer.NaturalVideoWidth;
+                    VideoDisplay.Height = VideoPlayer.NaturalVideoHeight * ratio;
+                }
 
                 fullscreen.Show();
                 this.Focus(); //retain focus in Main window and not in shown fullscreen
@@ -1244,30 +1291,66 @@ namespace Presenter
 
         private void GridSplitter_LayoutUpdated(object sender, EventArgs e)
         {
-            PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[1].ActualHeight - 60);
-
-            //if height is zero, then control height will be set to zero and can never be multiplied by a ratio to increase in height
-            if (PreviewPanel.ActualHeight <= 0)
+            if (Presentation == null || !Presentation.IsRunning)
                 return;
 
-            double ratio = PreviewPanel.ActualHeight / PreviewImage.ActualHeight;
+            if (!Config.SlidePreviewBottom)
+            {
+                if (Grid1.ColumnDefinitions[2].ActualWidth == 0)
+                    return;
 
-            //if height is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
-            if (PreviewImage.Height * ratio < 1.0)
-                return;
+                PreviewPanel.Width = Math.Max(0, Grid1.ColumnDefinitions[2].ActualWidth - 20);
 
-            PreviewImage.Height *= ratio;
-            PreviewImage.Width *= ratio;
+                //if height is zero, then control height will be set to zero and can never be multiplied by a ratio to increase in height
+                if (PreviewPanel.ActualWidth <= 0)
+                    return;
 
-            CurrentImage.Height *= ratio;
-            CurrentImage.Width *= ratio;
+                double ratio = PreviewPanel.ActualWidth / PreviewImage.ActualWidth;
 
-            if (VideoDisplay.ActualHeight <= 0 || MediaControls.ActualHeight > PreviewPanel.ActualHeight)
-                return;
+                //if height is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
+                if (PreviewImage.Width * ratio < 1.0)
+                    return;
 
-            ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight) / VideoDisplay.ActualHeight;
-            VideoDisplay.Height *= ratio;
-            VideoDisplay.Width *= ratio;
+                PreviewImage.Height *= ratio;
+                PreviewImage.Width *= ratio;
+
+                CurrentImage.Height *= ratio;
+                CurrentImage.Width *= ratio;
+
+                if (VideoDisplay.ActualWidth <= 0 || MediaControls.ActualWidth > PreviewPanel.ActualWidth)
+                    return;
+
+                ratio = PreviewPanel.ActualWidth / VideoDisplay.ActualWidth;
+                VideoDisplay.Height *= ratio;
+                VideoDisplay.Width *= ratio;
+            }
+            else
+            {
+                PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[1].ActualHeight - 60);
+
+                //if height is zero, then control height will be set to zero and can never be multiplied by a ratio to increase in height
+                if (PreviewPanel.ActualHeight <= 0)
+                    return;
+
+                double ratio = PreviewPanel.ActualHeight / PreviewImage.ActualHeight;
+
+                //if height is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
+                if (PreviewImage.Height * ratio < 1.0)
+                    return;
+
+                PreviewImage.Height *= ratio;
+                PreviewImage.Width *= ratio;
+
+                CurrentImage.Height *= ratio;
+                CurrentImage.Width *= ratio;
+
+                if (VideoDisplay.ActualHeight <= 0 || MediaControls.ActualHeight > PreviewPanel.ActualHeight)
+                    return;
+
+                ratio = (PreviewPanel.ActualHeight - MediaControls.ActualHeight - 5) / VideoDisplay.ActualHeight;
+                VideoDisplay.Height *= ratio;
+                VideoDisplay.Width *= ratio;
+            }
         }
         #endregion
 

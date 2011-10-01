@@ -28,16 +28,18 @@ namespace Presenter
 
             InsertPresBlanks.IsChecked = Config.InsertBlankAfterPres;
             InsertVideoBlanks.IsChecked = Config.InsertBlankAfterVideo;
+            ShowPreviewBottom.IsChecked = Config.SlidePreviewBottom;
+
             /*
-            //enable presenter view
+            //todo enable presenter view
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Office\" + Config.PowerpointVersion + @"\PowerPoint\Options", true);
             if (Util.Parse<int>(key.GetValue("UseMonMgr")) != 1)
                 key.SetValue("UseMonMgr", 1);
             */
 
             for (double i = 10; i <= 15; i++)
-                FontSize.Items.Add(i);
-            FontSize.SelectedValue = Config.FontSize;
+                FontSizeList.Items.Add(i);
+            FontSizeList.SelectedValue = Config.FontSize;
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -49,8 +51,9 @@ namespace Presenter
 
             Config.InsertBlankAfterPres = InsertPresBlanks.IsChecked ?? false;
             Config.InsertBlankAfterVideo = InsertVideoBlanks.IsChecked ?? false;
-            
-            Config.FontSize = (double)FontSize.SelectedValue;
+            Config.SlidePreviewBottom = ShowPreviewBottom.IsChecked ?? false;
+
+            Config.FontSize = (double)FontSizeList.SelectedValue;
 
             (Owner as Main).BindLocationList();
             this.Close();
