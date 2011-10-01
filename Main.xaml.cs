@@ -591,7 +591,7 @@ namespace Presenter
             if (!Config.SlidePreviewBottom)
             {
                 col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(350, GridUnitType.Pixel));
-                widthIncrease -= 350;
+                widthIncrease -= 360;
                 Grid.SetRowSpan(LiveList, 2);
                 Grid.SetColumn(PreviewPanel, 2);
                 Grid.SetRow(PreviewPanel, 0);
