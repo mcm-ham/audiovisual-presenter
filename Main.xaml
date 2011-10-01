@@ -197,17 +197,17 @@
                         </DrawingBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-                <WrapPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal" Margin="0,5,0,0">
-                    <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="0,0,5,0" />
-                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="0,0,5,0" />
+                <WrapPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
+                    <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="0,5,5,0" />
+                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="0,5,5,0" />
 
-                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" />
-                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="50"/>
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" Margin="0,5,0,0" />
+                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="50" Margin="0,5,0,0"/>
 
-                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" />
-                    <TextBox Name="currentTime" Width="30" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" />
-                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="60" />
-                    <TextBlock Name="totalTime" VerticalAlignment="Center" />
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" Margin="0,5,0,0" />
+                    <TextBox Name="currentTime" Width="30" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" Margin="0,5,0,0" />
+                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="60" Margin="0,5,0,0" />
+                    <TextBlock Name="totalTime" VerticalAlignment="Center" Margin="0,5,0,0" />
                 </WrapPanel>
             </StackPanel>
         </StackPanel>
