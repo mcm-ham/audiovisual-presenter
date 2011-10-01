@@ -44,6 +44,7 @@ namespace Presenter.App_Code
 
                 AddSlide("", "Blank", null, null, SlideType.Blank, "", 0, new Item(), 1);
 
+                template = null;
                 foreach (Item item in items)
                     AddSlides(item);
 
