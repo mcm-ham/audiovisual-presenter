@@ -330,6 +330,7 @@ namespace Presenter.App_Code
             set { SaveSetting("UseSlideTimings", value.ToString()); }
         }
 
+        public static readonly DependencyProperty SlidePreviewBottomProperty = DependencyProperty.Register("SlidePreviewBottomProperty", typeof(bool), typeof(Config));
         /// <summary>
         /// Specifies the location of the slide preview panel. Set to true for it to appear on the right, or false for it to
         /// appear along the bottom. The default value is false for wide screen monitors, true if not.
@@ -337,7 +338,14 @@ namespace Presenter.App_Code
         public static bool SlidePreviewBottom
         {
             get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["SlidePreviewBottom"]) ?? (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / (double)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height < 1.5); }
-            set { SaveSetting("SlidePreviewBottom", value.ToString()); }
+            set
+            {
+                SaveSetting("SlidePreviewBottom", value.ToString());
+                if (instance.SlidePreviewBottomChanged != null)
+                    instance.SlidePreviewBottomChanged(instance, new EventArgs());
+            }
         }
+
+        public event EventHandler SlidePreviewBottomChanged;
     }
 }
