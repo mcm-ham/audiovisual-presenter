@@ -585,49 +585,10 @@ namespace Presenter
             Interval.Text = Config.TimerInterval.ToString();
             UseSlideTimings.IsChecked = Config.UseSlideTimings;
             SetPreview(PreviewImage, null); //set preview to blank slide, otherwise intitally it will be white
-
-            double widthIncrease = col1.ActualWidth - 220;
             col1.SetValue(ColumnDefinition.WidthProperty, new GridLength(220, GridUnitType.Pixel));
-            if (!Config.SlidePreviewBottom)
-            {
-                col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(350, GridUnitType.Pixel));
-                widthIncrease -= 360;
-                Grid.SetRowSpan(LiveList, 2);
-                Grid.SetColumn(PreviewPanel, 2);
-                Grid.SetRow(PreviewPanel, 0);
-                Grid.SetRowSpan(PreviewPanel, 2);
-                PreviewPanel.VerticalAlignment = VerticalAlignment.Top;
-                PreviewPanel.HorizontalAlignment = HorizontalAlignment.Right;
-                PreviewPanel.Orientation = Orientation.Vertical;
-                PreviewPanel.MaxHeight = Double.PositiveInfinity;
-                PreviewPanel.MaxWidth = 350;
-                PreviewPanel.Height = Double.NaN;
-                PreviewPanel.Margin = new Thickness(0, 128, 10, 0);
-                PreviewImage.Margin = new Thickness(0, 0, 0, 20);
-                LiveList.Margin = new Thickness(12, 128, 12, 46);
-                GridSplitter2.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(0, GridUnitType.Pixel));
-                Grid.SetRowSpan(LiveList, 1);
-                Grid.SetColumn(PreviewPanel, 1);
-                Grid.SetRow(PreviewPanel, 1);
-                Grid.SetRowSpan(PreviewPanel, 1);
-                PreviewPanel.VerticalAlignment = VerticalAlignment.Bottom;
-                PreviewPanel.HorizontalAlignment = HorizontalAlignment.Left;
-                PreviewPanel.Orientation = Orientation.Horizontal;
-                PreviewPanel.MaxHeight = 250;
-                PreviewPanel.MaxWidth = Double.PositiveInfinity;
-                PreviewPanel.Width = Double.NaN;
-                PreviewPanel.Margin = new Thickness(12, 10, 0, 45);
-                PreviewImage.Margin = new Thickness(0, 0, 20, 0);
-                LiveList.Margin = new Thickness(12, 128, 12, 10);
 
-                GridSplitter1.Visibility = Visibility.Visible;
-            }
-            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth + widthIncrease - 105) * 0.74;
-            ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth + widthIncrease - 105) * 0.18;
+            SetPreviewPosition();
+            Config.instance.SlidePreviewBottomChanged += new EventHandler(instance_SlidePreviewBottomChanged);
 
             if (Presentation == null)
             {
@@ -668,6 +629,58 @@ namespace Presenter
             worker.RunWorkerAsync();
         }
 
+        protected void instance_SlidePreviewBottomChanged(object sender, EventArgs e)
+        {
+            SetPreviewPosition();
+        }
+
+        protected void SetPreviewPosition()
+        {
+            if (!Config.SlidePreviewBottom)
+            {
+                col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(350, GridUnitType.Pixel));
+                Grid.SetRowSpan(LiveList, 2);
+                Grid.SetColumn(PreviewPanel, 2);
+                Grid.SetRow(PreviewPanel, 0);
+                Grid.SetRowSpan(PreviewPanel, 2);
+                PreviewPanel.VerticalAlignment = VerticalAlignment.Top;
+                PreviewPanel.HorizontalAlignment = HorizontalAlignment.Right;
+                PreviewPanel.Orientation = Orientation.Vertical;
+                PreviewPanel.MaxHeight = Double.PositiveInfinity;
+                PreviewPanel.MaxWidth = 350;
+                PreviewPanel.Height = Double.NaN;
+                PreviewPanel.Margin = new Thickness(0, 128, 10, 0);
+                PreviewImage.Margin = new Thickness(0, 0, 0, 20);
+                LiveList.Margin = new Thickness(12, 128, 12, 46);
+                GridSplitter1.Visibility = Visibility.Hidden;
+                GridSplitter2.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                col3.SetValue(ColumnDefinition.WidthProperty, new GridLength(0, GridUnitType.Pixel));
+                Grid.SetRowSpan(LiveList, 1);
+                Grid.SetColumn(PreviewPanel, 1);
+                Grid.SetRow(PreviewPanel, 1);
+                Grid.SetRowSpan(PreviewPanel, 1);
+                PreviewPanel.VerticalAlignment = VerticalAlignment.Bottom;
+                PreviewPanel.HorizontalAlignment = HorizontalAlignment.Left;
+                PreviewPanel.Orientation = Orientation.Horizontal;
+                PreviewPanel.MaxHeight = 250;
+                PreviewPanel.MaxWidth = Double.PositiveInfinity;
+                PreviewPanel.Width = Double.NaN;
+                PreviewPanel.Margin = new Thickness(12, 10, 0, 45);
+                PreviewImage.Margin = new Thickness(0, 0, 20, 0);
+                LiveList.Margin = new Thickness(12, 128, 12, 10);
+                GridSplitter1.Visibility = Visibility.Visible;
+                GridSplitter2.Visibility = Visibility.Hidden;
+            }
+
+            LiveList.UpdateLayout();
+            var adjustment = Config.SlidePreviewBottom ? 105 : 120;
+            ((GridView)LiveList.View).Columns[1].Width = (col2.ActualWidth - adjustment) * 0.74;
+            ((GridView)LiveList.View).Columns[2].Width = (col2.ActualWidth - adjustment) * 0.18; 
+        }
+
         protected void SlideListViewItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var sl = ((sender as ListViewItem).DataContext as Slide);
@@ -703,6 +716,7 @@ namespace Presenter
             LocationList.Margin = new Thickness(81, 94, 80, 0);
             PreviewImage.Background = new SolidColorBrush(Colors.Black);
             CurrentImage.Background = new SolidColorBrush(Colors.Black);
+            Config.instance.SlidePreviewBottomChanged -= new EventHandler(instance_SlidePreviewBottomChanged);
             HideMedia();
             if (fullscreen != null)
             {
