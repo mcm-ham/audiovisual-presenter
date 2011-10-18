@@ -239,9 +239,22 @@ namespace Presenter
                 Slide s = LiveList.SelectedItem as Slide;
                 int hwnd = (s.Type == SlideType.PowerPoint) ? s.Presentation.SlideShowWindow().HWND : fullscreen.HWND;
                 User32.SetWindowPos(hwnd, User32.HWND_TOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+                var num = Presentation.Slides.Length;
                 Presentation.AddSlides(SelectedSchedule.Items.OrderBy(i => i.Ordinal).Last());
                 LiveList.ScrollIntoView(LiveList.Items[LiveList.Items.Count - 1]);
                 User32.SetWindowPos(hwnd, User32.HWND_NOTOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+
+                var worker = new System.ComponentModel.BackgroundWorker();
+                worker.DoWork += (sen, ev) =>
+                {
+                    Presentation.Slides.Skip(num).Where(sl => sl.Type == SlideType.PowerPoint).ForEach(sl =>
+                    {
+                        string path = SlideShow.ExportToImage(sl, sl.SlideIndex, "-preview", 333, 250);
+                        if (path != "")
+                            Dispatcher.BeginInvoke(new Action(() => { sl.Preview = new BitmapImage(new Uri(path)); }));
+                    });
+                };
+                worker.RunWorkerAsync();
             }
         }
 
