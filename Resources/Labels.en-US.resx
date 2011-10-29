@@ -498,6 +498,9 @@
   <data name="SlideShowImageLabel" xml:space="preserve">
     <value>Image</value>
   </data>
+  <data name="SlideShowSlideLabel" xml:space="preserve">
+    <value>Slide</value>
+  </data>
   <data name="SlideShowVideoLabel" xml:space="preserve">
     <value>Video</value>
   </data>

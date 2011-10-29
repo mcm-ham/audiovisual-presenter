@@ -1162,6 +1162,12 @@ namespace Presenter
             }
             else
             {
+                if (slide.Type == SlideType.Audio)
+                {
+                    fullscreen.ShowBlank();
+                    this.Focus();
+                }
+
                 CurrentImage.Visibility = Visibility.Collapsed;
                 VideoPanel.Visibility = Visibility.Visible;
                 mediaPosTimer = new DispatcherTimer();
@@ -1199,7 +1205,6 @@ namespace Presenter
 
         protected void PlayMedia(object sender, EventArgs args)
         {
-
             VideoPlayer.Play();
             VideoPlayer.Volume = (double)volumeSlider.Value;
             PlayPauseBtn.Content = "Pause";
