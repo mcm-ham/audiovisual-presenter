@@ -327,7 +327,8 @@ namespace Presenter.App_Code
 
                 for (int i = 1; i <= pres.Slides.Count; i++)
                 {
-                    var _slide = AddSlide(GetStringSummary(pres.Slides[i].Shapes), GetStringSummary(pres.Slides[i].NotesPage.Shapes), pres, null, SlideType.PowerPoint, "", progressEnd, scheduleItem, i);
+                    var defaultText = pres.Slides[i].Layout == PP.PpSlideLayout.ppLayoutBlank && pres.Slides[i].Shapes.Count == 0 ? "" : Labels.SlideShowSlideLabel + pres.Slides[i].SlideIndex;
+                    var _slide = AddSlide(GetStringSummary(pres.Slides[i].Shapes).ToNullIfEmpty() ?? defaultText, GetStringSummary(pres.Slides[i].NotesPage.Shapes), pres, null, SlideType.PowerPoint, "", progressEnd, scheduleItem, i);
                     _slide.AnimationCount = pres.Slides[i].TimeLine.MainSequence.Cast<PP.Effect>().Sum(e => e.Timing.TriggerType == PP.MsoAnimTriggerType.msoAnimTriggerOnPageClick ? 1 : 0);
                     _slide.AdvanceOnTime = pres.Slides[i].SlideShowTransition.AdvanceOnTime;
                 }

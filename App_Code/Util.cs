@@ -107,7 +107,7 @@ namespace Presenter.App_Code
             return GetAncestorByType<T>(VisualTreeHelper.GetParent(element));
         }
 
-        
+
         public static Image Resize(this Image image, int? width, int? height, int trim = 0)
         {
             if (width == null && height == null)
@@ -148,7 +148,7 @@ namespace Presenter.App_Code
 
             return resizedImage;
         }
-        
+
         public static Dictionary<PP.Presentation, PP.SlideShowWindow> SlideShowWindows = new Dictionary<PP.Presentation, PP.SlideShowWindow>();
         /// <summary>
         /// Workaround for PowerPoint 2010 bug where property returns the last slideshowwindow instead of the slideshowwindow belonging to specified presentation.
@@ -186,6 +186,11 @@ namespace Presenter.App_Code
         public static int ToOle(System.Windows.Media.Color wpfColor)
         {
             return wpfColor.R << RedShift | wpfColor.G << GreenShift | wpfColor.B << BlueShift;
-        } 
+        }
+
+        public static string ToNullIfEmpty(this string value)
+        {
+            return String.IsNullOrEmpty(value) ? null : value;
+        }
     }
 }
