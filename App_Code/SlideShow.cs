@@ -239,7 +239,11 @@ namespace Presenter.App_Code
                 return;
             }
 
+            //bug in powerpoint 2010 where next() does not allow animations to work
+            if (Util.Parse<double>(app.Version) >= 14)
+                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
             slide.Presentation.SlideShowWindow().View.Next();
+            
             int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
 
             if (SlideIndexChanged != null)
@@ -270,6 +274,9 @@ namespace Presenter.App_Code
             }
 
             int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
+            //bug in powerpoint 2010 where next() does not allow animations to work
+            if (Util.Parse<double>(app.Version) >= 14)
+                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
             slide.Presentation.SlideShowWindow().View.Previous();
             int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
 
@@ -351,6 +358,7 @@ namespace Presenter.App_Code
                 slide.Background.Fill.Solid();
                 slide.SlideShowTransition.EntryEffect = PP.PpEntryEffect.ppEffectNone;
 
+                pres.SlideShowSettings.ShowPresenterView = Core.MsoTriState.msoFalse;
                 pres.SlideShowSettings.Run();
                 Util.SlideShowWindows[pres] = pres.SlideShowWindow;
 
