@@ -993,6 +993,10 @@ namespace Presenter
 
         private void HightlightRow(ListViewItem row)
         {
+            //todo verify cause of error, Presentation_SlideAdded -> HightlightRow(null), object not set
+            if (row == null)
+                return;
+
             Slide slide = row.DataContext as Slide;
 
             Style style = new Style();

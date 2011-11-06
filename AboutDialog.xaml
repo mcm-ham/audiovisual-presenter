@@ -10,7 +10,7 @@
         <TextBlock Margin="25,54,25,50" TextWrapping="Wrap" Text="{x:Static Loc:Labels.AboutDesc}" />
         <TextBlock Margin="25,85,25,0" Text="{x:Static Loc:Labels.AboutEmailTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="mailto:info@minsoft.org" RequestNavigate="Hyperlink_RequestNavigate">info@minsoft.org</Hyperlink></TextBlock>
         <TextBlock Margin="25,100,25,0" Text="{x:Static Loc:Labels.AboutWebsiteTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.minsoft.org/" RequestNavigate="Hyperlink_RequestNavigate">www.minsoft.org</Hyperlink></TextBlock>
-        <!--<TextBlock Margin="25,115,25,0" Text="{x:Static Loc:Labels.AboutForumTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.minsoft.org/forum/" RequestNavigate="Hyperlink_RequestNavigate">www.minsoft.org/forum</Hyperlink></TextBlock>-->
+        <TextBlock Margin="25,115,25,0" Text="{x:Static Loc:Labels.AboutForumTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.minsoft.org/forum/" RequestNavigate="Hyperlink_RequestNavigate">www.minsoft.org/forum/</Hyperlink></TextBlock>
         <TextBlock Margin="25,130,25,0" Text="{x:Static Loc:Labels.AboutVersionTitle}" Height="21" VerticalAlignment="Top"><TextBlock Name="BuildNo" /></TextBlock>
         <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Padding="2" MinWidth="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
     </Grid>
