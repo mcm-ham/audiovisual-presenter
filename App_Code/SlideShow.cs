@@ -358,10 +358,11 @@ namespace Presenter.App_Code
                 slide.Background.Fill.Solid();
                 slide.SlideShowTransition.EntryEffect = PP.PpEntryEffect.ppEffectNone;
 
-                pres.SlideShowSettings.ShowPresenterView = Core.MsoTriState.msoFalse;
+                //todo PPT 2010 shows presenter view, 2007 doesn't throws error if the is called though
+                //pres.SlideShowSettings.ShowPresenterView = Core.MsoTriState.msoFalse;
                 pres.SlideShowSettings.Run();
                 Util.SlideShowWindows[pres] = pres.SlideShowWindow;
-
+                
                 //ensure presenter has focus otherwise if ppt has focus and user moves scrollwheel over presenter expecting the listview to scroll it will actually change slides instead and can end slideshow unexpectedly
                 System.Windows.Application.Current.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.MainWindow.Activate(); }));
 
