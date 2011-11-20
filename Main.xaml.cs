@@ -804,9 +804,8 @@ namespace Presenter
 
             if (Presentation.Slides[idx].Presentation != Presentation.Slides[previdx].Presentation)
             {
-                var p = Presentation.Slides[previdx].Presentation;
-                if (p != null)
-                    p.SlideShowWindow().View.GotoSlide(1);
+                if (Presentation.Slides[previdx].Presentation != null)
+                    Presentation.Slides[previdx].GotoSlide(1);
             }
 
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)

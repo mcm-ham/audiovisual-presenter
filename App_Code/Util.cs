@@ -161,6 +161,36 @@ namespace Presenter.App_Code
             return key.SlideShowWindow;
         }
 
+        /// <summary>
+        /// Goto specified PowerPoint slide index. Workaround for PowerPoint 2010 bug where animations do not work.
+        /// </summary>
+        public static void GotoSlide(this Slide slide, int index)
+        {
+            if (Util.Parse<double>(slide.Presentation.Application.Version) >= 14)
+                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
+            slide.Presentation.SlideShowWindow().View.GotoSlide(index);
+        }
+
+        /// <summary>
+        /// Goto next PowerPoint slide or animation. Workaround for PowerPoint 2010 bug where animations do not work.
+        /// </summary>
+        public static void Next(this Slide slide)
+        {
+            if (Util.Parse<double>(slide.Presentation.Application.Version) >= 14)
+                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
+            slide.Presentation.SlideShowWindow().View.Next();
+        }
+
+        /// <summary>
+        /// Goto previous PowerPoint slide or animation. Workaround for PowerPoint 2010 bug where animations do not work.
+        /// </summary>
+        public static void Previous(this Slide slide)
+        {
+            if (Util.Parse<double>(slide.Presentation.Application.Version) >= 14)
+                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
+            slide.Presentation.SlideShowWindow().View.Previous();
+        }
+
         const int RedShift = 0;
         const int GreenShift = 8;
         const int BlueShift = 16;
