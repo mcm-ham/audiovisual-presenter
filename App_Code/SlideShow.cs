@@ -183,7 +183,7 @@ namespace Presenter.App_Code
 
             try
             {
-                slide.Presentation.SlideShowWindow().View.GotoSlide(slide.PSlide.SlideIndex);
+                slide.GotoSlide(slide.PSlide.SlideIndex);
                 User32.SetWindowPos(slide.Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             catch (COMException ex)
@@ -219,7 +219,7 @@ namespace Presenter.App_Code
                 //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
                 Slide nextSlide = Slides[pos];
                 if (nextSlide.Type == SlideType.PowerPoint)
-                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.PSlide.SlideIndex);
+                    nextSlide.GotoSlide(nextSlide.PSlide.SlideIndex);
                 return;
             }
 
@@ -235,14 +235,11 @@ namespace Presenter.App_Code
                 //call GotoSlide if next slide is the start of a new presentation so that calling Next works with onclick animations
                 Slide nextSlide = Slides[pos];
                 if (nextSlide.Type == SlideType.PowerPoint)
-                    nextSlide.Presentation.SlideShowWindow().View.GotoSlide(nextSlide.PSlide.SlideIndex);
+                    nextSlide.GotoSlide(nextSlide.PSlide.SlideIndex);
                 return;
             }
 
-            //bug in powerpoint 2010 where next() does not allow animations to work
-            if (Util.Parse<double>(app.Version) >= 14)
-                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
-            slide.Presentation.SlideShowWindow().View.Next();
+            slide.Next();
             
             int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
 
@@ -269,15 +266,12 @@ namespace Presenter.App_Code
 
                 Slide prevSlide = Slides[pos - 2];
                 if (prevSlide.Type == SlideType.PowerPoint)
-                    prevSlide.Presentation.SlideShowWindow().View.GotoSlide(prevSlide.PSlide.SlideIndex);
+                    prevSlide.GotoSlide(prevSlide.PSlide.SlideIndex);
                 return;
             }
 
             int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
-            //bug in powerpoint 2010 where next() does not allow animations to work
-            if (Util.Parse<double>(app.Version) >= 14)
-                User32.SendMessage(new IntPtr(slide.Presentation.SlideShowWindow().HWND), User32.WM_SETFOCUS, IntPtr.Zero, UIntPtr.Zero);
-            slide.Presentation.SlideShowWindow().View.Previous();
+            slide.Previous();
             int pnewpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
 
             if (SlideIndexChanged != null)
