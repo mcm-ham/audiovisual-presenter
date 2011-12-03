@@ -129,20 +129,20 @@ namespace Presenter.App_Code
                         string res = ConfigurationManager.AppSettings["LibraryPath"];
                         if (!Path.IsPathRooted(res))
                         {
-                            string[] parts = res.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                            string[] parts = res.Split(new char[] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
                             Environment.SpecialFolder? folder = Util.Parse<Environment.SpecialFolder?>((parts.FirstOrDefault() ?? "").Replace(" ", ""));
                             if (folder.HasValue && (folder.Value == Environment.SpecialFolder.MyDocuments || folder.Value == Environment.SpecialFolder.MyMusic || folder.Value == Environment.SpecialFolder.MyPictures))
-                                res = Environment.GetFolderPath(folder.Value) + "\\" + String.Join("\\", parts.Skip(1).ToArray());
+                                res = Environment.GetFolderPath(folder.Value) + Path.DirectorySeparatorChar + String.Join(Path.DirectorySeparatorChar.ToString(), parts.Skip(1).ToArray());
                             else
                                 res = Path.GetFullPath(res);
                         }
-                        _path = res.TrimEnd('\\') + "\\";
+                        _path = res.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
                         if (!Directory.Exists(_path))
                             Directory.CreateDirectory(_path);
                     }
                     catch (Exception)
                     {
-                        _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Library\\";
+                        _path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + Path.DirectorySeparatorChar + "Library" + Path.DirectorySeparatorChar;
                         if (!Directory.Exists(_path))
                             Directory.CreateDirectory(_path);
                     }
