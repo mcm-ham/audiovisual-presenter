@@ -32,8 +32,18 @@ namespace Presenter.App_Code
                     return true;
                 }
                 
-                //check for file under library in case library path has been moved
-                string newpath = Config.LibraryPath + Filename.Substring(Filename.LastIndexOf('\\', Filename.LastIndexOf('\\') - 1) + 1);
+                //check for file under library (in sub-folder) in case library path has been moved
+                string newpath = Config.LibraryPath + Filename.Substring(Filename.LastIndexOf(Path.DirectorySeparatorChar, Filename.LastIndexOf(Path.DirectorySeparatorChar) - 1) + 1);
+                if (File.Exists(newpath))
+                {
+                    Filename = newpath;
+                    DB.Instance.SaveChanges();
+                    _found = true;
+                    return true;
+                }
+
+                //check for file under library root
+                newpath = Config.LibraryPath + Name;
                 if (File.Exists(newpath))
                 {
                     Filename = newpath;
