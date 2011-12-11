@@ -12,7 +12,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Presenter.App_Code;
 using Presenter.Resources;
-using PP = Microsoft.Office.Interop.PowerPoint;
 
 namespace Presenter
 {
@@ -767,14 +766,22 @@ namespace Presenter
 
                 int idx = LiveList.Items.Add(e.NewSlide);
 
-                //add new listitem happens asyncronously so look for lisitem asyncronously as well with low priority to ensure listitem has been added before running
+                //add new listitem happens asyncronously so look for listitem asyncronously as well with low priority to ensure listitem has been added before running
                 if (e.NewSlide.ScheduleItem.EntityState != System.Data.EntityState.Detached && !e.NewSlide.ScheduleItem.Flags.IsLoaded)
                     e.NewSlide.ScheduleItem.Flags.Load();
                 if (e.NewSlide.ScheduleItem.Flags.Any(f => f.Index == e.NewSlide.ItemIndex))
-                    Dispatcher.BeginInvoke(new Action(() =>
-                    {
-                        HightlightRow(LiveList.ItemContainerGenerator.ContainerFromIndex(idx) as ListViewItem);
-                    }), DispatcherPriority.ApplicationIdle);
+                {
+                    EventHandler handler = null;
+                    handler = (sen, ev) => {
+                        var item = LiveList.ItemContainerGenerator.ContainerFromIndex(idx) as ListViewItem;
+                        if (item != null)
+                        {
+                            HightlightRow(item);
+                            LiveList.ItemContainerGenerator.StatusChanged -= handler;
+                        }
+                    };
+                    LiveList.ItemContainerGenerator.StatusChanged += handler;
+                }
             }));
         }
 
@@ -945,7 +952,11 @@ namespace Presenter
             Presentation_SlideIndexChanged(Presentation, new SlideShowEventArgs(LiveList.SelectedIndex + 1, LiveList.SelectedIndex + 1));
 
             if ((LiveList.SelectedItem as Slide).Type == SlideType.PowerPoint)
-                Presentation.GoTo(LiveList.SelectedItem as Slide);
+            {
+                var slide = LiveList.SelectedItem as Slide;
+                //place in background thread otherwise otherwise if this method takes longer due to slide animations the next item the mouse is over once finished is selected
+                new Action(() => Presentation.GoTo(slide)).BeginInvoke(null, null);
+            }
         }
 
         private void Expander1_Click(object sender, RoutedEventArgs e)
@@ -992,10 +1003,6 @@ namespace Presenter
 
         private void HightlightRow(ListViewItem row)
         {
-            //todo verify cause of error, Presentation_SlideAdded -> HightlightRow(null), object not set
-            if (row == null)
-                return;
-
             Slide slide = row.DataContext as Slide;
 
             Style style = new Style();
@@ -1053,11 +1060,6 @@ namespace Presenter
         protected void LiveList_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true; //prevent double click from selecting two different slides in quick succession if list auto scrolls in between
-        }
-
-        protected void SlideListViewItem_Selected(object sender, RoutedEventArgs e)
-        {
-            LiveList.ReleaseMouseCapture(); //if mouse is not fully released when list jumps or mouse is moved, the next item the mouse is over is selected, this prevents the mouse from selecting anything else until the mouse is re-clicked
         }
 
         protected void UseSlideTimingsChanged(object sender, RoutedEventArgs e)
