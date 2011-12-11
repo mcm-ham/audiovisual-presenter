@@ -142,7 +142,6 @@
                     <!-- new styles also need to be added to HightlightRow -->
                     <EventSetter Event="MouseEnter" Handler="SlideListViewItem_MouseEnter" />
                     <EventSetter Event="PreviewMouseRightButtonDown" Handler="SlideListViewItem_MouseRightButtonDown" />
-                    <EventSetter Event="Selected" Handler="SlideListViewItem_Selected"/>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>
