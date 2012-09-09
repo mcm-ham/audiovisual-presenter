@@ -14,7 +14,13 @@
                     </Calendar.LayoutTransform>
                 </Calendar>
                 <TextBlock Name="DatePreview" Height="20" VerticalAlignment="Top" Margin="0,180,0,0" HorizontalAlignment="Center" Padding="0" />
-                <TextBox Name="ScheduleName" Height="25" VerticalAlignment="Bottom" KeyUp="ScheduleName_KeyUp" Margin="0,0,0,35" />
+                <AdornerDecorator>
+                    <TextBox Name="ScheduleName" Height="25" VerticalAlignment="Bottom" KeyUp="ScheduleName_KeyUp" Margin="0,0,0,35">
+                        <Code:WatermarkService.Watermark>
+                            <TextBlock Text="{x:Static Loc:Labels.OpenEnterDescription}"/>
+                        </Code:WatermarkService.Watermark>
+                    </TextBox>
+                </AdornerDecorator>
                 <Button Content="{x:Static Loc:Labels.OpenBtnNew}" Padding="2" MinWidth="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="New_Click" />
             </Grid>
         </GroupBox>
