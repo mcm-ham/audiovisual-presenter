@@ -143,6 +143,7 @@
     <Compile Include="App_Code\SlideShow.cs" />
     <Compile Include="App_Code\User32.cs" />
     <Compile Include="App_Code\Util.cs" />
+    <Compile Include="App_Code\Watermark.cs" />
     <Compile Include="BuildProgress.xaml.cs">
       <DependentUpon>BuildProgress.xaml</DependentUpon>
     </Compile>

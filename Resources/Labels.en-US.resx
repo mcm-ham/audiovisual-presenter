@@ -347,6 +347,9 @@
     <value>Are you sure you want to delete '{0}'?</value>
     <comment>{0} will get replaced by the name of the selected schedule</comment>
   </data>
+  <data name="OpenEnterDescription" xml:space="preserve">
+    <value>Enter description</value>
+  </data>
   <data name="OpenHeaderNew" xml:space="preserve">
     <value>New</value>
   </data>
