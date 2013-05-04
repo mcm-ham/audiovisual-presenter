@@ -27,14 +27,32 @@
         <GroupBox Name="groupBox2" Header="{x:Static Loc:Labels.OpenHeaderOpen}" Width="254" Margin="10" Padding="5" HorizontalAlignment="Right">
             <Grid>
                 <ListBox Name="ScheduleList" SelectionChanged="ScheduleList_SelectionChanged" MouseDoubleClick="ScheduleList_MouseDoubleClick" Margin="0,0,0,35">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Path=DisplayName}" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Name="ScheduleItemLabel" Text="{Binding Path=DisplayName}" MinWidth="230" Margin="-2,-2,-2,0" Padding="5,3" />
+                                <TextBox Name="ScheduleItemTextBox" Text="{Binding Path=Name}" Visibility="Collapsed" Width="226" Padding="5,3" KeyUp="ScheduleItemTextBox_KeyUp" LostKeyboardFocus="ScheduleItemTextBox_LostKeyboardFocus" />
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{x:Static Loc:Labels.ScheduleListContextOpen}" Click="Open_Click"/>
+                                        <MenuItem Header="{x:Static Loc:Labels.ScheduleListContextRename}" Click="Rename_Click"/>
+                                        <MenuItem Header="{x:Static Loc:Labels.ScheduleListContextDelete}" Click="Delete_Click"/>
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <Button Name="DeleteBtn" Content="{x:Static Loc:Labels.OpenBtnDel}" MinWidth="50" Padding="2" Visibility="Hidden" VerticalAlignment="Bottom" HorizontalAlignment="Left" Click="Delete_Click" />
-                <Button Content="{x:Static Loc:Labels.OpenBtnOpen}" MinWidth="50" Padding="2" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="Open_Click" />
+                <DockPanel VerticalAlignment="Bottom">
+                    <Button Name="DeleteBtn" Content="{x:Static Loc:Labels.OpenBtnDel}" MinWidth="50" Padding="2" Visibility="Hidden" HorizontalAlignment="Left" Click="Delete_Click" />
+                    <Button Name="RenameBtn" Content="{x:Static Loc:Labels.OpenBtnRename}" MinWidth="50" Padding="2" Visibility="Hidden" HorizontalAlignment="Left" Click="Rename_Click" Margin="10,0,0,0" />
+                    <Button Content="{x:Static Loc:Labels.OpenBtnOpen}" MinWidth="50" Padding="2" HorizontalAlignment="Right" Click="Open_Click" />
+                </DockPanel>
             </Grid>
         </GroupBox>
         

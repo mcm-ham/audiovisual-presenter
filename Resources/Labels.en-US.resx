@@ -343,6 +343,9 @@
   <data name="OpenBtnOpen" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="OpenBtnRename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
   <data name="OpenDelConfirm" xml:space="preserve">
     <value>Are you sure you want to delete '{0}'?</value>
     <comment>{0} will get replaced by the name of the selected schedule</comment>
@@ -465,6 +468,15 @@
   </data>
   <data name="ReportsUsageWindowTitle" xml:space="preserve">
     <value>Usage Reports</value>
+  </data>
+  <data name="ScheduleListContextDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ScheduleListContextOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="ScheduleListContextRename" xml:space="preserve">
+    <value>Rename</value>
   </data>
   <data name="ShowMessageAddTimerDown" xml:space="preserve">
     <value>down</value>
