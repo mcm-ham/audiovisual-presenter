@@ -576,6 +576,9 @@ namespace Presenter
             if (System.Windows.Forms.Screen.AllScreens.Length == 1)
                 MessageBox.Show(Labels.AppRequiresExtendedDesktop, "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
+            if (Config.UseNonPrimaryScreen && Config.ProjectorScreen.DeviceName == Config.PrimaryScreen.DeviceName && System.Windows.Forms.Screen.AllScreens.Length > 1)
+                Config.ProjectorScreen = System.Windows.Forms.Screen.AllScreens.First(s => !s.Primary);
+
             fullscreen = new FullscreenWindow();
             StartBtn.Visibility = Visibility.Collapsed;
             StopBtn.Visibility = Visibility.Visible;

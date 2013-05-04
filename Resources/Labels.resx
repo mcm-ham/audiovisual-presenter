@@ -389,6 +389,10 @@
   <data name="OptionsLibraryPath" xml:space="preserve">
     <value>Presenter Library Path</value>
   </data>
+  <data name="OptionsMonitorAuto" xml:space="preserve">
+    <value>Auto</value>
+    <comment>The label of the first item in the monitor dropdown in options, automatically chooses the first non-primary monitor if one exists.</comment>
+  </data>
   <data name="OptionsMonitorPrimary" xml:space="preserve">
     <value>Primary</value>
   </data>

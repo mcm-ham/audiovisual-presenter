@@ -193,6 +193,12 @@ namespace Presenter.App_Code
             }
         }
 
+        public static bool UseNonPrimaryScreen
+        {
+            get { return Util.Parse<bool?>(ConfigurationManager.AppSettings["UseNonPrimaryScreen"]) ?? true; }
+            set { SaveSetting("UseNonPrimaryScreen", value.ToString()); }
+        }
+
         public static string PowerpointVersion
         {
             get { return new Microsoft.Office.Interop.PowerPoint.Application().Version; }

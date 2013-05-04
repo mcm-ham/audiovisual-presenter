@@ -871,6 +871,15 @@ namespace Presenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Auto.
+        /// </summary>
+        public static string OptionsMonitorAuto {
+            get {
+                return ResourceManager.GetString("OptionsMonitorAuto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Primary.
         /// </summary>
         public static string OptionsMonitorPrimary {
