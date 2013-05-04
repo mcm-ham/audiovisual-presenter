@@ -18,13 +18,18 @@ namespace Presenter
             
             LibraryPath.Text = ConfigurationManager.AppSettings["LibraryPath"] ?? "My Documents\\Library\\";
 
+            MonitorSelection.Items.Add(Labels.OptionsMonitorAuto);
+
             for (int i = 0; i < Screen.AllScreens.Length; i++)
             {
                 MonitorSelection.Items.Add(Labels.OptionsMonitorTitle + " " + (i + 1) + (Screen.AllScreens[i].Primary ? " [" + Labels.OptionsMonitorPrimary + "]" : ""));
 
                 if (Screen.AllScreens[i] == Config.ProjectorScreen)
-                    MonitorSelection.SelectedIndex = i;
+                    MonitorSelection.SelectedIndex = i + 1;
             }
+
+            if (Config.UseNonPrimaryScreen)
+                MonitorSelection.SelectedIndex = 0;
 
             InsertPresBlanks.IsChecked = Config.InsertBlankAfterPres;
             InsertVideoBlanks.IsChecked = Config.InsertBlankAfterVideo;
@@ -46,8 +51,13 @@ namespace Presenter
         {
             Config.LibraryPath = LibraryPath.Text;
 
-            if (MonitorSelection.SelectedIndex != -1)
-                Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex];
+            if (MonitorSelection.SelectedIndex == 0)
+                Config.UseNonPrimaryScreen = true;
+            else if (MonitorSelection.SelectedIndex != -1)
+            {
+                Config.UseNonPrimaryScreen = false;
+                Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex - 1];
+            }
 
             Config.InsertBlankAfterPres = InsertPresBlanks.IsChecked ?? false;
             Config.InsertBlankAfterVideo = InsertVideoBlanks.IsChecked ?? false;
