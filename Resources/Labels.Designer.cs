@@ -736,6 +736,15 @@ namespace Presenter.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rename.
+        /// </summary>
+        public static string OpenBtnRename {
+            get {
+                return ResourceManager.GetString("OpenBtnRename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to delete &apos;{0}&apos;?.
         /// </summary>
         public static string OpenDelConfirm {
@@ -1092,6 +1101,33 @@ namespace Presenter.Resources {
         public static string ReportsUsageWindowTitle {
             get {
                 return ResourceManager.GetString("ReportsUsageWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string ScheduleListContextDelete {
+            get {
+                return ResourceManager.GetString("ScheduleListContextDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string ScheduleListContextOpen {
+            get {
+                return ResourceManager.GetString("ScheduleListContextOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename.
+        /// </summary>
+        public static string ScheduleListContextRename {
+            get {
+                return ResourceManager.GetString("ScheduleListContextRename", resourceCulture);
             }
         }
         
