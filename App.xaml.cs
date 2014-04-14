@@ -33,7 +33,7 @@ namespace Presenter
         public static void LogError(Exception ex)
         {
             ex = ex.GetBaseException();
-            string stacktrace = ex.StackTrace;
+            string stacktrace = ex.StackTrace ?? "";
             if (stacktrace.Length > 500 && stacktrace.IndexOf(" at ", 500) != -1)
                 stacktrace = stacktrace.Substring(0, stacktrace.IndexOf("at", 500));
 

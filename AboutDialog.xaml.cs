@@ -23,7 +23,7 @@ namespace Presenter
             Background = new SolidColorBrush(Config.BackgroundColour);
 
             var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            BuildNo.Text = " " + ver.Major + "." + ver.Minor + "." + ver.Build + " beta";
+            BuildNo.Text = " " + ver.Major + "." + ver.Minor + "." + ver.Build;
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)

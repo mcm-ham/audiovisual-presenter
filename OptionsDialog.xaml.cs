@@ -82,7 +82,7 @@ namespace Presenter
                 dirDialog.InitialDirectory = Config.LibraryPath;
                 dirDialog.Title = Labels.OptionsLibraryBrowseDesc;
                 dirDialog.IsFolderPicker = true;
-                if (dirDialog.ShowDialog() == CommonFileDialogResult.OK)
+                if (dirDialog.ShowDialog() == CommonFileDialogResult.Ok)
                     LibraryPath.Text = dirDialog.FileName;
             }
             else
