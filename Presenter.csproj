@@ -194,6 +194,7 @@
       <DependentUpon>ScreenMessage.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Resources\Labels.en-US.resx">
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Labels.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

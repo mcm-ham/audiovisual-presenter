@@ -184,7 +184,7 @@ namespace Presenter.App_Code
             try
             {
                 slide.GotoSlide(slide.PSlide.SlideIndex);
-                User32.SetWindowPos(slide.Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+                User32.SetWindowPos(slide.Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.Bounds.Left, Config.ProjectorScreen.Bounds.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             catch (COMException ex)
             {
@@ -201,6 +201,9 @@ namespace Presenter.App_Code
         public void Next(Slide slide)
         {
             int pos = slide.SlideIndex;
+            //fix issue in office 2013 where clicking next quickly thru slides CurrentShowPosition reports 0 on last slide
+            //int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
+            int pcurpos = slide.ItemIndex + 1;
 
             //GetClickIndex only available on office 2007 or higher so allow click to proceed (shows end of slideshow message) then switch to next presentation
             bool finishedCurrent = false;
@@ -208,7 +211,7 @@ namespace Presenter.App_Code
                 finishedCurrent = slide.Presentation.SlideShowWindow().View.GetClickIndex() >= slide.Presentation.SlideShowWindow().View.GetClickCount();
             
             //minus one from slide.Presentation.Slides.Count due to extra slide added at end that allowed slide animation on first slide
-            if (slide.Type != SlideType.PowerPoint || slide.Presentation.SlideShowWindow().View.CurrentShowPosition >= (slide.Presentation.Slides.Count - 1) && finishedCurrent)
+            if (slide.Type != SlideType.PowerPoint || pcurpos >= (slide.Presentation.Slides.Count - 1) && finishedCurrent)
             {
                 if (pos == Slides.Length)
                     return;
@@ -223,7 +226,6 @@ namespace Presenter.App_Code
                 return;
             }
 
-            int pcurpos = slide.Presentation.SlideShowWindow().View.CurrentShowPosition;
             if (pcurpos > slide.Presentation.Slides.Count)
             {
                 if (pos == Slides.Length)
@@ -301,7 +303,7 @@ namespace Presenter.App_Code
             {
                 var s = AddSlide(scheduleItem.Name, Labels.SlideShowImageLabel, null, null, SlideType.Image, filename, progressEnd, scheduleItem, 1);
                 Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                    s.Image = SlideShow.RetrieveImage(s.Filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
+                    s.Image = SlideShow.RetrieveImage(s.Filename, Config.ProjectorScreen.Bounds.Width, Config.ProjectorScreen.Bounds.Height);
                     s.Preview = SlideShow.RetrieveImage(s.Filename, 333, 250);
                 }));
             }

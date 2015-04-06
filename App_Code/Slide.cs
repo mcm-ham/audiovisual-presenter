@@ -16,7 +16,7 @@ namespace Presenter.App_Code
             /*if (type == SlideType.Image)
             {
                 System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() => {
-                    Image = RetrieveImage(filename, Config.ProjectorScreen.WorkingArea.Width, Config.ProjectorScreen.WorkingArea.Height);
+                    Image = RetrieveImage(filename, Config.ProjectorScreen.Bounds.Width, Config.ProjectorScreen.Bounds.Height);
                     Preview = RetrieveImage(filename, 333, 250);
                 }), System.Windows.Threading.DispatcherPriority.Background);
             }
@@ -152,7 +152,7 @@ namespace Presenter.App_Code
 
         public void SetTop()
         {
-            User32.SetWindowPos(Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+            User32.SetWindowPos(Presentation.SlideShowWindow().HWND, User32.HWND_TOP, Config.ProjectorScreen.Bounds.Left, Config.ProjectorScreen.Bounds.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
         }
     }
 }

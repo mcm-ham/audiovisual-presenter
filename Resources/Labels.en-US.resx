@@ -123,11 +123,18 @@
   <data name="AboutEmailTitle" xml:space="preserve">
     <value>Email:</value>
   </data>
-  <data name="AboutForumTitle" xml:space="preserve">
-    <value>Forum:</value>
-  </data>
   <data name="AboutHeader" xml:space="preserve">
     <value>Audiovisual Presenter</value>
+  </data>
+  <data name="AboutSupportTitle" xml:space="preserve">
+    <value>Support:</value>
+  </data>
+  <data name="AboutUpdateLatest" xml:space="preserve">
+    <value>You are running the latest version.</value>
+  </data>
+  <data name="AboutUpdateText" xml:space="preserve">
+    <value>A new version {0} is available</value>
+    <comment>{0} - version number</comment>
   </data>
   <data name="AboutVersionTitle" xml:space="preserve">
     <value>Version</value>
@@ -145,7 +152,7 @@
     <value>An error occurred processing an image file.</value>
   </data>
   <data name="AppRequiresExtendedDesktop" xml:space="preserve">
-    <value>Warning this program is designed for a dual display system set up with extended desktop. For details see: 'http://www.microsoft.com/athome/organization/twomonitors.aspx'.</value>
+    <value>Warning this program is designed for a dual display system set up with extended desktop. Attempting to enable now. For details see: http://support.microsoft.com/kb/976064</value>
   </data>
   <data name="AppRequiresOffice" xml:space="preserve">
     <value>This program requires Microsoft Office XP with PowerPoint or greater.</value>

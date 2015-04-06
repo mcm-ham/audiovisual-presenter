@@ -65,7 +65,7 @@ namespace Presenter.App_Code
                 if (_image == null)
                 {
                     if (ConfigurationManager.AppSettings["ImageFormats"] == null)
-                        SaveSetting("ImageFormats", "jpg,jpeg,wmp");
+                        SaveSetting("ImageFormats", "jpg,jpeg,wmp,png");
                     _image = new Collection<string>(ConfigurationManager.AppSettings["ImageFormats"].Split(','));
                 }
                 return _image;

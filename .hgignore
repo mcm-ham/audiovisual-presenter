@@ -1,5 +1,6 @@
 syntax: glob
 *.suo
+*.user
 obj/*
 bin/Debug
 bin/Release
