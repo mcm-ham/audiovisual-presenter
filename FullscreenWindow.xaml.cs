@@ -26,8 +26,8 @@ namespace Presenter
         {
             InitializeComponent();
             Background = new SolidColorBrush(Config.ScreenBlankColour);
-            Left = Config.ProjectorScreen.WorkingArea.Left;
-            Top = Config.ProjectorScreen.WorkingArea.Top;
+            Left = Config.ProjectorScreen.Bounds.Left;
+            Top = Config.ProjectorScreen.Bounds.Top;
             Topmost = true;
             Show();
         }
@@ -42,10 +42,10 @@ namespace Presenter
 
         public void Show(BitmapSource image)
         {
-            if (Config.ProjectorScreen.WorkingArea.Width > image.PixelWidth && Config.ProjectorScreen.WorkingArea.Height > image.PixelHeight)
+            if (Config.ProjectorScreen.Bounds.Width > image.PixelWidth && Config.ProjectorScreen.Bounds.Height > image.PixelHeight)
                 ImageDisplay.Width = image.PixelWidth;
             else
-                ImageDisplay.Width = Config.ProjectorScreen.WorkingArea.Width;
+                ImageDisplay.Width = Config.ProjectorScreen.Bounds.Width;
 
             ImageDisplay.Source = image;
             ImageDisplay.Visibility = Visibility.Visible;

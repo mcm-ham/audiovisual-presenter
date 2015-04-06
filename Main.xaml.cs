@@ -237,11 +237,11 @@ namespace Presenter
             {
                 Slide s = LiveList.SelectedItem as Slide;
                 int hwnd = (s.Type == SlideType.PowerPoint) ? s.Presentation.SlideShowWindow().HWND : fullscreen.HWND;
-                User32.SetWindowPos(hwnd, User32.HWND_TOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+                User32.SetWindowPos(hwnd, User32.HWND_TOPMOST, Config.ProjectorScreen.Bounds.Left, Config.ProjectorScreen.Bounds.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
                 var num = Presentation.Slides.Length;
                 Presentation.AddSlides(SelectedSchedule.Items.OrderBy(i => i.Ordinal).Last());
                 LiveList.ScrollIntoView(LiveList.Items[LiveList.Items.Count - 1]);
-                User32.SetWindowPos(hwnd, User32.HWND_NOTOPMOST, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+                User32.SetWindowPos(hwnd, User32.HWND_NOTOPMOST, Config.ProjectorScreen.Bounds.Left, Config.ProjectorScreen.Bounds.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
 
                 var worker = new System.ComponentModel.BackgroundWorker();
                 worker.DoWork += (sen, ev) =>
@@ -574,7 +574,17 @@ namespace Presenter
             }
 
             if (System.Windows.Forms.Screen.AllScreens.Length == 1)
-                MessageBox.Show(Labels.AppRequiresExtendedDesktop, "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            {
+                // available on Win7 and higher
+                try
+                {
+                    new System.Diagnostics.Process { StartInfo = { FileName = "DisplaySwitch.exe", Arguments = "/extend" } }.Start();
+                }
+                catch { }
+
+                if (System.Windows.Forms.Screen.AllScreens.Length == 1)
+                    MessageBox.Show(Labels.AppRequiresExtendedDesktop, "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
 
             if (Config.UseNonPrimaryScreen && Config.ProjectorScreen.DeviceName == Config.PrimaryScreen.DeviceName && System.Windows.Forms.Screen.AllScreens.Length > 1)
                 Config.ProjectorScreen = System.Windows.Forms.Screen.AllScreens.First(s => !s.Primary);
@@ -821,7 +831,7 @@ namespace Presenter
             if (Presentation.Slides.Length > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
             {
                 ShowMedia(Presentation.Slides[idx]);
-                User32.SetWindowPos(fullscreen.HWND, User32.HWND_TOP, Config.ProjectorScreen.WorkingArea.Left, Config.ProjectorScreen.WorkingArea.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+                User32.SetWindowPos(fullscreen.HWND, User32.HWND_TOP, Config.ProjectorScreen.Bounds.Left, Config.ProjectorScreen.Bounds.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
             }
             else
             {
