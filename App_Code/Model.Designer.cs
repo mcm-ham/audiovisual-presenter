@@ -8,12 +8,13 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
+using System.Data.EntityClient;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
-using System.Data.EntityClient;
-using System.ComponentModel;
-using System.Xml.Serialization;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
@@ -120,6 +121,7 @@ namespace Presenter.App_Code
         private ObjectSet<Schedule> _Schedules;
 
         #endregion
+
         #region AddTo Methods
     
         /// <summary>
@@ -147,11 +149,11 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
     }
-    
 
     #endregion
-    
+
     #region Entities
     
     /// <summary>
@@ -180,6 +182,7 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -261,6 +264,7 @@ namespace Presenter.App_Code
         partial void OnIndexChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -303,6 +307,7 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -333,6 +338,7 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -435,6 +441,7 @@ namespace Presenter.App_Code
         partial void OnOrdinalChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -499,6 +506,7 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -527,6 +535,7 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -605,6 +614,7 @@ namespace Presenter.App_Code
         partial void OnNameChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -631,8 +641,10 @@ namespace Presenter.App_Code
         }
 
         #endregion
+
     }
 
     #endregion
+
     
 }
