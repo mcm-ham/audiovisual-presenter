@@ -1,5 +1,6 @@
 .vs/
-bin/
-obj/
-packages/
 *.user
+src/**/bin/
+src/**/obj/
+test/**/bin/
+test/**/obj/

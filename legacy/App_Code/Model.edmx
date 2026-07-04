@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DatabaseModel.Store" Alias="Self" Provider="System.Data.SqlServerCe.4.0" ProviderManifestToken="4.0" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="DatabaseModelStoreContainer">
+          <EntitySet Name="Flags" EntityType="DatabaseModel.Store.Flags" store:Type="Tables" />
+          <EntitySet Name="Items" EntityType="DatabaseModel.Store.Items" store:Type="Tables" />
+          <EntitySet Name="Schedules" EntityType="DatabaseModel.Store.Schedules" store:Type="Tables" />
+          <AssociationSet Name="FK_Item_Flags" Association="DatabaseModel.Store.FK_Item_Flags">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Flags" EntitySet="Flags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Items" Association="DatabaseModel.Store.FK_Schedule_Items">
+            <End Role="Schedules" EntitySet="Schedules" />
+            <End Role="Items" EntitySet="Items" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Flags">
+          <Key>
+            <PropertyRef Name="ItemID" />
+            <PropertyRef Name="Index" />
+          </Key>
+          <Property Name="ItemID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Colour" Type="nvarchar" Nullable="false" MaxLength="30" />
+          <Property Name="Index" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Items">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ScheduleID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Filename" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="Ordinal" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Schedules">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="100" />
+        </EntityType>
+        <Association Name="FK_Item_Flags">
+          <End Role="Items" Type="DatabaseModel.Store.Items" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Flags" Type="DatabaseModel.Store.Flags" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Flags">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Items">
+          <End Role="Schedules" Type="DatabaseModel.Store.Schedules" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Items" Type="DatabaseModel.Store.Items" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedules">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Items">
+              <PropertyRef Name="ScheduleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DatabaseModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="DatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Flags" EntityType="DatabaseModel.Flag" />
+          <EntitySet Name="Items" EntityType="DatabaseModel.Item" />
+          <EntitySet Name="Schedules" EntityType="DatabaseModel.Schedule" />
+          <AssociationSet Name="FK_Item_Flags" Association="DatabaseModel.FK_Item_Flags">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Flags" EntitySet="Flags" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Schedule_Items" Association="DatabaseModel.FK_Schedule_Items">
+            <End Role="Schedules" EntitySet="Schedules" />
+            <End Role="Items" EntitySet="Items" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Flag">
+          <Key>
+            <PropertyRef Name="ItemID" />
+            <PropertyRef Name="Index" />
+          </Key>
+          <Property Name="ItemID" Type="Guid" Nullable="false" />
+          <Property Name="Colour" Type="String" Nullable="false" MaxLength="30" Unicode="true" FixedLength="false" />
+          <Property Name="Index" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Item" Relationship="DatabaseModel.FK_Item_Flags" FromRole="Flags" ToRole="Items" />
+        </EntityType>
+        <EntityType Name="Item">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="ScheduleID" Type="Guid" Nullable="false" />
+          <Property Name="Filename" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="Ordinal" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="Flags" Relationship="DatabaseModel.FK_Item_Flags" FromRole="Items" ToRole="Flags" />
+          <NavigationProperty Name="Schedule" Relationship="DatabaseModel.FK_Schedule_Items" FromRole="Items" ToRole="Schedules" />
+        </EntityType>
+        <EntityType Name="Schedule">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Guid" Nullable="false" />
+          <Property Name="Date" Type="DateTime" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Items" Relationship="DatabaseModel.FK_Schedule_Items" FromRole="Schedules" ToRole="Items" />
+        </EntityType>
+        <Association Name="FK_Item_Flags">
+          <End Role="Items" Type="DatabaseModel.Item" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Flags" Type="DatabaseModel.Flag" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Flags">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Schedule_Items">
+          <End Role="Schedules" Type="DatabaseModel.Schedule" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Items" Type="DatabaseModel.Item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedules">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Items">
+              <PropertyRef Name="ScheduleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="DatabaseModelStoreContainer" CdmEntityContainer="DatabaseEntities">
+          <EntitySetMapping Name="Flags"><EntityTypeMapping TypeName="DatabaseModel.Flag"><MappingFragment StoreEntitySet="Flags">
+            <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+            <ScalarProperty Name="Colour" ColumnName="Colour" />
+            <ScalarProperty Name="Index" ColumnName="Index" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Items"><EntityTypeMapping TypeName="DatabaseModel.Item"><MappingFragment StoreEntitySet="Items">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ScheduleID" ColumnName="ScheduleID" />
+            <ScalarProperty Name="Filename" ColumnName="Filename" />
+            <ScalarProperty Name="Ordinal" ColumnName="Ordinal" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Schedules"><EntityTypeMapping TypeName="DatabaseModel.Schedule"><MappingFragment StoreEntitySet="Schedules">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="Date" ColumnName="Date" />
+            <ScalarProperty Name="Name" ColumnName="Name" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="Model">
+        <EntityTypeShape EntityType="DatabaseModel.Flag" Width="1.5" PointX="5.25" PointY="1.125" Height="1.7879850260416672" IsExpanded="true" />
+        <EntityTypeShape EntityType="DatabaseModel.Item" Width="1.5" PointX="3" PointY="0.875" Height="2.1725878906249996" IsExpanded="true" />
+        <EntityTypeShape EntityType="DatabaseModel.Schedule" Width="1.5" PointX="0.75" PointY="1.125" Height="1.7879850260416665" IsExpanded="true" />
+        <AssociationConnector Association="DatabaseModel.FK_Item_Flags" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="2.0189925130208337" />
+          <ConnectorPoint PointX="5.25" PointY="2.0189925130208337" />
+        </AssociationConnector>
+        <AssociationConnector Association="DatabaseModel.FK_Schedule_Items" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="2.0189925130208333" />
+          <ConnectorPoint PointX="3" PointY="2.0189925130208333" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
