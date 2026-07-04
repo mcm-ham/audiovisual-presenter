@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- WPF needed for BitmapSource image loading and colour string parsing -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Presenter.Core\Presenter.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Office primary interop assemblies (copied from the original bin\); embedded so
+         no PIA needs to be installed or shipped -->
+    <Reference Include="Microsoft.Office.Interop.PowerPoint">
+      <HintPath>lib\Microsoft.Office.Interop.PowerPoint.dll</HintPath>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Office">
+      <HintPath>lib\Office.dll</HintPath>
+      <EmbedInteropTypes>true</EmbedInteropTypes>
+    </Reference>
+  </ItemGroup>
+
+</Project>

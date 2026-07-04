@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- net48 on purpose: System.Data.SqlServerCe is .NET Framework-only. This tool
+         exports the legacy Database.sdf to JSON for one-time import into SQLite. -->
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Allows building net48 without the .NET Framework developer pack installed -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" GeneratePathProperty="true" />
+    <PackageReference Include="System.Text.Json" Version="10.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SQL CE private deployment: the package only copies its native binaries under
+         legacy packages.config, so replicate that for PackageReference. The provider
+         probes the amd64/x86 subfolders next to the exe at runtime. -->
+    <None Include="$(PkgMicrosoft_SqlServer_Compact)\NativeBinaries\amd64\**\*.*"
+          Link="amd64\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(PkgMicrosoft_SqlServer_Compact)\NativeBinaries\x86\**\*.*"
+          Link="x86\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Windows 10 1809+ platform (required by Presenter.Engine.Render's PDF rasterizer) -->
+    <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- System.Windows.Forms.Screen is used for monitor detection (ported from Config.cs) -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>Presenter</AssemblyName>
+    <!-- keep the original namespaces (Presenter, Presenter.App_Code, Presenter.Resources)
+         so the ported XAML and Labels.Designer.cs work unchanged -->
+    <RootNamespace>Presenter</RootNamespace>
+    <ApplicationIcon>Icons\Projector.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- the WinForms SDK injects these as global usings, which clashes with WPF types
+         everywhere; WinForms is only used via explicit System.Windows.Forms.* names -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Presenter.Core\Presenter.Core.csproj" />
+    <ProjectReference Include="..\Presenter.Data\Presenter.Data.csproj" />
+    <ProjectReference Include="..\Presenter.Engine.Com\Presenter.Engine.Com.csproj" />
+    <ProjectReference Include="..\Presenter.Engine.Render\Presenter.Engine.Render.csproj" />
+    <!-- build-order only: the net48 exporter ships alongside the app for legacy DB migration -->
+    <ProjectReference Include="..\Presenter.SdfExport\Presenter.SdfExport.csproj" ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Windows Search integration in the library search box (ported from Main.xaml.cs) -->
+    <PackageReference Include="System.Data.OleDb" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\*.png" />
+    <Resource Include="Icons\Projector.ico" />
+    <Resource Include="Icons\license.txt" />
+  </ItemGroup>
+
+  <!-- ship the legacy exporter (exe + SQL CE native binaries + deps) in an SdfExport subfolder -->
+  <Target Name="CopySdfExporter" AfterTargets="Build">
+    <ItemGroup>
+      <SdfExportFiles Include="..\Presenter.SdfExport\bin\$(Configuration)\net48\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SdfExportFiles)" DestinationFiles="@(SdfExportFiles->'$(OutDir)SdfExport\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
