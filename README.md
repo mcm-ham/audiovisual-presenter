@@ -20,6 +20,7 @@ The app executable is `src/Presenter.App/bin/Debug/net10.0-windows10.0.17763.0/P
 - `src/Presenter.Core` — domain models and engine/settings abstractions (no WPF/COM/EF)
 - `src/Presenter.Data` — EF Core + SQLite persistence, legacy SQL CE import
 - `src/Presenter.Engine.Com` — full-fidelity playback by driving PowerPoint via COM (requires Office)
+- `src/Presenter.Engine.Uno` — animated no-Office playback: drives live LibreOffice Impress slideshows over UNO
 - `src/Presenter.Engine.Render` — no-Office fallback: LibreOffice renders slides to static images
 - `src/Presenter.App` — WPF operator UI
 - `src/Presenter.SdfExport` — net48 one-time exporter for the old Database.sdf (SQL CE)
@@ -28,10 +29,13 @@ The app executable is `src/Presenter.App/bin/Debug/net10.0-windows10.0.17763.0/P
 
 ## Playback engines
 
-PowerPoint (COM) is the default engine and provides live animations and slide timings.
-When Office is not installed, the app falls back to the LibreOffice render engine
-(static slides; needs [LibreOffice](https://www.libreoffice.org/)). The preferred
-engine can be chosen in Options.
+PowerPoint (COM) is the default engine and provides full-fidelity animations and
+slide timings. Without Office, the LibreOffice UNO engine plays live Impress
+slideshows — animations and transitions play, though complex PowerPoint effects
+may be approximated (needs [LibreOffice](https://www.libreoffice.org/); no SDK
+required, the engine drives LibreOffice through its bundled Python). The
+LibreOffice render engine is a last resort that shows slides as static images.
+The preferred engine can be chosen in Options.
 
 ## Data
 

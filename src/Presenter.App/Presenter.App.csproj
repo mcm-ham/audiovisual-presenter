@@ -29,6 +29,7 @@
     <ProjectReference Include="..\Presenter.Data\Presenter.Data.csproj" />
     <ProjectReference Include="..\Presenter.Engine.Com\Presenter.Engine.Com.csproj" />
     <ProjectReference Include="..\Presenter.Engine.Render\Presenter.Engine.Render.csproj" />
+    <ProjectReference Include="..\Presenter.Engine.Uno\Presenter.Engine.Uno.csproj" />
     <!-- build-order only: the net48 exporter ships alongside the app for legacy DB migration -->
     <ProjectReference Include="..\Presenter.SdfExport\Presenter.SdfExport.csproj" ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" />
   </ItemGroup>

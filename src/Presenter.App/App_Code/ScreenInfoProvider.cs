@@ -25,5 +25,15 @@ namespace Presenter.App_Code
                 return new ScreenBounds(wa.Left, wa.Top, wa.Width, wa.Height);
             }
         }
+
+        public int ProjectorScreenNumber
+        {
+            get
+            {
+                var screens = System.Windows.Forms.Screen.AllScreens;
+                int idx = Array.FindIndex(screens, s => s.DeviceName == Config.ProjectorScreen.DeviceName);
+                return idx >= 0 ? idx + 1 : 1;
+            }
+        }
     }
 }

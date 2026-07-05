@@ -6,5 +6,6 @@
   <Project Path="Presenter.Data/Presenter.Data.csproj" />
   <Project Path="Presenter.Engine.Com/Presenter.Engine.Com.csproj" />
   <Project Path="Presenter.Engine.Render/Presenter.Engine.Render.csproj" />
+  <Project Path="Presenter.Engine.Uno/Presenter.Engine.Uno.csproj" />
   <Project Path="Presenter.SdfExport/Presenter.SdfExport.csproj" />
 </Solution>

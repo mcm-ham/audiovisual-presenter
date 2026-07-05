@@ -424,6 +424,9 @@
   <data name="OptionsEngineRender" xml:space="preserve">
     <value>LibreOffice (static slides)</value>
   </data>
+  <data name="OptionsEngineUno" xml:space="preserve">
+    <value>LibreOffice (animations)</value>
+  </data>
   <data name="OptionsPresentionSettings" xml:space="preserve">
     <value>Presentation Settings</value>
   </data>

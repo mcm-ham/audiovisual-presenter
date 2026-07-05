@@ -970,6 +970,15 @@ namespace Presenter.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to LibreOffice (animations).
+        /// </summary>
+        public static string OptionsEngineUno {
+            get {
+                return ResourceManager.GetString("OptionsEngineUno", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Presentation Settings.
         /// </summary>
         public static string OptionsPresentionSettings {

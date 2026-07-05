@@ -28,9 +28,11 @@ namespace Presenter
             if (Config.UseNonPrimaryScreen)
                 MonitorSelection.SelectedIndex = 0;
 
+            string libreOfficeSuffix = Engine.Render.SofficeLocator.Find() != null ? "" : " [" + Labels.OptionsEngineMissing + "]";
             EngineSelection.Items.Add(Labels.OptionsEngineCom + (App.OfficeAvailable ? "" : " [" + Labels.OptionsEngineMissing + "]"));
-            EngineSelection.Items.Add(Labels.OptionsEngineRender + (Engine.Render.SofficeLocator.Find() != null ? "" : " [" + Labels.OptionsEngineMissing + "]"));
-            EngineSelection.SelectedIndex = Config.PreferredEngine == "render" ? 1 : 0;
+            EngineSelection.Items.Add(Labels.OptionsEngineUno + libreOfficeSuffix);
+            EngineSelection.Items.Add(Labels.OptionsEngineRender + libreOfficeSuffix);
+            EngineSelection.SelectedIndex = Config.PreferredEngine switch { "uno" => 1, "render" => 2, _ => 0 };
 
             InsertPresBlanks.IsChecked = Config.InsertBlankAfterPres;
             InsertVideoBlanks.IsChecked = Config.InsertBlankAfterVideo;
@@ -53,7 +55,7 @@ namespace Presenter
                 Config.ProjectorScreen = Screen.AllScreens[MonitorSelection.SelectedIndex - 1];
             }
 
-            string engine = EngineSelection.SelectedIndex == 1 ? "render" : "com";
+            string engine = EngineSelection.SelectedIndex switch { 1 => "uno", 2 => "render", _ => "com" };
             if (engine != Config.PreferredEngine)
             {
                 Config.PreferredEngine = engine;

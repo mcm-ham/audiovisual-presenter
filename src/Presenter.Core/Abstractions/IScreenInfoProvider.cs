@@ -14,4 +14,10 @@ public interface IScreenInfoProvider
 
     /// <summary>Working area of the primary (operator) screen.</summary>
     ScreenBounds PrimaryWorkingArea { get; }
+
+    /// <summary>
+    /// 1-based number of the projector screen in the OS monitor order (what
+    /// LibreOffice's presentation Display property expects).
+    /// </summary>
+    int ProjectorScreenNumber => 1;
 }
