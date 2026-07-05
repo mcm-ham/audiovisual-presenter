@@ -2,7 +2,6 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using Presenter.Core.Abstractions;
 using Presenter.Core.Models;
-using Presenter.Engine.Render;
 using Presenter.Engine.Uno.Interop;
 
 namespace Presenter.Engine.Uno;
@@ -98,7 +97,8 @@ public class UnoPresentationEngine : IPresentationEngine
         var S = _settings.Current;
         int itemCount = scheduleItem.Schedule?.Items.Count ?? 1;
         double progressEnd = (scheduleItem.Ordinal + 1) / (double)itemCount;
-        string filename = Path.GetFullPath(scheduleItem.Filename).ToLower();
+        //keep original casing: shared folders (e.g. Parallels \\Mac) can be case-sensitive
+        string filename = Path.GetFullPath(scheduleItem.Filename);
         string filetype = Path.GetExtension(filename).TrimStart('.').ToLower();
 
         if (S.VideoFormats.Contains(filetype))
@@ -151,8 +151,36 @@ public class UnoPresentationEngine : IPresentationEngine
                 ("display", _screens.ProjectorScreenNumber),
                 ("withTimings", S.UseSlideTimings)).Dispose();
 
-            //show windows grab focus; give it back to the operator window
+            //the OS-level show window appears (and steals focus) slightly after the
+            //start request returns; wait for it so the activation below comes last
+            int? showHwnd = null;
+            var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(10);
+            while ((showHwnd = host.GetShowWindowHandle()) is null && DateTime.UtcNow < deadline)
+                Thread.Sleep(50);
+
+            if (showHwnd is int hwnd)
+            {
+                var taskbarList = (ITaskbarList2)new CTaskbarList();
+                taskbarList.HrInit();
+                taskbarList.DeleteTab(new IntPtr(hwnd));
+                //keep the taskbar beneath the show even though the operator window has focus
+                taskbarList.MarkFullscreenWindow(new IntPtr(hwnd), true);
+            }
+
+            //show windows grab focus; give it back to the operator window, then guard
+            //briefly: Impress re-asserts foreground during its fullscreen transition
             OnUi(() => _activateMainWindow?.Invoke());
+            if (showHwnd is int show)
+            {
+                var guardUntil = DateTime.UtcNow + TimeSpan.FromSeconds(2);
+                while (DateTime.UtcNow < guardUntil)
+                {
+                    Thread.Sleep(200);
+                    if (User32.GetForegroundWindow() != new IntPtr(show))
+                        break;
+                    OnUi(() => _activateMainWindow?.Invoke());
+                }
+            }
         }
 
         if (S.InsertBlankAfterPres && S.PowerPointFormats.Contains(filetype) || S.InsertBlankAfterVideo && S.VideoFormats.Concat(S.AudioFormats).Contains(filetype))

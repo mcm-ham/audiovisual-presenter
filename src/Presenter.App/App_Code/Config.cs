@@ -209,7 +209,7 @@ namespace Presenter.App_Code
             set { S.InsertBlankAfterVideo = value; Save(); }
         }
 
-        /// <summary>Preferred presentation engine: "com" (drive PowerPoint) or "render" (LibreOffice).</summary>
+        /// <summary>Preferred presentation engine: "com" (drive PowerPoint) or "uno" (LibreOffice).</summary>
         public static string PreferredEngine
         {
             get { return S.PreferredEngine; }

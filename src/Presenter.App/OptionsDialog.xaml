@@ -18,8 +18,8 @@
         <CheckBox Name="InsertVideoBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterVideo}" Margin="25,252,0,0" Height="16" VerticalAlignment="Top" />
         <CheckBox Name="ShowPreviewBottom" Content="{x:Static Loc:Labels.OptionsShowPreviewBottom}" Margin="25,274,0,0" Height="16" VerticalAlignment="Top" />
 
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="200,75,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsEngine}" />
-        <ComboBox Name="EngineSelection" Height="23" Width="240" Margin="200,96,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <TextBlock Height="23" HorizontalAlignment="Left" Margin="270,75,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsEngine}" />
+        <ComboBox Name="EngineSelection" Height="23" Width="240" Margin="270,96,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
         <TextBlock Text="{x:Static Loc:Labels.OptionsFontSize}" Margin="25,142,0,0" VerticalAlignment="Top" />
         <ComboBox Name="FontSizeList" Height="23" Width="135" Margin="25,164,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />

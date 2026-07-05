@@ -943,7 +943,7 @@ namespace Presenter.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to PowerPoint (full animations).
+        ///   Looks up a localized string similar to PowerPoint.
         /// </summary>
         public static string OptionsEngineCom {
             get {
@@ -961,16 +961,7 @@ namespace Presenter.Resources {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to LibreOffice (static slides).
-        /// </summary>
-        public static string OptionsEngineRender {
-            get {
-                return ResourceManager.GetString("OptionsEngineRender", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to LibreOffice (animations).
+        ///   Looks up a localized string similar to LibreOffice.
         /// </summary>
         public static string OptionsEngineUno {
             get {

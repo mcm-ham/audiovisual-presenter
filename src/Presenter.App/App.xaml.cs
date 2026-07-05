@@ -59,7 +59,16 @@ namespace Presenter
             OfficeAvailable = DetectPowerPoint();
             AppServices.SelectEngine(OfficeAvailable,
                 new System.Windows.Threading.DispatcherSynchronizationContext(Dispatcher),
-                () => Current.MainWindow?.Activate());
+                () =>
+                {
+                    var window = Current.MainWindow;
+                    if (window == null)
+                        return;
+                    //a show window of another process holds the foreground; plain
+                    //Activate() is denied by Windows and only flashes the taskbar
+                    User32.ForceForeground(new System.Windows.Interop.WindowInteropHelper(window).Handle);
+                    window.Activate();
+                });
 
             Config.FontSize = AppServices.SettingsStore.Current.FontSize ?? SystemFonts.MessageFontSize;
 

@@ -354,7 +354,8 @@ public class ComPresentationEngine : IPresentationEngine
         var S = _settings.Current;
         int itemCount = scheduleItem.Schedule?.Items.Count ?? 1;
         double progressEnd = (scheduleItem.Ordinal + 1) / (double)itemCount;
-        string filename = Path.GetFullPath(scheduleItem.Filename).ToLower();
+        //keep original casing: shared folders (e.g. Parallels \\Mac) can be case-sensitive
+        string filename = Path.GetFullPath(scheduleItem.Filename);
         string filetype = Path.GetExtension(filename).TrimStart('.').ToLower();
 
         if (S.VideoFormats.Contains(filetype))
@@ -424,6 +425,9 @@ public class ComPresentationEngine : IPresentationEngine
             slide.Background.Fill.Solid();
             slide.SlideShowTransition.EntryEffect = PP.PpEntryEffect.ppEffectNone;
 
+            //suppress Presenter View (on by default with a second monitor since PowerPoint 2013)
+            //without changing the user's global PowerPoint preference
+            pres.SlideShowSettings.ShowPresenterView = Office.MsoTriState.msoFalse;
             pres.SlideShowSettings.Run();
             ComUtil.SlideShowWindows[pres] = pres.SlideShowWindow;
 
@@ -431,9 +435,12 @@ public class ComPresentationEngine : IPresentationEngine
             //expecting the listview to scroll it will actually change slides and can end the slideshow unexpectedly
             OnUi(() => _activateMainWindow?.Invoke());
 
-            var taskbarList = (ITaskbarList)new CTaskbarList();
+            var taskbarList = (ITaskbarList2)new CTaskbarList();
             taskbarList.HrInit();
-            taskbarList.DeleteTab(new IntPtr(pres.SlideShowWindow().HWND));
+            var showHwnd = new IntPtr(pres.SlideShowWindow().HWND);
+            taskbarList.DeleteTab(showHwnd);
+            //keep the taskbar beneath the show even though the operator window has focus
+            taskbarList.MarkFullscreenWindow(showHwnd, true);
 
             app.SlideShowNextSlide += app_SlideShowNextSlide;
         }

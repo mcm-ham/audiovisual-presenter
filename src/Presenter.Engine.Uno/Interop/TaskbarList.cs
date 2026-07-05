@@ -1,11 +1,11 @@
 using System.Runtime.InteropServices;
 
-namespace Presenter.Engine.Com.Interop;
+namespace Presenter.Engine.Uno.Interop;
 
 /// <summary>
-/// ITaskbarList2 COM interface, used after SlideShowSettings.Run() to remove the
-/// PowerPoint slideshow window's tab from the taskbar and to mark the window
-/// fullscreen so the taskbar stays beneath it while the operator window holds focus.
+/// ITaskbarList2 COM interface, used once the Impress show window appears to remove
+/// its taskbar tab and to mark it fullscreen so the taskbar stays beneath it while
+/// the operator window holds focus.
 /// </summary>
 [ComImport, Guid("602D4995-B13A-429B-A66E-1935E44F4317"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 internal interface ITaskbarList2

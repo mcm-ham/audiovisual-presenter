@@ -416,16 +416,13 @@
     <value>Playback Engine</value>
   </data>
   <data name="OptionsEngineCom" xml:space="preserve">
-    <value>PowerPoint (full animations)</value>
+    <value>PowerPoint</value>
   </data>
   <data name="OptionsEngineMissing" xml:space="preserve">
     <value>not installed</value>
   </data>
-  <data name="OptionsEngineRender" xml:space="preserve">
-    <value>LibreOffice (static slides)</value>
-  </data>
   <data name="OptionsEngineUno" xml:space="preserve">
-    <value>LibreOffice (animations)</value>
+    <value>LibreOffice</value>
   </data>
   <data name="OptionsPresentionSettings" xml:space="preserve">
     <value>Presentation Settings</value>

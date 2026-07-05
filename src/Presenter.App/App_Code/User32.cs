@@ -51,6 +51,39 @@ public class User32
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool SetForegroundWindow(IntPtr hWnd);
 
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+
+    [DllImport("kernel32.dll")]
+    private static extern uint GetCurrentThreadId();
+
+    /// <summary>
+    /// Brings a window of this process to the foreground even when another process
+    /// (a PowerPoint or Impress show window) currently holds it. Windows denies a
+    /// plain SetForegroundWindow from a background process, so temporarily attach
+    /// to the foreground window's input queue, which grants the right.
+    /// </summary>
+    public static void ForceForeground(IntPtr hWnd)
+    {
+        IntPtr foreground = GetForegroundWindow();
+        if (foreground == hWnd)
+            return;
+
+        uint foregroundThread = GetWindowThreadProcessId(foreground, out _);
+        uint ourThread = GetCurrentThreadId();
+        if (foreground != IntPtr.Zero && foregroundThread != ourThread)
+        {
+            AttachThreadInput(ourThread, foregroundThread, true);
+            try { SetForegroundWindow(hWnd); }
+            finally { AttachThreadInput(ourThread, foregroundThread, false); }
+        }
+        else
+        {
+            SetForegroundWindow(hWnd);
+        }
+    }
+
     public const uint WM_CHAR = 0x102;
     public const uint WM_KEYUP = 0x0101; //http://msdn.microsoft.com/en-us/library/ms646281%28VS.85%29.aspx
     public const uint WM_KEYDOWN = 0x0100; //http://msdn.microsoft.com/en-us/library/ms646281%28VS.85%29.aspx

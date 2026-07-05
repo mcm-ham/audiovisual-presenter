@@ -146,6 +146,8 @@ class Host:
         self.desktop = self.ctx.ServiceManager.createInstanceWithContext(
             "com.sun.star.frame.Desktop", self.ctx)
 
+        self.disable_presenter_console()
+
         url = uno.systemPathToFileUrl(self.document)
         # read-only: never lock or modify the user's file (the same file may be loaded
         # twice in one schedule); minimized: the edit window must stay out of the way
@@ -164,6 +166,21 @@ class Host:
             pass
 
         emit({"event": "loaded", "pid": self.proc.pid, "hwnd": hwnd, "slides": self.slide_info()})
+
+    def disable_presenter_console(self):
+        """The Presenter Console would take over the operator's screen (the show itself
+        goes to the configured display); the app has its own preview/notes UI, so turn
+        it off in this soffice instance's dedicated profile."""
+        try:
+            cp = self.ctx.ServiceManager.createInstanceWithContext(
+                "com.sun.star.configuration.ConfigurationProvider", self.ctx)
+            node = prop("nodepath", "/org.openoffice.Office.Impress/Misc")
+            cfg = cp.createInstanceWithArguments(
+                "com.sun.star.configuration.ConfigurationUpdateAccess", (node,))
+            cfg.getByName("Start").setPropertyValue("EnablePresenterScreen", False)
+            cfg.commitChanges()
+        except Exception:
+            pass  # older LibreOffice may lack the key; the show still runs
 
     def slide_info(self):
         pages = self.doc.DrawPages

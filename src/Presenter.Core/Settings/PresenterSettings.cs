@@ -57,8 +57,8 @@ public class PresenterSettings
     /// <summary>Margin as "left,top,right,bottom" (parsed into a Thickness by the UI).</summary>
     public string MessengerMargin { get; set; } = "0,0,0,8";
 
-    /// <summary>Preferred presentation engine; "com" (drive PowerPoint), "uno"
-    /// (live LibreOffice Impress slideshows) or "render" (static LibreOffice images).</summary>
+    /// <summary>Preferred presentation engine; "com" (drive PowerPoint) or "uno"
+    /// (live LibreOffice Impress slideshows).</summary>
     public string PreferredEngine { get; set; } = "com";
 
     /// <summary>Union of all supported media file extensions.</summary>

@@ -6,7 +6,6 @@ using Presenter.Core.Settings;
 using Presenter.Data;
 using Presenter.Data.Legacy;
 using Presenter.Engine.Com;
-using Presenter.Engine.Render;
 using Presenter.Engine.Uno;
 using Presenter.Resources;
 
@@ -47,9 +46,8 @@ namespace Presenter.App_Code
         /// <summary>
         /// Picks the presentation engine by preference and availability: COM drives
         /// PowerPoint (full fidelity, needs Office), UNO drives live LibreOffice
-        /// Impress slideshows (animations play, needs LibreOffice), render shows
-        /// LibreOffice-rendered static slides. Falls back preferring animations:
-        /// com → uno → render → no-playback stub. Re-invoked by the options dialog
+        /// Impress slideshows (animations play, needs LibreOffice). Falls back:
+        /// com → uno → no-playback stub. Re-invoked by the options dialog
         /// when the preference changes (context args stick from the first call at
         /// startup).
         /// </summary>
@@ -63,18 +61,13 @@ namespace Presenter.App_Code
 
             string preferred = SettingsStore.Current.PreferredEngine;
             var uno = new UnoPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow);
-            var render = new RenderPresentationEngine(SettingsStore, screens, labels);
 
             if (preferred == "uno" && uno.IsAvailable)
                 Engine = uno;
-            else if (preferred == "render" && render.IsAvailable)
-                Engine = render;
             else if (officeAvailable)
                 Engine = new ComPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow);
             else if (uno.IsAvailable)
                 Engine = uno;
-            else if (render.IsAvailable)
-                Engine = render;
             else
                 Engine = new NoopPresentationEngine();
         }

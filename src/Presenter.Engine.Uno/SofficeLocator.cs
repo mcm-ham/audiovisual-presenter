@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.Win32;
 
-namespace Presenter.Engine.Render;
+namespace Presenter.Engine.Uno;
 
 /// <summary>Locates the LibreOffice soffice.exe executable.</summary>
 public static class SofficeLocator
