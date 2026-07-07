@@ -2,6 +2,7 @@
   <Project Path="../test/Presenter.Core.Tests/Presenter.Core.Tests.csproj" />
   <Project Path="../test/Presenter.Data.Tests/Presenter.Data.Tests.csproj" />
   <Project Path="Presenter.App/Presenter.App.csproj" />
+  <Project Path="Presenter.App.Avalonia/Presenter.App.Avalonia.csproj" />
   <Project Path="Presenter.Core/Presenter.Core.csproj" />
   <Project Path="Presenter.Data/Presenter.Data.csproj" />
   <Project Path="Presenter.Engine.Com/Presenter.Engine.Com.csproj" />

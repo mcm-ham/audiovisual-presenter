@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Loc="clr-namespace:Presenter.Resources"
+    xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
+    x:Class="Presenter.FullscreenWindow"
+    Title="FullscreenWindow" SystemDecorations="None" CanResize="False" ShowInTaskbar="False">
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="{x:Static Loc:Labels.FullscreenVideoClose}" Click="Close_Click"/>
+        </ContextMenu>
+    </Window.ContextMenu>
+    <Grid Name="FullscreenGrid">
+        <!-- libvlc letterboxes within the view, so the video view can just fill the window -->
+        <vlc:VideoView Name="VideoDisplay" IsVisible="False" />
+        <Image Name="ImageDisplay" IsVisible="False" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
+</Window>

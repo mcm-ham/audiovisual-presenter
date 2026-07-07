@@ -1,0 +1,207 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Loc="clr-namespace:Presenter.Resources"
+    xmlns:Code="clr-namespace:Presenter.App_Code"
+    x:Class="Presenter.Main"
+    Title="{x:Static Loc:Labels.MainWindowTitle}" Height="768" Width="1024" WindowState="Maximized"
+    KeyDown="Window_KeyDown" Closed="Main_Closed"
+    FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeBinding}">
+    <Window.Styles>
+        <!-- denser rows than the Fluent default, closer to the WPF app -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="8,3" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+    </Window.Styles>
+    <Grid Name="Grid1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition Width="0" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="310" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Grid.ColumnSpan="3" Grid.Row="0" Spacing="4" Margin="4">
+            <Button Click="Planner_Click" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/calendar_date.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuPlanner}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Separator Width="1" Height="40" Background="#D0D0D0" />
+
+            <Button Click="Options_Click" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/process.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuOptions}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Button Click="RemoteMode_Click" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/user.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuRemote}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Button Name="ShowMessageBtn" Click="ShowMessage" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/mail.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuMessage}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Separator Width="1" Height="40" Background="#D0D0D0" />
+
+            <Button Click="ReportsList_Click" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/page_preview.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuReportList}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Button Click="ReportsUsage_Click" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/page_preview.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuReportUsage}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+
+            <Separator Width="1" Height="40" Background="#D0D0D0" />
+
+            <Button Click="About_Click" Background="Transparent">
+                <StackPanel>
+                    <Image Width="32" Source="/Icons/info.png" HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Static Loc:Labels.MainMenuAbout}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <Grid Name="LibraryGrid" Grid.RowSpan="2">
+            <TextBlock Text="{x:Static Loc:Labels.MainHeaderLibrary}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" FontSize="20" Padding="0" />
+            <TextBlock Text="{x:Static Loc:Labels.MainLabelLocation}" Height="23" HorizontalAlignment="Left" Margin="12,94,0,0" VerticalAlignment="Top" Width="63" Padding="0" />
+            <ComboBox Name="LocationList" Height="28" Margin="81,94,80,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" SelectionChanged="LocationList_SelectionChanged" />
+            <Button Name="RefreshBtn" MinWidth="52" Padding="2" Margin="0,94,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
+            <TextBlock Text="{x:Static Loc:Labels.MainLabelSearch}" Margin="12,128,0,0" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Padding="0" />
+            <TextBox Name="SearchTerms" Height="23" Margin="81,128,17,0" VerticalAlignment="Top" TextChanged="SearchTerms_TextChanged" />
+            <ListBox Name="FileList" Margin="12,168,17,46" KeyUp="FileList_KeyUp" DoubleTapped="FileList_DoubleTapped" SelectionChanged="FileList_SelectionChanged" PointerMoved="DragDrop_PointerMoved" SelectionMode="Multiple">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                            <TextBlock Text="{Binding}" ToolTip.Tip="{Binding}" />
+                            <StackPanel.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextAdd}" Click="AddSelected"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile2"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextOpenLocation}" Click="OpenLocation2"/>
+                                    <MenuItem Header="{x:Static Loc:Labels.MainContextDeleteFile}" Click="DeleteFile"/>
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Name="AddBtn" HorizontalAlignment="Left" Margin="12,0,0,12" Content="{x:Static Loc:Labels.MainBtnAdd}" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="AddSelected" IsEnabled="False" />
+        </Grid>
+
+        <Button Name="Expander1" Click="Expander1_Click" Grid.RowSpan="2" Width="15" Height="30" Padding="0" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Center" IsVisible="False">&lt;</Button>
+
+        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,60,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="0" FontSize="20" Padding="0" />
+        <TextBlock Name="ScheduleName" Grid.Column="1" Grid.Row="0" Height="28" Margin="12,98,12,0" VerticalAlignment="Top" Padding="0"/>
+        <ListBox Name="ScheduleList" Grid.Column="1" Grid.RowSpan="2" Margin="12,128,12,46" KeyUp="ScheduleList_KeyUp" DoubleTapped="ScheduleList_DoubleTapped" PointerMoved="DragDrop_PointerMoved" SelectionMode="Multiple" SelectionChanged="ScheduleList_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <TextBlock Text="{Binding Path=Name}" Foreground="{Binding Path=IsFound, Converter={x:Static Code:FoundForegroundConverter.Instance}}" />
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextOpenFile}" Click="OpenFile"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextOpenLocation}" Click="OpenLocation"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextRemove}" Click="RemoveFile"/>
+                                <MenuItem Header="{x:Static Loc:Labels.MainContextDuplicate}" Click="DuplicateFile"/>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <DockPanel Name="LivePanel" Grid.Column="1" Grid.Row="0" Margin="12,128,12,10" IsVisible="False">
+            <Grid DockPanel.Dock="Top" ColumnDefinitions="35,4*,1*,50,25" Margin="8,0,8,2">
+                <TextBlock Text="{x:Static Loc:Labels.MainLabelLiveSlide}" FontWeight="Bold" />
+                <TextBlock Grid.Column="1" Text="{x:Static Loc:Labels.MainLabelLiveText}" FontWeight="Bold" />
+                <TextBlock Grid.Column="2" Text="{x:Static Loc:Labels.MainLabelLiveNotes}" FontWeight="Bold" />
+                <TextBlock Grid.Column="3" Text="{x:Static Loc:Labels.MainLabelLiveJump}" FontWeight="Bold" />
+            </Grid>
+            <ListBox Name="LiveList" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" DoubleTapped="LiveList_DoubleTapped">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="35,4*,1*,50,25" Background="Transparent" PointerEntered="SlideRow_PointerEntered" PointerPressed="SlideRow_PointerPressed">
+                            <TextBlock Text="{Binding SlideIndex}" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{Binding Text}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBlock Grid.Column="2" Text="{Binding Comment}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Grid.Column="3" Text="{Binding JumpIndex}" Width="35" MinHeight="17" Height="20" FontSize="10" Padding="2,0" HorizontalAlignment="Left" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipJumpText}" />
+                            <Button Grid.Column="4" Height="17" MinHeight="0" Padding="6,0" Content="" Click="HightlightRow" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipHighlightBtn}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{x:Static Loc:Labels.MainLabelLiveEdit}" Click="EditPres"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+        </DockPanel>
+
+        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="2" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" IsVisible="False" Background="#828790" />
+        <GridSplitter Name="GridSplitter2" ResizeDirection="Columns" Width="2" HorizontalAlignment="Left" Margin="0,128,0,45" Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Stretch" IsVisible="False" Background="#828790" />
+
+        <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="1" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" IsVisible="False">
+            <Border Name="PreviewImage" BorderBrush="Black" Margin="0,0,20,0" Width="333" Height="250" />
+            <Border Name="CurrentImage" BorderBrush="Black" Width="333" Height="250" />
+
+            <StackPanel Name="VideoPanel" IsVisible="False">
+                <!-- the projector's libvlc output cannot be mirrored into the operator
+                     window (single video output), so this panel only hosts the controls -->
+                <Border Name="VideoDisplay" Width="333" Height="220" Background="Black" IsVisible="False">
+                    <TextBlock Text="{x:Static Loc:Labels.SlideShowVideoLabel}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <WrapPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
+                    <Button Name="PlayPauseBtn" Click="PlayPauseMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Margin="0,5,5,0" />
+                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Margin="0,5,5,0" />
+
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" Margin="0,5,0,0" />
+                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="50" Margin="0,5,0,0"/>
+
+                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" Margin="0,5,0,0" />
+                    <TextBox Name="currentTime" Width="45" MinHeight="20" Padding="2,0" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" Margin="0,5,0,0" />
+                    <Slider Name="timelineSlider" VerticalAlignment="Center" ValueChanged="timelineSlider_ValueChanged" Width="60" Margin="0,5,0,0" />
+                    <TextBlock Name="totalTime" VerticalAlignment="Center" Margin="0,5,0,0" />
+                </WrapPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="12">
+            <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Start_Click" />
+            <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Stop_Click" IsVisible="False" />
+            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="TimerStart_Click" IsVisible="False" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimer}" />
+            <TextBox Name="Interval" Padding="2" Margin="0,0,12,0" Width="35" IsVisible="False" TextChanged="Interval_TextChanged" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimerSec}" />
+            <CheckBox Name="UseSlideTimings" Content="{x:Static Loc:Labels.MainChkbxUseTimings}" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipUseTimings}" IsCheckedChanged="UseSlideTimingsChanged" VerticalAlignment="Center" IsVisible="False" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Margin="12">
+            <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="RemoveFile" IsEnabled="False" />
+            <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Up_Click" IsEnabled="False" />
+            <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Down_Click" IsEnabled="False" />
+        </StackPanel>
+
+        <Grid Name="RemotePanel" Grid.ColumnSpan="3" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" IsVisible="False" PointerPressed="RemotePanel_PointerPressed">
+            <Rectangle Fill="White" Stroke="Black" StrokeThickness="2" />
+            <TextBlock Text="{x:Static Loc:Labels.MainDescRemote}" Padding="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" />
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Loc="clr-namespace:Presenter.Resources"
+    xmlns:Code="clr-namespace:Presenter.App_Code"
+    x:Class="Presenter.ReportsUsageDialog"
+    Title="{x:Static Loc:Labels.ReportsUsageWindowTitle}" Height="600" Width="800" WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
+    FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeBinding}">
+    <ScrollViewer Padding="0" VerticalAlignment="Stretch">
+        <StackPanel Margin="10">
+            <TextBlock Text="{x:Static Loc:Labels.ReportsUsageSelectionDesc}" Margin="0,0,0,10"/>
+
+            <ItemsControl Name="LibraryList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox Content="{Binding}" Margin="2" Click="CheckBox_Click" Loaded="CheckBox_Loaded" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="3" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+            <Grid Margin="0,30,0,10">
+                <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,6,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelFrom}" />
+                <CalendarDatePicker Name="FromDate" Margin="45,0,0,0" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <TextBlock Height="28" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,46,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelTo}" />
+                <CalendarDatePicker Name="ToDate" Margin="45,40,0,0" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                <Button Padding="2" HorizontalAlignment="Left" Margin="0,80,0,0" Name="button1" VerticalAlignment="Top" MinWidth="75" Click="Generate" Content="{x:Static Loc:Labels.ReportsUsageGenerateBtn}" />
+                <Button Padding="2" HorizontalAlignment="Left" Margin="90,80,0,0" Name="button2" VerticalAlignment="Top" MinWidth="75" Click="Download" Content="{x:Static Loc:Labels.ReportsUsageDownloadBtn}" />
+            </Grid>
+
+            <!-- simple templated bar chart (replaces the legacy WPFToolkit DataVisualization chart) -->
+            <ItemsControl Name="mainChart" Margin="0,10,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="280"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Name}" TextAlignment="Right" Margin="0,0,8,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Tooltip}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Rectangle Width="{Binding BarWidth}" Height="14" Fill="SteelBlue" VerticalAlignment="Center" ToolTip.Tip="{Binding Tooltip}" />
+                                <TextBlock Text="{Binding Count}" Margin="6,0,0,0" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Loc="clr-namespace:Presenter.Resources"
+    xmlns:Code="clr-namespace:Presenter.App_Code"
+    x:Class="Presenter.AboutDialog"
+    Title="{x:Static Loc:Labels.AboutWindowTitle}" Height="360" Width="560" WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
+    FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeBinding}">
+    <Window.Styles>
+        <Style Selector="HyperlinkButton">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+    </Window.Styles>
+    <Grid>
+        <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25,14,0,0" Padding="0" FontSize="20" Text="{x:Static Loc:Labels.AboutHeader}" />
+        <TextBlock Margin="25,54,25,50" TextWrapping="Wrap" Text="{x:Static Loc:Labels.AboutDesc}" />
+        <StackPanel Orientation="Horizontal" Margin="25,105,25,0" VerticalAlignment="Top" Spacing="6">
+            <TextBlock Text="{x:Static Loc:Labels.AboutEmailTitle}" VerticalAlignment="Center" />
+            <HyperlinkButton NavigateUri="mailto:info@minsoft.org" Content="info@minsoft.org" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="25,130,25,0" VerticalAlignment="Top" Spacing="6">
+            <TextBlock Text="{x:Static Loc:Labels.AboutWebsiteTitle}" VerticalAlignment="Center" />
+            <HyperlinkButton NavigateUri="http://www.minsoft.org/" Content="www.minsoft.org" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="25,155,25,0" VerticalAlignment="Top" Spacing="6">
+            <TextBlock Text="{x:Static Loc:Labels.AboutSupportTitle}" VerticalAlignment="Center" />
+            <HyperlinkButton NavigateUri="http://www.minsoft.org/support/" Content="www.minsoft.org/support/" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="25,180,25,0" VerticalAlignment="Top" Spacing="6">
+            <TextBlock Text="{x:Static Loc:Labels.AboutVersionTitle}" VerticalAlignment="Center" />
+            <TextBlock Name="BuildNo" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,230,0,0" VerticalAlignment="Top">
+            <HyperlinkButton Name="UpdateLink" IsVisible="False"><TextBlock Name="UpdateText" /></HyperlinkButton>
+            <TextBlock Name="UpdateStatus" Text="{x:Static Loc:Labels.AboutUpdateLatest}" IsVisible="False" />
+        </StackPanel>
+        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Padding="2" MinWidth="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+    </Grid>
+</Window>

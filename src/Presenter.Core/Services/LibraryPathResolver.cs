@@ -14,7 +14,9 @@ public static class LibraryPathResolver
     {
         try
         {
-            string res = settings.LibraryPath;
+            //the stored path may use Windows separators (default setting, or a database
+            //migrated from the Windows app), which macOS/Linux Path APIs don't parse
+            string res = Util.NormalizeSeparators(settings.LibraryPath);
             if (!Path.IsPathRooted(res))
             {
                 string[] parts = res.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
