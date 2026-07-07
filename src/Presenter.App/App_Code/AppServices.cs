@@ -60,7 +60,7 @@ namespace Presenter.App_Code
             var labels = new EngineLabels(Labels.SlideShowVideoLabel, Labels.SlideShowAudioLabel, Labels.SlideShowImageLabel, Labels.SlideShowSlideLabel);
 
             string preferred = SettingsStore.Current.PreferredEngine;
-            var uno = new UnoPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow);
+            var uno = new UnoPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow, new WpfSlideImageLoader());
 
             if (preferred == "uno" && uno.IsAvailable)
                 Engine = uno;

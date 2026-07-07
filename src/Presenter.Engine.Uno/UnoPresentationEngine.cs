@@ -1,8 +1,6 @@
 using System.IO;
-using System.Windows.Media.Imaging;
 using Presenter.Core.Abstractions;
 using Presenter.Core.Models;
-using Presenter.Engine.Uno.Interop;
 
 namespace Presenter.Engine.Uno;
 
@@ -29,6 +27,8 @@ public class UnoPresentationEngine : IPresentationEngine
     private readonly EngineLabels _labels;
     private readonly SynchronizationContext? _sync;
     private readonly Action? _activateMainWindow;
+    private readonly ISlideImageLoader? _images;
+    private readonly IShowWindowController _windows = IShowWindowController.Create();
 
     private readonly List<Slide> _slides = new();
     private readonly List<SlideshowHost> _hosts = new();
@@ -38,18 +38,22 @@ public class UnoPresentationEngine : IPresentationEngine
     /// (timings, clicks, ESC) are marshalled to it like the COM engine does.</param>
     /// <param name="activateMainWindow">Re-activates the operator window after each
     /// slideshow starts (show windows steal focus); invoked on the UI thread.</param>
+    /// <param name="imageLoader">Loads image slides into the UI framework's bitmap
+    /// type; when null, image slides carry no Image/Preview.</param>
     public UnoPresentationEngine(ISettingsStore settings, IScreenInfoProvider screens, EngineLabels labels,
-        SynchronizationContext? syncContext = null, Action? activateMainWindow = null)
+        SynchronizationContext? syncContext = null, Action? activateMainWindow = null,
+        ISlideImageLoader? imageLoader = null)
     {
         _settings = settings;
         _screens = screens;
         _labels = labels;
         _sync = syncContext;
         _activateMainWindow = activateMainWindow;
+        _images = imageLoader;
     }
 
     public bool IsAvailable => SofficeLocator.Find() is string soffice
-        && File.Exists(Path.Combine(Path.GetDirectoryName(soffice)!, "python.exe"));
+        && (!OperatingSystem.IsWindows() || SofficeLocator.FindPython(soffice) != null);
 
     public bool IsRunning { get; private set; }
 
@@ -116,8 +120,8 @@ public class UnoPresentationEngine : IPresentationEngine
             {
                 Text = scheduleItem.Name,
                 Comment = _labels.ImageLabel,
-                Image = RetrieveImage(filename, b.Width, b.Height),
-                Preview = RetrieveImage(filename, 333, 250),
+                Image = _images?.Load(filename, b.Width, b.Height),
+                Preview = _images?.Load(filename, 333, 250),
             };
             AddSlide(s, progressEnd, scheduleItem, 1);
         }
@@ -159,13 +163,7 @@ public class UnoPresentationEngine : IPresentationEngine
                 Thread.Sleep(50);
 
             if (showHwnd is int hwnd)
-            {
-                var taskbarList = (ITaskbarList2)new CTaskbarList();
-                taskbarList.HrInit();
-                taskbarList.DeleteTab(new IntPtr(hwnd));
-                //keep the taskbar beneath the show even though the operator window has focus
-                taskbarList.MarkFullscreenWindow(new IntPtr(hwnd), true);
-            }
+                _windows.PrepareShowWindow(hwnd);
 
             //show windows grab focus; give it back to the operator window, then guard
             //briefly: Impress re-asserts foreground during its fullscreen transition
@@ -176,7 +174,7 @@ public class UnoPresentationEngine : IPresentationEngine
                 while (DateTime.UtcNow < guardUntil)
                 {
                     Thread.Sleep(200);
-                    if (User32.GetForegroundWindow() != new IntPtr(show))
+                    if (!_windows.IsForeground(show))
                         break;
                     OnUi(() => _activateMainWindow?.Invoke());
                 }
@@ -192,7 +190,7 @@ public class UnoPresentationEngine : IPresentationEngine
     private SlideshowHost LaunchHost(string filename)
     {
         string soffice = SofficeLocator.Find()
-            ?? throw new InvalidOperationException("LibreOffice (soffice.exe) was not found. Install LibreOffice or select another engine in Options.");
+            ?? throw new InvalidOperationException("LibreOffice (soffice) was not found. Install LibreOffice or select another engine in Options.");
 
         //profiles must live at a SHORT path: LibreOffice profile internals are deep
         //enough that a long base path exceeds MAX_PATH and crashes soffice on first run
@@ -200,7 +198,8 @@ public class UnoPresentationEngine : IPresentationEngine
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AudiovisualPresenter", "uno", "p" + _profileSlot++);
 
-        var host = SlideshowHost.Launch(soffice, filename, profile, LoadTimeout);
+        var host = SlideshowHost.Launch(soffice, filename, profile, LoadTimeout, _windows,
+            _screens.ProjectorBounds);
         host.SlideChanged += Host_SlideChanged;
         host.ShowEnded += Host_ShowEnded;
         _hosts.Add(host);
@@ -428,7 +427,9 @@ public class UnoPresentationEngine : IPresentationEngine
         if (hwnd == null)
             return;
         var b = _screens.ProjectorBounds;
-        User32.SetWindowPos(hwnd.Value, User32.HWND_TOP, b.Left, b.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+        _windows.BringToFront(hwnd.Value, b.Left, b.Top);
+        if (_windows.BringToFrontActivates)
+            OnUi(() => _activateMainWindow?.Invoke());
     }
 
     // -- previews and editing ------------------------------------------------------------
@@ -482,21 +483,6 @@ public class UnoPresentationEngine : IPresentationEngine
         {
             return false;
         }
-    }
-
-    /// <summary>Loads an image scaled to fit, frozen so it can cross threads.</summary>
-    private static BitmapSource RetrieveImage(string filename, int width, int height)
-    {
-        BitmapSource photo = BitmapDecoder.Create(new Uri(filename), BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad).Frames[0];
-        if (photo.Width >= width || photo.Height >= height)
-        {
-            double scale = Math.Min(width / photo.Width, height / photo.Height);
-            photo = BitmapFrame.Create(new System.Windows.Media.Imaging.TransformedBitmap(photo,
-                new System.Windows.Media.ScaleTransform(scale * 96 / photo.DpiX, scale * 96 / photo.DpiY, 0, 0)));
-        }
-        if (photo.CanFreeze)
-            photo.Freeze();
-        return photo;
     }
 
     /// <summary>Sends a command, treating failures as the presentation having gone away.</summary>

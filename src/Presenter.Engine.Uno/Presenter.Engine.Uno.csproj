@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <!-- WPF needed for BitmapSource image loading (image slides) -->
-    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- runs on LibreOffice's bundled python.exe next to soffice.exe -->
+    <!-- Windows: runs on LibreOffice's bundled python.exe next to soffice.exe;
+         macOS: runs in-process inside soffice via the script provider (launch
+         constraints on the bundled Python forbid spawning it ourselves) -->
     <Content Include="slideshow_host.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
