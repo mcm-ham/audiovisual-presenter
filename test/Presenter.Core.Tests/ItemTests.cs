@@ -31,7 +31,22 @@ public class ItemTests : IDisposable
     [Fact]
     public void TryResolveFile_RelocatedLibrary_FindsInSubfolder_AndUpdatesFilename()
     {
-        // file lives at {library}\Presentations\deck.pptx but item points at an old library location
+        // file lives at {library}/Presentations/deck.pptx but item points at an old library location
+        Directory.CreateDirectory(Path.Combine(_library, "Presentations"));
+        string actual = Path.Combine(_library, "Presentations", "deck.pptx");
+        File.WriteAllText(actual, "x");
+        var item = new Item { Filename = Path.Combine(Path.GetTempPath(), "presenter-old-library", "Presentations", "deck.pptx") };
+
+        Assert.True(item.TryResolveFile(_library, out bool changed));
+        Assert.True(changed);
+        Assert.Equal(actual, item.Filename);
+    }
+
+    [Fact]
+    public void TryResolveFile_MigratedWindowsFilename_FindsInSubfolder_AndUpdatesFilename()
+    {
+        // a database migrated from the Windows app stores backslash-separated filenames;
+        // relocation under the library path must still work on every platform
         Directory.CreateDirectory(Path.Combine(_library, "Presentations"));
         string actual = Path.Combine(_library, "Presentations", "deck.pptx");
         File.WriteAllText(actual, "x");
@@ -47,6 +62,7 @@ public class ItemTests : IDisposable
     {
         string actual = Path.Combine(_library, "song.mp3");
         File.WriteAllText(actual, "x");
+        // migrated Windows filename: root fallback relies on parsing the name out of it
         var item = new Item { Filename = @"C:\somewhere\else\entirely\song.mp3" };
 
         Assert.True(item.TryResolveFile(_library, out bool changed));
@@ -73,6 +89,10 @@ public class ItemTests : IDisposable
     [Fact]
     public void IsTemplateNone_MatchesNonePot()
     {
+        Assert.True(new Item { Filename = Path.Combine("lib", "Templates", "None.pot") }.IsTemplateNone);
+        Assert.False(new Item { Filename = Path.Combine("lib", "Templates", "Sky.potx") }.IsTemplateNone);
+
+        // migrated Windows filenames keep their backslash separators
         Assert.True(new Item { Filename = @"C:\lib\Templates\None.pot" }.IsTemplateNone);
         Assert.False(new Item { Filename = @"C:\lib\Templates\Sky.potx" }.IsTemplateNone);
     }

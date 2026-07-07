@@ -96,9 +96,11 @@ public class ScheduleRepositoryTests : SqliteTestBase
         {
             var repo = new ScheduleRepository(db);
             var s1 = new Schedule { ID = Guid.NewGuid(), Name = "S1", Date = new DateTime(2026, 7, 1) };
+            // one filename migrated from the Windows app (backslashes), one saved natively —
+            // both must count as the same file
             s1.Items.Add(new Item { ID = Guid.NewGuid(), ScheduleID = s1.ID, Filename = @"C:\lib\presentations\deck.pptx", Ordinal = 0 });
             var s2 = new Schedule { ID = Guid.NewGuid(), Name = "S2", Date = new DateTime(2026, 7, 8) };
-            s2.Items.Add(new Item { ID = Guid.NewGuid(), ScheduleID = s2.ID, Filename = @"C:\lib\presentations\deck.pptx", Ordinal = 0 });
+            s2.Items.Add(new Item { ID = Guid.NewGuid(), ScheduleID = s2.ID, Filename = Path.Combine(library, "presentations", "deck.pptx"), Ordinal = 0 });
             s2.Items.Add(new Item { ID = Guid.NewGuid(), ScheduleID = s2.ID, Filename = @"C:\lib\videos\clip.mp4", Ordinal = 1 });
             repo.Save(s1);
             repo.Save(s2);

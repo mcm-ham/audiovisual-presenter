@@ -14,12 +14,12 @@ public class Item
     public Schedule? Schedule { get; set; }
     public ICollection<Flag> Flags { get; set; } = new List<Flag>();
 
-    public string Name => Path.GetFileName(Filename);
+    public string Name => Util.GetFileName(Filename);
 
     /// <summary>
     /// True when this item is the sentinel "no template" entry (None.pot).
     /// </summary>
-    public bool IsTemplateNone => Path.GetFileName(Filename).ToLowerInvariant() == "none.pot";
+    public bool IsTemplateNone => Util.GetFileName(Filename).ToLowerInvariant() == "none.pot";
 
     private bool? _found;
 
@@ -56,12 +56,13 @@ public class Item
             return true;
         }
 
-        // check for file under library (in sub-folder) in case library path has been moved
-        int lastSep = Filename.LastIndexOf(Path.DirectorySeparatorChar);
+        // check for file under library (in sub-folder) in case library path has been moved;
+        // stored filenames may use either separator when migrated from the Windows app
+        int lastSep = Filename.LastIndexOfAny(Util.DirectorySeparators);
         if (lastSep > 0)
         {
-            int prevSep = Filename.LastIndexOf(Path.DirectorySeparatorChar, lastSep - 1);
-            string newpath = libraryPath + Filename.Substring(prevSep + 1);
+            int prevSep = Filename.LastIndexOfAny(Util.DirectorySeparators, lastSep - 1);
+            string newpath = libraryPath + Util.NormalizeSeparators(Filename.Substring(prevSep + 1));
             if (File.Exists(newpath))
             {
                 Filename = newpath;

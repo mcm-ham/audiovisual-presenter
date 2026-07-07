@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Presenter.Core;
 using Presenter.Core.Models;
 
 namespace Presenter.Data;
@@ -84,11 +85,13 @@ public class ScheduleRepository(PresenterDbContext db)
             .Select(i => new { i.Filename, i.Schedule!.Date, i.Schedule.Name })
             .ToArray();
 
+        // normalize separators so filenames migrated from the Windows app match on macOS/Linux
         string sep = Path.DirectorySeparatorChar.ToString();
         return (from i in rows
-                where libraries.Any(l => i.Filename.ToLowerInvariant().Contains(sep + l + sep)) == include
-                      && !i.Filename.EndsWith("None.pot")
-                group i by Path.GetFileNameWithoutExtension(i.Filename) into g
+                let filename = Util.NormalizeSeparators(i.Filename)
+                where libraries.Any(l => filename.ToLowerInvariant().Contains(sep + l + sep)) == include
+                      && !filename.EndsWith("None.pot")
+                group i by Path.GetFileNameWithoutExtension(filename) into g
                 select new ItemUsage
                 {
                     Name = g.Key,

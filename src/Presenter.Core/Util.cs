@@ -74,4 +74,23 @@ public static class Util
     {
         return string.IsNullOrEmpty(value) ? null : value;
     }
+
+    /// <summary>
+    /// Both separators that can appear in stored filenames: a database migrated from
+    /// the Windows app contains backslash paths, which macOS/Linux Path APIs don't parse.
+    /// </summary>
+    public static readonly char[] DirectorySeparators = ['\\', '/'];
+
+    /// <summary>Path.GetFileName equivalent that treats both '\' and '/' as separators.</summary>
+    public static string GetFileName(string path)
+    {
+        int i = path.LastIndexOfAny(DirectorySeparators);
+        return i < 0 ? path : path[(i + 1)..];
+    }
+
+    /// <summary>Rewrites both '\' and '/' to the platform's directory separator.</summary>
+    public static string NormalizeSeparators(string path)
+    {
+        return path.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
+    }
 }
