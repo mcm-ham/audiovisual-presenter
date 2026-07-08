@@ -2,6 +2,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
+    xmlns:vlc="clr-namespace:LibVLCSharp.Avalonia;assembly=LibVLCSharp.Avalonia"
     x:Class="Presenter.Main"
     Title="{x:Static Loc:Labels.MainWindowTitle}" Height="768" Width="1024" WindowState="Maximized"
     KeyDown="Window_KeyDown" Closed="Main_Closed"
@@ -189,10 +190,10 @@
             <Border Name="CurrentImage" BorderBrush="Black" Width="333" Height="250" />
 
             <StackPanel Name="VideoPanel" IsVisible="False">
-                <!-- the projector's libvlc output cannot be mirrored into the operator
-                     window (single video output), so this panel only hosts the controls -->
+                <!-- a libvlc player has a single video output (held by the projector
+                     window), so the mini preview is a second muted player kept in sync -->
                 <Border Name="VideoDisplay" Width="333" Height="220" Background="Black" IsVisible="False">
-                    <TextBlock Text="{x:Static Loc:Labels.SlideShowVideoLabel}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <vlc:VideoView Name="PreviewVideo" />
                 </Border>
                 <WrapPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
                     <Button Name="PlayPauseBtn" Click="PlayPauseMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Padding="0" Margin="0,5,5,0" />

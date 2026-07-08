@@ -1195,8 +1195,12 @@ namespace Presenter
         FullscreenWindow fullscreen = null;
         bool _mediaAdvanceOnComplete = false;
         LibVLCSharp.Shared.MediaPlayer VideoPlayer;
+        //muted second player mirroring the projector video in the operator window
+        //(a libvlc player has a single video output, so the projector's cannot be shared)
+        LibVLCSharp.Shared.MediaPlayer PreviewPlayer;
+        const long PreviewDriftToleranceMs = 300;
 
-        /// <summary>Creates the libvlc media player on first use; false when libvlc is unavailable.</summary>
+        /// <summary>Creates the libvlc media players on first use; false when libvlc is unavailable.</summary>
         private bool EnsureMediaPlayer()
         {
             if (VideoPlayer != null)
@@ -1209,6 +1213,9 @@ namespace Presenter
             //the player from inside the event handler itself
             VideoPlayer.EndReached += (s, e) => Dispatcher.UIThread.Post(() => VideoPlayer_MediaEnded(s, EventArgs.Empty));
             VideoPlayer.LengthChanged += (s, e) => Dispatcher.UIThread.Post(() => Media_LengthChanged(e.Length));
+
+            PreviewPlayer = new LibVLCSharp.Shared.MediaPlayer(Vlc.Instance) { Mute = true };
+            PreviewVideo.MediaPlayer = PreviewPlayer;
             return true;
         }
 
@@ -1257,6 +1264,13 @@ namespace Presenter
                 mediaPosTimer.Tick += new EventHandler(mediaPosTimer_Tick);
                 using var media = new LibVLCSharp.Shared.Media(Vlc.Instance, new Uri(Path.GetFullPath(slide.Filename)));
                 VideoPlayer.Media = media;
+                if (slide.Type == SlideType.Video)
+                {
+                    //no-audio skips decoding the preview's audio track entirely
+                    using var previewMedia = new LibVLCSharp.Shared.Media(Vlc.Instance, new Uri(Path.GetFullPath(slide.Filename)));
+                    previewMedia.AddOption(":no-audio");
+                    PreviewPlayer.Media = previewMedia;
+                }
                 PlayMedia();
             }
         }
@@ -1293,7 +1307,12 @@ namespace Presenter
             //Play/Stop must not run on the UI thread while a libvlc callback is in
             //flight; ThreadPool keeps it deadlock-free (recommended LibVLCSharp usage)
             var player = VideoPlayer;
-            Task.Run(() => player.Play());
+            var preview = VideoDisplay.IsVisible ? PreviewPlayer : null;
+            Task.Run(() =>
+            {
+                player.Play();
+                preview?.Play();
+            });
             VideoPlayer.Volume = (int)(volumeSlider.Value * 100);
             PlayPauseBtn.Content = Labels.MainBtnVideoPause;
             mediaPosTimer?.Start();
@@ -1307,6 +1326,7 @@ namespace Presenter
             if (VideoPlayer.IsPlaying)
             {
                 VideoPlayer.SetPause(true);
+                PreviewPlayer?.SetPause(true);
                 PlayPauseBtn.Content = Labels.MainBtnVideoPlay;
                 mediaPosTimer?.Stop();
             }
@@ -1322,7 +1342,12 @@ namespace Presenter
                 return;
 
             var player = VideoPlayer;
-            Task.Run(() => player.Stop());
+            var preview = PreviewPlayer;
+            Task.Run(() =>
+            {
+                player.Stop();
+                preview?.Stop();
+            });
             PlayPauseBtn.Content = Labels.MainBtnVideoPlay;
             mediaPosTimer?.Stop();
         }
@@ -1343,7 +1368,10 @@ namespace Presenter
         protected void SeekToMediaPosition(object sender, PointerReleasedEventArgs args)
         {
             if (VideoPlayer != null)
+            {
                 VideoPlayer.Time = (long)timelineSlider.Value;
+                SyncPreviewTime();
+            }
             _timeDragging = false;
         }
 
@@ -1356,6 +1384,11 @@ namespace Presenter
         {
             if (!_timeDragging && VideoPlayer != null)
                 timelineSlider.Value = VideoPlayer.Time;
+
+            //re-align the operator-window mirror when it drifts from the projector player
+            if (VideoPlayer != null && PreviewPlayer != null && VideoPlayer.IsPlaying && PreviewPlayer.IsPlaying
+                && Math.Abs(PreviewPlayer.Time - VideoPlayer.Time) > PreviewDriftToleranceMs)
+                PreviewPlayer.Time = VideoPlayer.Time;
         }
 
         private void timelineSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -1381,7 +1414,17 @@ namespace Presenter
 
             //if entered value is valid and the time has changed (presume they would have entered a new value if the user wanted to jump to a time)
             if (value.HasValue && value != _initEditTime && VideoPlayer != null)
+            {
                 VideoPlayer.Time = (long)value.Value.TotalMilliseconds;
+                SyncPreviewTime();
+            }
+        }
+
+        //seeks must sync the mirror directly: while paused the drift-correcting timer isn't running
+        private void SyncPreviewTime()
+        {
+            if (PreviewPlayer != null && VideoDisplay.IsVisible)
+                PreviewPlayer.Time = VideoPlayer.Time;
         }
 
         private TimeSpan? getCurrentTime()
@@ -1478,6 +1521,14 @@ namespace Presenter
                 VideoPlayer = null;
                 player.Stop();
                 player.Dispose();
+            }
+
+            if (PreviewPlayer != null)
+            {
+                var preview = PreviewPlayer;
+                PreviewPlayer = null;
+                preview.Stop();
+                preview.Dispose();
             }
 
             if (Presentation != null)
