@@ -378,6 +378,12 @@ namespace Presenter
         #endregion
 
         #region dragdrop
+        // Application-scoped drag formats. The DataTransfer API only carries strings/bytes/files,
+        // so schedule items travel as their Guid ID (resolved back to an Item on drop) and library
+        // entries travel as their filename string.
+        private static readonly DataFormat<string> ScheduleItemFormat = DataFormat.CreateStringApplicationFormat("ScheduleItem");
+        private static readonly DataFormat<string> LibraryFileFormat = DataFormat.CreateStringApplicationFormat("LibraryFile");
+
         bool _dragging = false;
         private void DragDrop_PointerMoved(object sender, PointerEventArgs e)
         {
@@ -389,13 +395,22 @@ namespace Presenter
                 object data = parent.GetItemAtPoint(e.GetPosition(parent));
                 if (data != null && ScheduleList.IsEnabled)
                 {
-                    var dataObject = new DataObject();
-                    dataObject.Set(data is Item ? "ScheduleItem" : "LibraryFile", data);
-                    DragDrop.DoDragDrop(e, dataObject, DragDropEffects.Move);
+                    var dataTransfer = new DataTransfer();
+                    dataTransfer.Add(data is Item item
+                        ? DataTransferItem.Create(ScheduleItemFormat, item.ID.ToString())
+                        : DataTransferItem.Create(LibraryFileFormat, data.ToString()));
+                    DragDrop.DoDragDropAsync(e, dataTransfer, DragDropEffects.Move);
                 }
             }
             else if (!pressed && _dragging)
                 _dragging = false;
+        }
+
+        /// <summary>Resolves the schedule item referenced by a drag operation (carried as its Guid ID).</summary>
+        private Item DragScheduleItem(DragEventArgs e)
+        {
+            string id = e.DataTransfer.TryGetValue(ScheduleItemFormat);
+            return Guid.TryParse(id, out Guid guid) ? SelectedSchedule.Items.FirstOrDefault(i => i.ID == guid) : null;
         }
 
         private void DragDrop_DropHandler(object sender, DragEventArgs e)
@@ -405,7 +420,7 @@ namespace Presenter
 
             if (parent.Name == "ScheduleList" || parent.Name == "LiveList")
             {
-                string data = e.Data.Get("LibraryFile") as string;
+                string data = e.DataTransfer.TryGetValue(LibraryFileFormat);
                 if (!String.IsNullOrEmpty(data)) //adding new from filelist
                 {
                     SelectedSchedule.AddItem(Path.Combine(GetSelectedPath(), data), Config.SupportedFileTypes);
@@ -418,7 +433,7 @@ namespace Presenter
                     SelectedSchedule.MoveItem(source, dest);
                     AppServices.Repository.Save(SelectedSchedule);
                 }
-                else if (e.Data.Contains(DataFormats.Files)) //add new from explorer
+                else if (e.DataTransfer.Contains(DataFormat.File)) //add new from explorer
                 {
                     string[] files = GetDroppedFiles(e);
 
@@ -431,7 +446,7 @@ namespace Presenter
                 }
                 else if (parent.Name != "LiveList") //reordering
                 {
-                    Item source = e.Data.Get("ScheduleItem") as Item;
+                    Item source = DragScheduleItem(e);
                     Item dest = parent.GetItemAtPoint(e.GetPosition(parent)) as Item;
                     if (source != null)
                     {
@@ -447,14 +462,14 @@ namespace Presenter
             }
             else //if (parent.Name == "FileList")
             {
-                Item data = e.Data.Get("ScheduleItem") as Item;
+                Item data = DragScheduleItem(e);
                 if (data != null) //removing item from schedule
                 {
                     SelectedSchedule.RemoveItem(data);
                     AppServices.Repository.Save(SelectedSchedule);
                     BindScheduleList();
                 }
-                else if (e.Data.Contains(DataFormats.Files)) //add files from explorer to library
+                else if (e.DataTransfer.Contains(DataFormat.File)) //add files from explorer to library
                 {
                     string[] files = GetDroppedFiles(e);
 
@@ -469,7 +484,7 @@ namespace Presenter
         /// <summary>Files dropped from the OS shell, directories expanded, filtered to supported types.</summary>
         private static string[] GetDroppedFiles(DragEventArgs e)
         {
-            string[] files = e.Data.GetFiles()?.Select(f => f.Path.LocalPath).ToArray() ?? [];
+            string[] files = e.DataTransfer.TryGetFiles()?.Select(f => f.Path.LocalPath).ToArray() ?? [];
 
             //expand directories to include all files within
             files = files.Union(files.Where(f => Directory.Exists(f)).SelectMany(d => Directory.GetFiles(d))).ToArray();
@@ -806,7 +821,7 @@ namespace Presenter
             Config.TimerInterval = Util.Parse<int>(Interval.Text);
             RefreshBtn.IsVisible = true;
             RemoveBtn.IsVisible = true;
-            LocationList.Margin = new Thickness(81, 94, 80, 0);
+            LocationList.Margin = new Thickness(81, 46, 80, 0);
             PreviewImage.Background = new SolidColorBrush(Colors.Black);
             CurrentImage.Background = new SolidColorBrush(Colors.Black);
             Config.instance.SlidePreviewBottomChanged -= new EventHandler(instance_SlidePreviewBottomChanged);
