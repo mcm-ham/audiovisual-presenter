@@ -3,15 +3,20 @@
     xmlns:Loc="clr-namespace:Presenter.Resources"
     xmlns:Code="clr-namespace:Presenter.App_Code"
     x:Class="Presenter.OpenDialog"
-    Title="{x:Static Loc:Labels.OpenWindowTitle}" Height="400" Width="600" WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
+    Title="{x:Static Loc:Labels.OpenWindowTitle}" Height="420" Width="600" WindowStartupLocation="CenterScreen" ShowInTaskbar="False"
     FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeBinding}">
     <Grid ColumnDefinitions="*,*">
         <HeaderedContentControl Name="groupBox1" Header="{x:Static Loc:Labels.OpenHeaderNew}" Margin="10" Padding="5">
             <Grid RowDefinitions="Auto,Auto,*,Auto">
-                <Calendar Name="monthCalendar" HorizontalAlignment="Center" SelectedDatesChanged="monthCalendar_SelectedDatesChanged" DisplayDateChanged="monthCalendar_DisplayDateChanged" />
+                <LayoutTransformControl HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <LayoutTransformControl.LayoutTransform>
+                        <ScaleTransform ScaleX="0.82" ScaleY="0.82" />
+                    </LayoutTransformControl.LayoutTransform>
+                    <Calendar Name="monthCalendar" FirstDayOfWeek="Sunday" SelectedDatesChanged="monthCalendar_SelectedDatesChanged" DisplayDateChanged="monthCalendar_DisplayDateChanged" />
+                </LayoutTransformControl>
                 <TextBlock Name="DatePreview" Grid.Row="1" Margin="0,6,0,0" HorizontalAlignment="Center" Padding="0" />
                 <TextBox Name="ScheduleName" Grid.Row="3" VerticalAlignment="Bottom" KeyUp="ScheduleName_KeyUp" Margin="0,0,0,35" Watermark="{x:Static Loc:Labels.OpenEnterDescription}" />
-                <Button Grid.Row="3" Content="{x:Static Loc:Labels.OpenBtnNew}" Padding="2" MinWidth="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="New_Click" />
+                <Button Grid.Row="3" Content="{x:Static Loc:Labels.OpenBtnNew}" MinWidth="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="New_Click" />
             </Grid>
         </HeaderedContentControl>
         <HeaderedContentControl Name="groupBox2" Grid.Column="1" Header="{x:Static Loc:Labels.OpenHeaderOpen}" Margin="10" Padding="5">
@@ -20,7 +25,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Background="Transparent">
-                                <TextBlock Name="ScheduleItemLabel" Text="{Binding Path=DisplayName}" Padding="0,3" />
+                                <TextBlock Name="ScheduleItemLabel" Text="{Binding Path=DisplayName}" VerticalAlignment="Center" />
                                 <TextBox Name="ScheduleItemTextBox" Text="{Binding Path=Name}" IsVisible="False" Width="200" Padding="5,3" KeyUp="ScheduleItemTextBox_KeyUp" LostFocus="ScheduleItemTextBox_LostFocus" />
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
@@ -34,9 +39,9 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <DockPanel Grid.Row="1" VerticalAlignment="Bottom">
-                    <Button Name="DeleteBtn" Content="{x:Static Loc:Labels.OpenBtnDel}" MinWidth="50" Padding="2" IsVisible="False" HorizontalAlignment="Left" Click="Delete_Click" />
-                    <Button Name="RenameBtn" Content="{x:Static Loc:Labels.OpenBtnRename}" MinWidth="50" Padding="2" IsVisible="False" HorizontalAlignment="Left" Click="Rename_Click" Margin="10,0,0,0" />
-                    <Button Content="{x:Static Loc:Labels.OpenBtnOpen}" MinWidth="50" Padding="2" HorizontalAlignment="Right" Click="Open_Click" />
+                    <Button Name="DeleteBtn" Content="{x:Static Loc:Labels.OpenBtnDel}" MinWidth="50" IsVisible="False" HorizontalAlignment="Left" Click="Delete_Click" />
+                    <Button Name="RenameBtn" Content="{x:Static Loc:Labels.OpenBtnRename}" MinWidth="50" IsVisible="False" HorizontalAlignment="Left" Click="Rename_Click" Margin="10,0,0,0" />
+                    <Button Content="{x:Static Loc:Labels.OpenBtnOpen}" MinWidth="50" HorizontalAlignment="Right" Click="Open_Click" />
                 </DockPanel>
             </Grid>
         </HeaderedContentControl>

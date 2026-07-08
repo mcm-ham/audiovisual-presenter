@@ -7,11 +7,11 @@
     FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeBinding}">
     <Grid>
         <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="25,14,0,0" Padding="0" Text="{x:Static Loc:Labels.OptionsLibraryPath}" />
-        <TextBox Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" />
-        <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" MinWidth="75" Padding="2" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <TextBox Margin="25,36,0,0" Width="350" Height="23" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
         <TextBlock Height="23" HorizontalAlignment="Left" Margin="25,85,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
-        <ComboBox Name="MonitorSelection" Width="160" Margin="25,106,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <ComboBox Name="MonitorSelection" Width="160" Height="23" Margin="25,106,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
         <TextBlock Text="{x:Static Loc:Labels.OptionsPresentionSettings}" Margin="26,218,0,0" VerticalAlignment="Top" />
         <CheckBox Name="InsertPresBlanks" Content="{x:Static Loc:Labels.OptionsInsertBlankAfterPres}" Margin="25,240,0,0" VerticalAlignment="Top" />
@@ -19,12 +19,12 @@
         <CheckBox Name="ShowPreviewBottom" Content="{x:Static Loc:Labels.OptionsShowPreviewBottom}" Margin="25,304,0,0" VerticalAlignment="Top" />
 
         <TextBlock Name="EngineLabel" Height="23" HorizontalAlignment="Left" Margin="270,85,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsEngine}" />
-        <ComboBox Name="EngineSelection" Width="260" Margin="270,106,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <ComboBox Name="EngineSelection" Width="260" Height="23" Margin="270,106,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
         <TextBlock Text="{x:Static Loc:Labels.OptionsFontSize}" Margin="25,152,0,0" VerticalAlignment="Top" />
-        <ComboBox Name="FontSizeList" Width="160" Margin="25,173,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <ComboBox Name="FontSizeList" Width="160" Height="23" Margin="25,173,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
-        <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
-        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
+        <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
     </Grid>
 </Window>

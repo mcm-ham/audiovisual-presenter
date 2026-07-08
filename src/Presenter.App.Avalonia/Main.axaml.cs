@@ -653,7 +653,7 @@ namespace Presenter
             NextBtn.Content = Labels.MainBtnNext;
             RefreshBtn.IsVisible = false;
             RemoveBtn.IsVisible = false;
-            LocationList.Margin = new Thickness(81, 94, 17, 0);
+            LocationList.Margin = new Thickness(81, 46, 17, 0);
             PrevBtn.IsEnabled = true;
             NextBtn.IsEnabled = true;
             Interval.Text = Config.TimerInterval.ToString();
@@ -730,7 +730,7 @@ namespace Presenter
                 col3.Width = new GridLength(350, GridUnitType.Pixel);
                 Grid.SetRowSpan(LivePanel, 2);
                 Grid.SetColumn(PreviewPanel, 2);
-                Grid.SetRow(PreviewPanel, 0);
+                Grid.SetRow(PreviewPanel, 1);
                 Grid.SetRowSpan(PreviewPanel, 2);
                 PreviewPanel.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;
                 PreviewPanel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right;
@@ -738,9 +738,9 @@ namespace Presenter
                 PreviewPanel.MaxHeight = Double.PositiveInfinity;
                 PreviewPanel.MaxWidth = 350;
                 PreviewPanel.Height = Double.NaN;
-                PreviewPanel.Margin = new Thickness(0, 128, 10, 0);
+                PreviewPanel.Margin = new Thickness(0, 80, 10, 0);
                 PreviewImage.Margin = new Thickness(0, 0, 0, 20);
-                LivePanel.Margin = new Thickness(12, 128, 12, 46);
+                LivePanel.Margin = new Thickness(12, 80, 12, 46);
                 GridSplitter1.IsVisible = false;
                 GridSplitter2.IsVisible = true;
             }
@@ -749,7 +749,7 @@ namespace Presenter
                 col3.Width = new GridLength(0, GridUnitType.Pixel);
                 Grid.SetRowSpan(LivePanel, 1);
                 Grid.SetColumn(PreviewPanel, 1);
-                Grid.SetRow(PreviewPanel, 1);
+                Grid.SetRow(PreviewPanel, 2);
                 Grid.SetRowSpan(PreviewPanel, 1);
                 PreviewPanel.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom;
                 PreviewPanel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
@@ -759,7 +759,7 @@ namespace Presenter
                 PreviewPanel.Width = Double.NaN;
                 PreviewPanel.Margin = new Thickness(12, 10, 0, 45);
                 PreviewImage.Margin = new Thickness(0, 0, 20, 0);
-                LivePanel.Margin = new Thickness(12, 128, 12, 10);
+                LivePanel.Margin = new Thickness(12, 80, 12, 10);
                 GridSplitter1.IsVisible = true;
                 GridSplitter2.IsVisible = false;
             }
@@ -1401,6 +1401,8 @@ namespace Presenter
 
         private void GridSplitter_LayoutUpdated(object sender, EventArgs e)
         {
+            System.IO.File.AppendAllText("/tmp/presenter-layout-diag.log",
+                $"{DateTime.Now:HH:mm:ss.fff} GS run={Presentation?.IsRunning} panelW={PreviewPanel.Bounds.Width} imgWb={PreviewImage.Bounds.Width} imgW={PreviewImage.Width} imgH={PreviewImage.Height}\n");
             if (Presentation == null || !Presentation.IsRunning)
                 return;
 
@@ -1411,41 +1413,41 @@ namespace Presenter
 
                 PreviewPanel.Width = Math.Max(0, Grid1.ColumnDefinitions[2].ActualWidth - 20);
 
-                //if width is zero, then control width will be set to zero and can never be multiplied by a ratio to increase in width
-                if (PreviewPanel.Bounds.Width <= 0 || PreviewImage.Bounds.Width <= 0)
+                //size from the panel width, keeping the previews' aspect ratio. The WPF
+                //original rescaled by a ratio of panel to image *bounds*; in Avalonia the
+                //bounds lag a layout pass behind the Width setter, so that feedback loop
+                //never settles and layout aborts with "Infinite layout loop detected".
+                //Compare against the Width property instead — it is what we last set.
+                double targetW = PreviewPanel.Width;
+                if (targetW < 1.0 || PreviewImage.Width < 1.0)
+                    return;
+                if (Math.Abs(PreviewImage.Width - targetW) < 1.0)
                     return;
 
-                double ratio = PreviewPanel.Bounds.Width / PreviewImage.Bounds.Width;
+                double aspect = PreviewImage.Height / PreviewImage.Width;
+                PreviewImage.Width = targetW;
+                PreviewImage.Height = targetW * aspect;
 
-                //if width is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
-                if (PreviewImage.Width * ratio < 1.0)
-                    return;
-
-                PreviewImage.Height *= ratio;
-                PreviewImage.Width *= ratio;
-
-                CurrentImage.Height *= ratio;
-                CurrentImage.Width *= ratio;
+                CurrentImage.Width = targetW;
+                CurrentImage.Height = targetW * aspect;
             }
             else
             {
-                PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[1].ActualHeight - 60);
+                PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[2].ActualHeight - 60);
 
-                //if height is zero, then control height will be set to zero and can never be multiplied by a ratio to increase in height
-                if (PreviewPanel.Bounds.Height <= 0 || PreviewImage.Bounds.Height <= 0)
+                //see the width case above
+                double targetH = PreviewPanel.Height;
+                if (targetH < 1.0 || PreviewImage.Height < 1.0)
+                    return;
+                if (Math.Abs(PreviewImage.Height - targetH) < 1.0)
                     return;
 
-                double ratio = PreviewPanel.Bounds.Height / PreviewImage.Bounds.Height;
+                double aspect = PreviewImage.Width / PreviewImage.Height;
+                PreviewImage.Height = targetH;
+                PreviewImage.Width = targetH * aspect;
 
-                //if height is allowed to be set close to zero precision is lost resulting in loss of fixed aspect ratio
-                if (PreviewImage.Height * ratio < 1.0)
-                    return;
-
-                PreviewImage.Height *= ratio;
-                PreviewImage.Width *= ratio;
-
-                CurrentImage.Height *= ratio;
-                CurrentImage.Width *= ratio;
+                CurrentImage.Height = targetH;
+                CurrentImage.Width = targetH * aspect;
             }
         }
         #endregion

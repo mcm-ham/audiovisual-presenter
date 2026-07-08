@@ -21,7 +21,7 @@
                         </Code:WatermarkService.Watermark>
                     </TextBox>
                 </AdornerDecorator>
-                <Button Content="{x:Static Loc:Labels.OpenBtnNew}" Padding="2" MinWidth="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="New_Click" />
+                <Button Content="{x:Static Loc:Labels.OpenBtnNew}" MinWidth="50" VerticalAlignment="Bottom" HorizontalAlignment="Right" Click="New_Click" />
             </Grid>
         </GroupBox>
         <GroupBox Name="groupBox2" Header="{x:Static Loc:Labels.OpenHeaderOpen}" Width="254" Margin="10" Padding="5" HorizontalAlignment="Right">
@@ -49,9 +49,9 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <DockPanel VerticalAlignment="Bottom">
-                    <Button Name="DeleteBtn" Content="{x:Static Loc:Labels.OpenBtnDel}" MinWidth="50" Padding="2" Visibility="Hidden" HorizontalAlignment="Left" Click="Delete_Click" />
-                    <Button Name="RenameBtn" Content="{x:Static Loc:Labels.OpenBtnRename}" MinWidth="50" Padding="2" Visibility="Hidden" HorizontalAlignment="Left" Click="Rename_Click" Margin="10,0,0,0" />
-                    <Button Content="{x:Static Loc:Labels.OpenBtnOpen}" MinWidth="50" Padding="2" HorizontalAlignment="Right" Click="Open_Click" />
+                    <Button Name="DeleteBtn" Content="{x:Static Loc:Labels.OpenBtnDel}" MinWidth="50" Visibility="Hidden" HorizontalAlignment="Left" Click="Delete_Click" />
+                    <Button Name="RenameBtn" Content="{x:Static Loc:Labels.OpenBtnRename}" MinWidth="50" Visibility="Hidden" HorizontalAlignment="Left" Click="Rename_Click" Margin="10,0,0,0" />
+                    <Button Content="{x:Static Loc:Labels.OpenBtnOpen}" MinWidth="50" HorizontalAlignment="Right" Click="Open_Click" />
                 </DockPanel>
             </Grid>
         </GroupBox>

@@ -33,8 +33,8 @@
                 <ComboBox Name="HorLocation" Height="23" Width="100" Margin="10,0,0,0" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="ShowBtn" MinWidth="75" Padding="2" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" Margin="0,0,10,0" />
-                <Button Name="CancelBtn" MinWidth="75" Padding="2" Content="{x:Static Loc:Labels.GenericCancel}" Click="Cancel_Click" />
+                <Button Name="ShowBtn" Padding="2" Content="{x:Static Loc:Labels.ShowMessageButton}" Click="Show_Click" Margin="0,0,10,0" />
+                <Button Name="CancelBtn" Padding="2" Content="{x:Static Loc:Labels.GenericCancel}" Click="Cancel_Click" />
             </StackPanel>
         </StackPanel>
     </Grid>

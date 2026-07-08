@@ -27,8 +27,8 @@
                 <CalendarDatePicker Name="FromDate" Margin="45,0,0,0" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left" />
                 <TextBlock Height="28" Name="label2" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="0,46,0,0" Padding="0" Text="{x:Static Loc:Labels.ReportsUsageLabelTo}" />
                 <CalendarDatePicker Name="ToDate" Margin="45,40,0,0" Width="160" VerticalAlignment="Top" HorizontalAlignment="Left" />
-                <Button Padding="2" HorizontalAlignment="Left" Margin="0,80,0,0" Name="button1" VerticalAlignment="Top" MinWidth="75" Click="Generate" Content="{x:Static Loc:Labels.ReportsUsageGenerateBtn}" />
-                <Button Padding="2" HorizontalAlignment="Left" Margin="90,80,0,0" Name="button2" VerticalAlignment="Top" MinWidth="75" Click="Download" Content="{x:Static Loc:Labels.ReportsUsageDownloadBtn}" />
+                <Button HorizontalAlignment="Left" Margin="0,80,0,0" Name="button1" VerticalAlignment="Top" Click="Generate" Content="{x:Static Loc:Labels.ReportsUsageGenerateBtn}" />
+                <Button HorizontalAlignment="Left" Margin="90,80,0,0" Name="button2" VerticalAlignment="Top" Click="Download" Content="{x:Static Loc:Labels.ReportsUsageDownloadBtn}" />
             </Grid>
 
             <!-- simple templated bar chart (replaces the legacy WPFToolkit DataVisualization chart) -->

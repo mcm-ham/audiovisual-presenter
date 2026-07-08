@@ -1,8 +1,147 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Presenter.App"
+             Name="Audiovisual Presenter"
              RequestedThemeVariant="Light">
+    <Application.Resources>
+        <!-- classic Windows blue accent so focus rings, checkboxes and the calendar's
+             "today" cell read like the WPF app rather than Fluent's default palette -->
+        <Color x:Key="SystemAccentColor">#0078D7</Color>
+        <Color x:Key="SystemAccentColorLight1">#268CEC</Color>
+        <Color x:Key="SystemAccentColorLight2">#4BA0F0</Color>
+        <Color x:Key="SystemAccentColorLight3">#79BBF5</Color>
+        <Color x:Key="SystemAccentColorDark1">#106EBE</Color>
+        <Color x:Key="SystemAccentColorDark2">#005A9E</Color>
+        <Color x:Key="SystemAccentColorDark3">#004578</Color>
+
+        <!-- classic Windows button fills, reused by the button styles below -->
+        <LinearGradientBrush x:Key="ClassicButtonBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Offset="0" Color="#F5F5F5" />
+            <GradientStop Offset="1" Color="#E1E1E1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="ClassicButtonHoverBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Offset="0" Color="#EAF6FF" />
+            <GradientStop Offset="1" Color="#C4E5FC" />
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ClassicButtonPressedBrush" Color="#CCE4F7" />
+    </Application.Resources>
     <Application.Styles>
         <FluentTheme />
+
+        <!-- Compact, squared "classic Windows" overrides layered on top of Fluent.
+             Note: a bare "Button" selector matches the Button type only, NOT subclasses
+             like CalendarDayButton/ToggleButton, so the calendar and combo internals are
+             left alone. Toolbar buttons opt out of the chrome via Classes="toolbar". -->
+
+        <Style Selector="Button">
+            <Setter Property="Background" Value="{StaticResource ClassicButtonBrush}" />
+            <Setter Property="BorderBrush" Value="#ADADAD" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="MinHeight" Value="23" />
+            <Setter Property="MinWidth" Value="75" />
+            <!-- top-biased padding compensates for the macOS font descent, which
+                 otherwise makes centered button text sit visually too high -->
+            <Setter Property="Padding" Value="2,2,2,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ClassicButtonHoverBrush}" />
+            <Setter Property="BorderBrush" Value="#3399FF" />
+        </Style>
+        <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{StaticResource ClassicButtonPressedBrush}" />
+            <Setter Property="BorderBrush" Value="#2A80D2" />
+        </Style>
+        <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F0F0F0" />
+            <Setter Property="BorderBrush" Value="#D0D0D0" />
+            <Setter Property="TextElement.Foreground" Value="#A0A0A0" />
+        </Style>
+
+        <!-- toolbar buttons: borderless, transparent, with a subtle hover, and a small
+             gap under the icon so the label doesn't crowd it. The border thickness stays
+             constant (transparent when idle) so hovering never changes the button's size
+             and therefore never resizes the toolbar band. -->
+        <Style Selector="Button.toolbar">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+        <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E8F3FF" />
+            <Setter Property="BorderBrush" Value="#B8DDFF" />
+        </Style>
+        <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CCE8FF" />
+            <Setter Property="BorderBrush" Value="#99D1FF" />
+        </Style>
+        <Style Selector="Button.toolbar Image">
+            <Setter Property="Margin" Value="0,0,0,4" />
+        </Style>
+
+        <!-- compact list rows across every window (Fluent's default rows are tall) -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="6,2" />
+            <Setter Property="MinHeight" Value="0" />
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="4,2" />
+        </Style>
+
+        <Style Selector="ComboBox">
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="6,2" />
+        </Style>
+
+        <Style Selector="CheckBox">
+            <Setter Property="MinHeight" Value="0" />
+        </Style>
+
+        <!-- The Fluent calendar renders large; it's scaled down proportionally with a
+             LayoutTransform at the use site (OpenDialog) rather than by resizing the day
+             buttons, which would leave the CalendarItem container oversized around them.
+             The header/prev/next are Buttons, so keep them borderless rather than
+             inheriting the classic command-button chrome above. -->
+        <Style Selector="Calendar Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="2" />
+        </Style>
+
+        <!-- classic light-blue list selection with a thin blue border, like Explorer/WPF -->
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CCE8FF" />
+            <Setter Property="BorderBrush" Value="#99D1FF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="TextElement.Foreground" Value="Black" />
+        </Style>
+        <Style Selector="ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CCE8FF" />
+            <Setter Property="BorderBrush" Value="#99D1FF" />
+            <Setter Property="TextElement.Foreground" Value="Black" />
+        </Style>
+        <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#BDE0FF" />
+            <Setter Property="BorderBrush" Value="#99D1FF" />
+            <Setter Property="TextElement.Foreground" Value="Black" />
+        </Style>
+        <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E8F3FF" />
+            <Setter Property="TextElement.Foreground" Value="Black" />
+        </Style>
     </Application.Styles>
 </Application>

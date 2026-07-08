@@ -4,6 +4,14 @@
     DispatcherUnhandledException="App_DispatcherUnhandledException"
     StartupUri="Main.xaml">
     <Application.Resources>
-
+        <!-- Centralized command-button chrome. Every dialog previously repeated
+             Padding="2" inline on its buttons; keep it here so the whole app stays
+             consistent and new buttons pick it up automatically. This mirrors the
+             Avalonia app's Button style in App.axaml.
+             Buttons hosted in Main's ToolBar are unaffected: WPF styles those via
+             ToolBar.ButtonStyleKey, which takes precedence over this implicit style. -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="2" />
+        </Style>
     </Application.Resources>
 </Application>

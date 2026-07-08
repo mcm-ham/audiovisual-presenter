@@ -75,6 +75,7 @@ public class UnoPresentationEngine : IPresentationEngine
             Item[] items = schedule.Items.OrderBy(i => i.Ordinal).ToArray();
             IsRunning = true;
             _profileSlot = 0;
+            KillOrphanedInstances();
 
             _slides.Clear();
             SlideAdded?.Invoke(this, new SlideAddedEventArgs(null, -1));
@@ -185,6 +186,30 @@ public class UnoPresentationEngine : IPresentationEngine
         {
             AddSlide(new Slide(SlideType.Blank, "") { Text = "", Comment = "Blank" }, progressEnd, new Item(), 1);
         }
+    }
+
+    /// <summary>
+    /// A force-quit app leaves its soffice children alive; the next session then reuses
+    /// profile p0, and the freshly spawned soffice delegates to the orphan holding that
+    /// profile and exits immediately ("soffice exited with code 0"). Sweep processes on
+    /// our profile paths before launching new ones. Windows is left alone: there soffice
+    /// runs under the helper python.exe over stdio and has no profile-delegation issue
+    /// that survives it.
+    /// </summary>
+    private static void KillOrphanedInstances()
+    {
+        if (OperatingSystem.IsWindows())
+            return;
+        try
+        {
+            using var pkill = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("/usr/bin/pkill")
+            {
+                ArgumentList = { "-f", "AudiovisualPresenter/uno/" },
+                UseShellExecute = false,
+            });
+            pkill?.WaitForExit(2000);
+        }
+        catch { /* sweeping is best-effort; launch failures surface on their own */ }
     }
 
     private SlideshowHost LaunchHost(string filename)

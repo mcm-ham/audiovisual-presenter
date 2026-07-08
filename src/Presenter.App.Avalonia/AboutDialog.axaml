@@ -33,6 +33,6 @@
             <HyperlinkButton Name="UpdateLink" IsVisible="False"><TextBlock Name="UpdateText" /></HyperlinkButton>
             <TextBlock Name="UpdateStatus" Text="{x:Static Loc:Labels.AboutUpdateLatest}" IsVisible="False" />
         </StackPanel>
-        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Padding="2" MinWidth="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
     </Grid>
 </Window>

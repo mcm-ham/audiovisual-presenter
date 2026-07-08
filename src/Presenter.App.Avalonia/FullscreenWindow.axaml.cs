@@ -20,6 +20,8 @@ namespace Presenter
         public FullscreenWindow()
         {
             InitializeComponent();
+            LayoutUpdated += (s, e) => System.IO.File.AppendAllText("/tmp/presenter-layout-diag.log",
+                $"{System.DateTime.Now:HH:mm:ss.fff} FS w={Bounds.Width} h={Bounds.Height}\n");
             Background = new SolidColorBrush(Config.ScreenBlankColour);
 
             var screen = Config.ProjectorScreen;

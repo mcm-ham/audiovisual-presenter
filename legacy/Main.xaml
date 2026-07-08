@@ -102,7 +102,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Name="AddBtn" HorizontalAlignment="Left" Margin="12,0,0,12" Content="{x:Static Loc:Labels.MainBtnAdd}" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="AddSelected" IsEnabled="False" />
+            <Button Name="AddBtn" HorizontalAlignment="Left" Margin="12,0,0,12" Content="{x:Static Loc:Labels.MainBtnAdd}" VerticalAlignment="Bottom" Padding="2" Click="AddSelected" IsEnabled="False" />
         </Grid>
         
         <Button Name="Expander1" Click="Expander1_Click" Grid.RowSpan="2" Width="15" Height="30" VerticalAlignment="Center" HorizontalAlignment="Right" Visibility="Collapsed">&lt;</Button>
@@ -212,16 +212,16 @@
         </StackPanel>
         
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="1" Margin="12">
-            <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Start_Click" />
-            <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="Stop_Click" Visibility="Collapsed" />
-            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Padding="2" MinWidth="75" Margin="0,0,12,0" Click="TimerStart_Click" Visibility="Collapsed" ToolTip="{x:Static Loc:Labels.MainTooltipTimer}" />
+            <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Padding="2" Margin="0,0,12,0" Click="Start_Click" />
+            <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Padding="2" Margin="0,0,12,0" Click="Stop_Click" Visibility="Collapsed" />
+            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Padding="2" Margin="0,0,12,0" Click="TimerStart_Click" Visibility="Collapsed" ToolTip="{x:Static Loc:Labels.MainTooltipTimer}" />
             <TextBox Name="Interval" Padding="2" Margin="0,0,12,0" Width="35" Visibility="Collapsed" TextChanged="Interval_TextChanged" ToolTip="{x:Static Loc:Labels.MainTooltipTimerSec}" />
             <CheckBox Name="UseSlideTimings" Content="{x:Static Loc:Labels.MainChkbxUseTimings}" ToolTip="{x:Static Loc:Labels.MainTooltipUseTimings}" Checked="UseSlideTimingsChanged" Unchecked="UseSlideTimingsChanged" VerticalAlignment="Center" Visibility="Collapsed" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1" Margin="12">
-            <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="RemoveFile" IsEnabled="False" />
-            <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Up_Click" IsEnabled="False" />
-            <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Padding="2" MinWidth="75" Margin="12,0,0,0" Click="Down_Click" IsEnabled="False" />
+            <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Padding="2" Margin="12,0,0,0" Click="RemoveFile" IsEnabled="False" />
+            <Button Name="PrevBtn" Content="{x:Static Loc:Labels.MainBtnMoveUp}" Padding="2" Margin="12,0,0,0" Click="Up_Click" IsEnabled="False" />
+            <Button Name="NextBtn" Content="{x:Static Loc:Labels.MainBtnMoveDown}" Padding="2" Margin="12,0,0,0" Click="Down_Click" IsEnabled="False" />
         </StackPanel>
 
         <Grid Name="RemotePanel" Grid.ColumnSpan="3" Grid.RowSpan="2" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" Visibility="Hidden" PreviewMouseLeftButtonDown="Down_Click" PreviewMouseRightButtonDown="Up_Click">

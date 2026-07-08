@@ -8,7 +8,7 @@
     <Grid>
         <TextBlock Height="28" Name="label1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="128" Margin="25,14,0,0" Padding="0" Text="{x:Static Loc:Labels.OptionsLibraryPath}" />
         <TextBox Height="23" Margin="25,36,0,0" Width="350" Name="LibraryPath" VerticalAlignment="Top" HorizontalAlignment="Left" /> 
-        <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" MinWidth="75" Padding="2" VerticalAlignment="Top" HorizontalAlignment="Left" />
+        <Button Margin="385,36,0,0" Content="{x:Static Loc:Labels.OptionsBtnBrowse}" Click="Browse_Click" Padding="2" VerticalAlignment="Top" HorizontalAlignment="Left" />
         
         <TextBlock Height="23" HorizontalAlignment="Left" Margin="25,75,0,0" VerticalAlignment="Top" Text="{x:Static Loc:Labels.OptionsMonitorSetting}" />
         <ComboBox Name="MonitorSelection" Height="23" Width="135" Margin="25,96,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
@@ -21,7 +21,7 @@
         <TextBlock Text="{x:Static Loc:Labels.OptionsFontSize}" Margin="25,142,0,0" VerticalAlignment="Top" />
         <ComboBox Name="FontSizeList" Height="23" Width="135" Margin="25,164,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
-        <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
-        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" MinWidth="75" Padding="2" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
+        <Button HorizontalAlignment="Right" Margin="0,0,95,12" Name="button1" VerticalAlignment="Bottom" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button2" VerticalAlignment="Bottom" Padding="2" Click="button2_Click" Content="{x:Static Loc:Labels.GenericCancel}" />
     </Grid>
 </Window>

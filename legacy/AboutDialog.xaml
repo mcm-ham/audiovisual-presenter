@@ -13,6 +13,6 @@
         <TextBlock Margin="25,115,25,0" Text="{x:Static Loc:Labels.AboutSupportTitle}" Height="21" VerticalAlignment="Top"><TextBlock Text="  " /><Hyperlink NavigateUri="http://www.minsoft.org/support/" RequestNavigate="Hyperlink_RequestNavigate">www.minsoft.org/support/</Hyperlink></TextBlock>
         <TextBlock Margin="25,130,25,0" Text="{x:Static Loc:Labels.AboutVersionTitle}" Height="21" VerticalAlignment="Top"><TextBlock Name="BuildNo" /></TextBlock>
         <TextBlock HorizontalAlignment="Center" Margin="0,180,0,0"><Hyperlink Name="UpdateLink"  RequestNavigate="Hyperlink_RequestNavigate"><TextBlock Name="UpdateText" /></Hyperlink><TextBlock Name="UpdateStatus" Text="{x:Static Loc:Labels.AboutUpdateLatest}" Visibility="Collapsed" /></TextBlock>
-        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Padding="2" MinWidth="75" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
+        <Button HorizontalAlignment="Right" Margin="0,0,10,12" Name="button1" VerticalAlignment="Bottom" Padding="2" Click="button1_Click" Content="{x:Static Loc:Labels.GenericOk}" />
     </Grid>
 </Window>
