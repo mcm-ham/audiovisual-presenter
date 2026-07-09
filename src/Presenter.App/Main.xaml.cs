@@ -1217,29 +1217,49 @@ namespace Presenter
             }
         }
 
+        bool _mediaPlaying = false;
+
         protected void PlayMedia(object sender, EventArgs args)
         {
             VideoPlayer.Play();
             VideoPlayer.Volume = (double)volumeSlider.Value;
-            PlayPauseBtn.Content = "Pause";
-            PlayPauseBtn.Click += new RoutedEventHandler(PauseMedia);
+            _mediaPlaying = true;
+            SetPlayPauseIcon(true);
             mediaPosTimer.Start();
         }
 
         protected void PauseMedia(object sender, EventArgs args)
         {
             VideoPlayer.Pause();
-            PlayPauseBtn.Content = "Play";
-            PlayPauseBtn.Click += new RoutedEventHandler(PlayMedia);
+            _mediaPlaying = false;
+            SetPlayPauseIcon(false);
             mediaPosTimer.Stop();
+        }
+
+        protected void PlayPauseMedia(object sender, RoutedEventArgs args)
+        {
+            if (_mediaPlaying)
+                PauseMedia(sender, args);
+            else
+                PlayMedia(sender, args);
         }
 
         protected void StopMedia(object sender, EventArgs args)
         {
             VideoPlayer.Stop();
-            PlayPauseBtn.Content = "Play";
-            PlayPauseBtn.Click += new RoutedEventHandler(PlayMedia);
+            _mediaPlaying = false;
+            SetPlayPauseIcon(false);
             mediaPosTimer?.Stop();
+            //Stop rewinds the media, so return the transport to the start (the
+            //ValueChanged handler mirrors 0 into the currentTime box)
+            timelineSlider.Value = 0;
+        }
+
+        private void SetPlayPauseIcon(bool playing)
+        {
+            PlayIcon.Visibility = playing ? Visibility.Collapsed : Visibility.Visible;
+            PauseIcon.Visibility = playing ? Visibility.Visible : Visibility.Collapsed;
+            PlayPauseBtn.ToolTip = playing ? Labels.MainBtnVideoPause : Labels.MainBtnVideoPlay;
         }
 
         protected void ChangeMediaVolume(object sender, RoutedPropertyChangedEventArgs<double> args)

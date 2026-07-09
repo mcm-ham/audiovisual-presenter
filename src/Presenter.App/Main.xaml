@@ -196,18 +196,50 @@
                         </DrawingBrush>
                     </Rectangle.Fill>
                 </Rectangle>
-                <WrapPanel Name="MediaControls" HorizontalAlignment="Center" VerticalAlignment="Bottom" Orientation="Horizontal">
-                    <Button Name="PlayPauseBtn" Click="PlayMedia" Content="{x:Static Loc:Labels.MainBtnVideoPlay}" Padding="0" Margin="0,5,5,0" />
-                    <Button Click="StopMedia" Content="{x:Static Loc:Labels.MainBtnVideoStop}" Padding="0" Margin="0,5,5,0" />
+                <Grid Name="MediaControls" Margin="0,6,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoVolume}" Margin="0,5,0,0" />
-                    <Slider Name="volumeSlider" VerticalAlignment="Center" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="50" Margin="0,5,0,0"/>
+                    <!-- seek bar spans the full preview width; the current-time box stays
+                         editable so the operator can type a time to jump to -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Name="currentTime" Width="44" TextAlignment="Center" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" ToolTip="{x:Static Loc:Labels.MainBtnVideoSeek}" />
+                        <Slider Name="timelineSlider" Grid.Column="1" VerticalAlignment="Center" Margin="8,0" MinWidth="140" IsMoveToPointEnabled="True" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" />
+                        <TextBlock Name="totalTime" Grid.Column="2" VerticalAlignment="Center" />
+                    </Grid>
 
-                    <TextBlock VerticalAlignment="Center" Text="{x:Static Loc:Labels.MainBtnVideoSeek}" Margin="0,5,0,0" />
-                    <TextBox Name="currentTime" Width="30" VerticalAlignment="Center" GotFocus="currentTime_GotFocus" LostFocus="currentTime_LostFocus" KeyDown="currentTime_KeyDown" Margin="0,5,0,0" />
-                    <Slider Name="timelineSlider" VerticalAlignment="Center" PreviewMouseLeftButtonDown="timelineSlider_PreviewMouseLeftButtonDown" ValueChanged="timelineSlider_ValueChanged" PreviewMouseLeftButtonUp="SeekToMediaPosition" Width="60" Margin="0,5,0,0" />
-                    <TextBlock Name="totalTime" VerticalAlignment="Center" Margin="0,5,0,0" />
-                </WrapPanel>
+                    <!-- transport buttons left, volume right -->
+                    <Grid Grid.Row="1" Margin="0,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Button Name="PlayPauseBtn" Click="PlayPauseMedia" Width="36" Height="24" ToolTip="{x:Static Loc:Labels.MainBtnVideoPlay}">
+                            <Grid>
+                                <Path Name="PlayIcon" Data="M0,0 L9,5.5 L0,11 Z" Width="9" Height="11" Fill="#404040" />
+                                <Path Name="PauseIcon" Data="M0,0 L3.5,0 L3.5,11 L0,11 Z M6.5,0 L10,0 L10,11 L6.5,11 Z" Width="10" Height="11" Fill="#404040" Visibility="Collapsed" />
+                            </Grid>
+                        </Button>
+                        <Button Grid.Column="1" Click="StopMedia" Width="36" Height="24" Margin="4,0,0,0" ToolTip="{x:Static Loc:Labels.MainBtnVideoStop}">
+                            <Path Data="M0,0 L10,0 L10,10 L0,10 Z" Width="10" Height="10" Fill="#404040" />
+                        </Button>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Background="Transparent" ToolTip="{x:Static Loc:Labels.MainBtnVideoVolume}">
+                            <Path Data="M0,3.5 L3,3.5 L7,0.5 L7,10.5 L3,7.5 L0,7.5 Z" Fill="#404040" VerticalAlignment="Center" />
+                            <Path Data="M0,2.2 A3.2,3.2 0 0 1 0,8.8" Stroke="#404040" StrokeThickness="1.3" Margin="1.5,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <Slider Name="volumeSlider" Grid.Column="4" Width="80" Margin="6,0,0,0" VerticalAlignment="Center" IsMoveToPointEnabled="True" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" ToolTip="{x:Static Loc:Labels.MainBtnVideoVolume}" />
+                    </Grid>
+                </Grid>
             </StackPanel>
         </StackPanel>
         

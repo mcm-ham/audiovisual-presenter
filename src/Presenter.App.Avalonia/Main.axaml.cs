@@ -1277,7 +1277,7 @@ namespace Presenter
 
         protected void VideoPlayer_MediaEnded(object sender, EventArgs e)
         {
-            PlayPauseBtn.Content = Labels.MainBtnVideoPlay;
+            SetPlayPauseIcon(false);
             mediaPosTimer?.Stop();
 
             if (!_mediaAdvanceOnComplete)
@@ -1314,8 +1314,15 @@ namespace Presenter
                 preview?.Play();
             });
             VideoPlayer.Volume = (int)(volumeSlider.Value * 100);
-            PlayPauseBtn.Content = Labels.MainBtnVideoPause;
+            SetPlayPauseIcon(true);
             mediaPosTimer?.Start();
+        }
+
+        private void SetPlayPauseIcon(bool playing)
+        {
+            PlayIcon.IsVisible = !playing;
+            PauseIcon.IsVisible = playing;
+            ToolTip.SetTip(PlayPauseBtn, playing ? Labels.MainBtnVideoPause : Labels.MainBtnVideoPlay);
         }
 
         protected void PlayPauseMedia(object sender, RoutedEventArgs args)
@@ -1327,7 +1334,7 @@ namespace Presenter
             {
                 VideoPlayer.SetPause(true);
                 PreviewPlayer?.SetPause(true);
-                PlayPauseBtn.Content = Labels.MainBtnVideoPlay;
+                SetPlayPauseIcon(false);
                 mediaPosTimer?.Stop();
             }
             else
@@ -1348,8 +1355,11 @@ namespace Presenter
                 player.Stop();
                 preview?.Stop();
             });
-            PlayPauseBtn.Content = Labels.MainBtnVideoPlay;
+            SetPlayPauseIcon(false);
             mediaPosTimer?.Stop();
+            //Stop rewinds the media, so return the transport to the start (the
+            //ValueChanged handler mirrors 0 into the currentTime box)
+            timelineSlider.Value = 0;
         }
 
         protected void ChangeMediaVolume(object sender, RangeBaseValueChangedEventArgs args)
@@ -1459,54 +1469,81 @@ namespace Presenter
 
         private void GridSplitter_LayoutUpdated(object sender, EventArgs e)
         {
-            System.IO.File.AppendAllText("/tmp/presenter-layout-diag.log",
-                $"{DateTime.Now:HH:mm:ss.fff} GS run={Presentation?.IsRunning} panelW={PreviewPanel.Bounds.Width} imgWb={PreviewImage.Bounds.Width} imgW={PreviewImage.Width} imgH={PreviewImage.Height}\n");
             if (Presentation == null || !Presentation.IsRunning)
                 return;
 
+            //The preview is bounded by whichever dimension its mode fixes: the side preview
+            //(column 2) is capped by MaxWidth (MaxHeight is Infinity), the bottom preview by
+            //MaxHeight (MaxWidth is Infinity). Drive sizing from the dragged dimension but clamp
+            //to the finite cap so the preview *stops* enlarging at the viewing bound instead of
+            //overflowing. The non-binding dimension stays Infinity so it never constrains.
+            //(Sizes are compared against the last-set Width/Height, not the lagging Bounds, so
+            //the feedback loop settles rather than aborting with "Infinite layout loop".)
+            double availW, availH;
             if (!Config.SlidePreviewBottom)
             {
                 if (Grid1.ColumnDefinitions[2].ActualWidth == 0)
                     return;
 
                 PreviewPanel.Width = Math.Max(0, Grid1.ColumnDefinitions[2].ActualWidth - 20);
-
-                //size from the panel width, keeping the previews' aspect ratio. The WPF
-                //original rescaled by a ratio of panel to image *bounds*; in Avalonia the
-                //bounds lag a layout pass behind the Width setter, so that feedback loop
-                //never settles and layout aborts with "Infinite layout loop detected".
-                //Compare against the Width property instead — it is what we last set.
-                double targetW = PreviewPanel.Width;
-                if (targetW < 1.0 || PreviewImage.Width < 1.0)
-                    return;
-                if (Math.Abs(PreviewImage.Width - targetW) < 1.0)
-                    return;
-
-                double aspect = PreviewImage.Height / PreviewImage.Width;
-                PreviewImage.Width = targetW;
-                PreviewImage.Height = targetW * aspect;
-
-                CurrentImage.Width = targetW;
-                CurrentImage.Height = targetW * aspect;
+                availW = Math.Min(PreviewPanel.Width, PreviewPanel.MaxWidth);
+                availH = PreviewPanel.MaxHeight;
             }
             else
             {
                 PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[2].ActualHeight - 60);
-
-                //see the width case above
-                double targetH = PreviewPanel.Height;
-                if (targetH < 1.0 || PreviewImage.Height < 1.0)
-                    return;
-                if (Math.Abs(PreviewImage.Height - targetH) < 1.0)
-                    return;
-
-                double aspect = PreviewImage.Width / PreviewImage.Height;
-                PreviewImage.Height = targetH;
-                PreviewImage.Width = targetH * aspect;
-
-                CurrentImage.Height = targetH;
-                CurrentImage.Width = targetH * aspect;
+                availH = Math.Min(PreviewPanel.Height, PreviewPanel.MaxHeight);
+                availW = PreviewPanel.MaxWidth;
             }
+
+            if (availW < 1.0 || availH < 1.0 || PreviewImage.Width < 1.0 || PreviewImage.Height < 1.0)
+                return;
+
+            //fit the slide previews within (availW, availH) keeping their aspect ratio
+            double aspect = PreviewImage.Height / PreviewImage.Width;
+            double imgW = availW;
+            double imgH = imgW * aspect;
+            if (imgH > availH)
+            {
+                imgH = availH;
+                imgW = imgH / aspect;
+            }
+            if (imgW >= 1.0 && Math.Abs(PreviewImage.Width - imgW) >= 1.0)
+            {
+                PreviewImage.Width = imgW;
+                PreviewImage.Height = imgW * aspect;
+
+                CurrentImage.Width = imgW;
+                CurrentImage.Height = imgW * aspect;
+            }
+
+            //scale the video into the same box, less the controls' height so they are never
+            //clipped (the fixed-size video would otherwise push them past the viewing bound)
+            FitVideoDisplay(availW, availH - MediaControls.Bounds.Height - 4);
+        }
+
+        /// <summary>
+        /// Scales VideoDisplay to fit within the given width/height while keeping its
+        /// current aspect ratio (libvlc letterboxes the picture inside it). Like the image
+        /// resize above, it compares against the last-set Width/Height rather than the lagging
+        /// Bounds so the layout loop settles instead of aborting with "Infinite layout loop".
+        /// </summary>
+        private void FitVideoDisplay(double availWidth, double availHeight)
+        {
+            if (!VideoDisplay.IsVisible || VideoDisplay.Width < 1.0 || VideoDisplay.Height < 1.0
+                || availWidth < 1.0 || availHeight < 1.0)
+                return;
+
+            double scale = Math.Min(availWidth / VideoDisplay.Width, availHeight / VideoDisplay.Height);
+            double newW = VideoDisplay.Width * scale;
+            double newH = VideoDisplay.Height * scale;
+            if (newW < 1.0 || newH < 1.0)
+                return;
+            if (Math.Abs(VideoDisplay.Width - newW) < 1.0 && Math.Abs(VideoDisplay.Height - newH) < 1.0)
+                return;
+
+            VideoDisplay.Width = newW;
+            VideoDisplay.Height = newH;
         }
         #endregion
 
