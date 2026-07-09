@@ -31,9 +31,25 @@ namespace Presenter.App_Code
         {
             get
             {
-                string device = ScreenService.DeviceName(Config.ProjectorScreen);
-                int idx = ScreenService.AllScreens.FindIndex(s => ScreenService.DeviceName(s) == device);
-                return idx >= 0 ? idx + 1 : 1;
+                var b = Config.ProjectorScreen.Bounds;
+
+                //Impress numbers displays in the OS EnumDisplayMonitors order; ask Win32
+                //directly so we match the working WPF app (WinForms uses the same order)
+                //rather than Avalonia's screen-list order, which need not agree.
+                if (OperatingSystem.IsWindows())
+                {
+                    int number = User32.MonitorNumberAt(b.X, b.Y);
+                    if (number > 0)
+                        return number;
+                }
+
+                //non-Windows fallback: position within Avalonia's screen list. Match on
+                //bounds (unique) instead of the display name (identical monitors collide).
+                var all = ScreenService.AllScreens;
+                for (int i = 0; i < all.Count; i++)
+                    if (all[i].Bounds.X == b.X && all[i].Bounds.Y == b.Y)
+                        return i + 1;
+                return 1;
             }
         }
     }

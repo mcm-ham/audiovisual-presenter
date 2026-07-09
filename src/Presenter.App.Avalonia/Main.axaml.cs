@@ -751,7 +751,9 @@ namespace Presenter
                 PreviewPanel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right;
                 PreviewPanel.Orientation = Avalonia.Layout.Orientation.Vertical;
                 PreviewPanel.MaxHeight = Double.PositiveInfinity;
-                PreviewPanel.MaxWidth = 350;
+                //no fixed width cap: the side preview grows with the column and is bounded by
+                //the column height instead (see GridSplitter_LayoutUpdated)
+                PreviewPanel.MaxWidth = Double.PositiveInfinity;
                 PreviewPanel.Height = Double.NaN;
                 PreviewPanel.Margin = new Thickness(0, 80, 10, 0);
                 PreviewImage.Margin = new Thickness(0, 0, 0, 20);
@@ -769,7 +771,9 @@ namespace Presenter
                 PreviewPanel.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom;
                 PreviewPanel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
                 PreviewPanel.Orientation = Avalonia.Layout.Orientation.Horizontal;
-                PreviewPanel.MaxHeight = 250;
+                //no fixed height cap: the bottom preview grows with the divider and is bounded by
+                //the column width instead (see GridSplitter_LayoutUpdated)
+                PreviewPanel.MaxHeight = Double.PositiveInfinity;
                 PreviewPanel.MaxWidth = Double.PositiveInfinity;
                 PreviewPanel.Width = Double.NaN;
                 PreviewPanel.Margin = new Thickness(12, 10, 0, 45);
@@ -1472,31 +1476,45 @@ namespace Presenter
             if (Presentation == null || !Presentation.IsRunning)
                 return;
 
-            //The preview is bounded by whichever dimension its mode fixes: the side preview
-            //(column 2) is capped by MaxWidth (MaxHeight is Infinity), the bottom preview by
-            //MaxHeight (MaxWidth is Infinity). Drive sizing from the dragged dimension but clamp
-            //to the finite cap so the preview *stops* enlarging at the viewing bound instead of
-            //overflowing. The non-binding dimension stays Infinity so it never constrains.
-            //(Sizes are compared against the last-set Width/Height, not the lagging Bounds, so
-            //the feedback loop settles rather than aborting with "Infinite layout loop".)
-            double availW, availH;
             if (!Config.SlidePreviewBottom)
             {
-                if (Grid1.ColumnDefinitions[2].ActualWidth == 0)
-                    return;
-
-                PreviewPanel.Width = Math.Max(0, Grid1.ColumnDefinitions[2].ActualWidth - 20);
-                availW = Math.Min(PreviewPanel.Width, PreviewPanel.MaxWidth);
-                availH = PreviewPanel.MaxHeight;
-            }
-            else
-            {
-                PreviewPanel.Height = Math.Max(0, Grid1.RowDefinitions[2].ActualHeight - 60);
-                availH = Math.Min(PreviewPanel.Height, PreviewPanel.MaxHeight);
-                availW = PreviewPanel.MaxWidth;
+                SizeSidePreview();
+                return;
             }
 
-            if (availW < 1.0 || availH < 1.0 || PreviewImage.Width < 1.0 || PreviewImage.Height < 1.0)
+            //Bottom layout: the two previews sit side by side (image left, video right), so the
+            //preview is *width*-bounded, not height-capped: it grows with the divider dragged up
+            //until the two boxes plus the gap between them fill the column width, then it stops.
+            //(Sizes are compared against the last-set Width/Height, not the lagging Bounds, so
+            //the feedback loop settles rather than aborting with "Infinite layout loop".)
+
+            //the side layout pins VideoPanel to the box width; let it size to content here
+            if (!double.IsNaN(VideoPanel.Width))
+                VideoPanel.Width = double.NaN;
+
+            if (PreviewImage.Width < 1.0 || PreviewImage.Height < 1.0)
+                return;
+
+            //vertical room freed up by dragging the divider (row 2 height, less the panel's
+            //10px top and 45px bottom margins with a little slack)
+            double dividerH = Math.Max(0, Grid1.RowDefinitions[2].ActualHeight - 60);
+
+            //cap the box height so the two side-by-side boxes still fit the column width: each
+            //box's width is boxHeight / aspect, so their combined width is boxHeight*(1/imgAspect
+            //+ 1/secondAspect). The right box is the video when one is showing, else the image.
+            double imgAspect = PreviewImage.Height / PreviewImage.Width;
+            bool video = VideoDisplay.IsVisible && VideoDisplay.Width >= 1.0 && VideoDisplay.Height >= 1.0;
+            double secondAspect = video ? VideoDisplay.Height / VideoDisplay.Width : imgAspect;
+            double widthForBoxes = Grid1.ColumnDefinitions[1].ActualWidth - 12 - 12 - 20;
+            if (widthForBoxes < 1.0 || dividerH < 1.0)
+                return;
+            double widthCap = widthForBoxes / (1.0 / imgAspect + 1.0 / secondAspect);
+
+            double availH = Math.Min(dividerH, widthCap);
+            double availW = double.PositiveInfinity;
+            PreviewPanel.Height = availH;
+
+            if (availH < 1.0)
                 return;
 
             //fit the slide previews within (availW, availH) keeping their aspect ratio
@@ -1520,6 +1538,65 @@ namespace Presenter
             //scale the video into the same box, less the controls' height so they are never
             //clipped (the fixed-size video would otherwise push them past the viewing bound)
             FitVideoDisplay(availW, availH - MediaControls.Bounds.Height - 4);
+        }
+
+        /// <summary>
+        /// Sizes the side (column 2) preview, where the two previews stack vertically and share
+        /// the column's height. Both boxes — and the media controls under the video — are given
+        /// one common width so their left/right edges line up; that width grows with the dragged
+        /// column until the two boxes (plus the gap between them and the controls) fill the
+        /// divider's vertical span, then it stops. The span runs from the panel's 80px top margin
+        /// to GridSplitter2's 45px bottom margin. Sizes are compared against the last-set
+        /// Width/Height rather than the lagging Bounds so the layout loop settles.
+        /// </summary>
+        private void SizeSidePreview()
+        {
+            if (Grid1.ColumnDefinitions[2].ActualWidth == 0)
+                return;
+
+            double columnW = Math.Max(0, Grid1.ColumnDefinitions[2].ActualWidth - 20);
+            PreviewPanel.Width = columnW;
+
+            if (columnW < 1.0 || PreviewImage.Width < 1.0 || PreviewImage.Height < 1.0)
+                return;
+
+            //aspect (height / width) of each stacked box; the lower box is the video when one is
+            //showing, otherwise the "current slide" image
+            double imgAspect = PreviewImage.Height / PreviewImage.Width;
+            bool video = VideoDisplay.IsVisible && VideoDisplay.Width >= 1.0 && VideoDisplay.Height >= 1.0;
+            double lowerAspect = video ? VideoDisplay.Height / VideoDisplay.Width : imgAspect;
+            double controls = video ? MediaControls.Bounds.Height + 4 : 0;
+
+            double span = Grid1.RowDefinitions[1].ActualHeight + Grid1.RowDefinitions[2].ActualHeight - 80 - 45;
+            double budget = span - 20 - controls;
+            if (budget < 1.0)
+                return;
+
+            //one width shared by both boxes, capped so their combined height fits the span
+            double w = Math.Min(columnW, budget / (imgAspect + lowerAspect));
+            if (w < 1.0)
+                return;
+
+            if (Math.Abs(PreviewImage.Width - w) >= 1.0)
+            {
+                PreviewImage.Width = w;
+                PreviewImage.Height = w * imgAspect;
+
+                CurrentImage.Width = w;
+                CurrentImage.Height = w * imgAspect;
+            }
+            if (video)
+            {
+                if (Math.Abs(VideoDisplay.Width - w) >= 1.0)
+                {
+                    VideoDisplay.Width = w;
+                    VideoDisplay.Height = w * lowerAspect;
+                }
+                //VideoPanel wraps the video box and the transport controls; pin it to the same
+                //width so the controls line up with the box instead of stretching to the column
+                if (double.IsNaN(VideoPanel.Width) || Math.Abs(VideoPanel.Width - w) >= 1.0)
+                    VideoPanel.Width = w;
+            }
         }
 
         /// <summary>

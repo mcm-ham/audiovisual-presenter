@@ -76,5 +76,31 @@ namespace Presenter.App_Code
                 SetForegroundWindow(hWnd);
             }
         }
+
+        private delegate bool MonitorEnumProc(IntPtr hMonitor, IntPtr hdc, ref Rect rect, IntPtr data);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumDisplayMonitors(IntPtr hdc, IntPtr clip, MonitorEnumProc callback, IntPtr data);
+
+        /// <summary>
+        /// 1-based number of the monitor whose top-left corner is (<paramref name="x"/>,
+        /// <paramref name="y"/>), in the OS EnumDisplayMonitors order. This is the same
+        /// order System.Windows.Forms.Screen.AllScreens uses (WinForms is built on the
+        /// same enumeration) and the numbering LibreOffice's presentation Display property
+        /// expects, so it matches the working WPF app exactly. Matching by position keeps
+        /// it robust when two monitors share a display name. Returns 0 when none matches.
+        /// </summary>
+        public static int MonitorNumberAt(int x, int y)
+        {
+            int found = 0, i = 0;
+            EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (IntPtr _, IntPtr _, ref Rect r, IntPtr _) =>
+            {
+                i++;
+                if (found == 0 && r.Left == x && r.Top == y)
+                    found = i;
+                return true;
+            }, IntPtr.Zero);
+            return found;
+        }
     }
 }
