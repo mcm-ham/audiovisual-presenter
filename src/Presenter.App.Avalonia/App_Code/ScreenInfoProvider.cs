@@ -18,6 +18,22 @@ namespace Presenter.App_Code
             }
         }
 
+        public ScreenBounds ProjectorLogicalBounds
+        {
+            get
+            {
+                //Avalonia reports Bounds (and origin) in physical pixels; LibreOffice's
+                //windowed show positions the document window in logical points, so
+                //descale by the projector screen's scale factor (2 on a Retina panel).
+                var screen = Config.ProjectorScreen;
+                var b = screen.Bounds;
+                double scale = screen.Scaling;
+                return new ScreenBounds(
+                    (int)Math.Round(b.X / scale), (int)Math.Round(b.Y / scale),
+                    (int)Math.Round(b.Width / scale), (int)Math.Round(b.Height / scale));
+            }
+        }
+
         public ScreenBounds PrimaryWorkingArea
         {
             get

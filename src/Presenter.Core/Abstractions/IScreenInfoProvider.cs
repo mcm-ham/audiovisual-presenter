@@ -9,8 +9,16 @@ public record ScreenBounds(int Left, int Top, int Width, int Height);
 /// </summary>
 public interface IScreenInfoProvider
 {
-    /// <summary>Full bounds of the projector (output) screen.</summary>
+    /// <summary>Full bounds of the projector (output) screen, in device pixels.</summary>
     ScreenBounds ProjectorBounds { get; }
+
+    /// <summary>
+    /// Projector bounds in logical points (device pixels divided by the screen's
+    /// scale factor). LibreOffice's macOS windowed show positions the document
+    /// window in logical points, so a HiDPI projector needs the descaled rectangle;
+    /// defaults to <see cref="ProjectorBounds"/> where scale is always 1.
+    /// </summary>
+    ScreenBounds ProjectorLogicalBounds => ProjectorBounds;
 
     /// <summary>Working area of the primary (operator) screen.</summary>
     ScreenBounds PrimaryWorkingArea { get; }

@@ -224,7 +224,7 @@ public class UnoPresentationEngine : IPresentationEngine
             "AudiovisualPresenter", "uno", "p" + _profileSlot++);
 
         var host = SlideshowHost.Launch(soffice, filename, profile, LoadTimeout, _windows,
-            _screens.ProjectorBounds);
+            _screens.ProjectorLogicalBounds);
         host.SlideChanged += Host_SlideChanged;
         host.ShowEnded += Host_ShowEnded;
         _hosts.Add(host);
