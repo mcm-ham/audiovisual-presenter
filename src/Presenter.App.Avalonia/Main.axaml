@@ -213,9 +213,9 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="2" Margin="12">
             <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Margin="0,0,12,0" Click="Start_Click" />
             <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Margin="0,0,12,0" Click="Stop_Click" IsVisible="False" />
-            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Margin="0,0,12,0" Click="TimerStart_Click" IsVisible="False" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimer}" />
-            <TextBox Name="Interval" Padding="2" Margin="0,0,12,0" Width="35" MinWidth="0" Height="23" VerticalAlignment="Center" IsVisible="False" TextChanged="Interval_TextChanged" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimerSec}" />
-            <CheckBox Name="UseSlideTimings" Content="{x:Static Loc:Labels.MainChkbxUseTimings}" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipUseTimings}" IsCheckedChanged="UseSlideTimingsChanged" VerticalAlignment="Center" IsVisible="False" />
+            <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Margin="0,0,12,0" Click="TimerStart_Click" IsVisible="False" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimer}" ToolTip.Placement="Top" ToolTip.HorizontalOffset="16" ToolTip.VerticalOffset="-12" />
+            <TextBox Name="Interval" Padding="2,0" Margin="0,0,12,0" Width="35" MinWidth="0" MinHeight="0" Height="23" VerticalAlignment="Center" TextAlignment="Center" VerticalContentAlignment="Center" IsVisible="False" TextChanged="Interval_TextChanged" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimerSec}" ToolTip.Placement="Top" ToolTip.HorizontalOffset="16" ToolTip.VerticalOffset="-12" />
+            <CheckBox Name="UseSlideTimings" Content="{x:Static Loc:Labels.MainChkbxUseTimings}" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipUseTimings}" IsCheckedChanged="UseSlideTimingsChanged" VerticalAlignment="Center" IsVisible="False" ToolTip.Placement="Top" ToolTip.HorizontalOffset="16" ToolTip.VerticalOffset="-12" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="2" Margin="12">
             <Button Name="RemoveBtn" Content="{x:Static Loc:Labels.MainBtnRemove}" Margin="12,0,0,0" Click="RemoveFile" IsEnabled="False" />

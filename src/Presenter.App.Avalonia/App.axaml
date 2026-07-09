@@ -96,13 +96,19 @@
 
         <Style Selector="TextBox">
             <Setter Property="CornerRadius" Value="2" />
-            <Setter Property="MinHeight" Value="0" />
+            <!-- floor matches the command-button MinHeight so single-line inputs align with
+                 buttons; it's a floor, not a fixed height, so it still grows with the font -->
+            <Setter Property="MinHeight" Value="23" />
+            <!-- centre the text in the taller box instead of letting it sit at the top -->
+            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Padding" Value="4,2" />
         </Style>
 
         <Style Selector="ComboBox">
             <Setter Property="CornerRadius" Value="2" />
-            <Setter Property="MinHeight" Value="0" />
+            <!-- floor matches the command-button MinHeight so dropdowns align with buttons;
+                 a floor (not a fixed height) still grows with the font -->
+            <Setter Property="MinHeight" Value="23" />
             <Setter Property="Padding" Value="6,2" />
         </Style>
 
