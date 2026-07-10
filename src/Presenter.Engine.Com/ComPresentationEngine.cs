@@ -540,6 +540,8 @@ public class ComPresentationEngine : IPresentationEngine
         User32.SetWindowPos(pres.SlideShowWindow().HWND, User32.HWND_TOP, b.Left, b.Top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
     }
 
+    public void HideSlideWindows() { }
+
     public bool TryEditSlide(Slide slide)
     {
         var pres = Pres(slide);

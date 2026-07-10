@@ -29,6 +29,9 @@ internal static class AppKit
     private static extern bool MsgSendBool(IntPtr receiver, IntPtr selector, nuint arg);
 
     [DllImport(ObjC, EntryPoint = "objc_msgSend")]
+    private static extern bool MsgSendBool(IntPtr receiver, IntPtr selector);
+
+    [DllImport(ObjC, EntryPoint = "objc_msgSend")]
     private static extern int MsgSendInt(IntPtr receiver, IntPtr selector);
 
     // AppKit must be loaded before its classes resolve (console hosts don't link it)
@@ -38,6 +41,7 @@ internal static class AppKit
     private static readonly IntPtr _appKit =
         dlopen("/System/Library/Frameworks/AppKit.framework/AppKit", 1 /* RTLD_LAZY */);
 
+    private const nuint NSApplicationActivateAllWindows = 1 << 0;
     private const nuint NSApplicationActivateIgnoringOtherApps = 1 << 1;
 
     /// <summary>Activates (and thereby raises) the application with the given pid.</summary>
@@ -47,8 +51,17 @@ internal static class AppKit
             sel_registerName("runningApplicationWithProcessIdentifier:"), pid);
         if (app == IntPtr.Zero)
             return false;
+        MsgSendBool(app, sel_registerName("unhide"));
         return MsgSendBool(app, sel_registerName("activateWithOptions:"),
-            NSApplicationActivateIgnoringOtherApps);
+            NSApplicationActivateAllWindows | NSApplicationActivateIgnoringOtherApps);
+    }
+
+    /// <summary>Hides the application with the given pid and all of its windows.</summary>
+    public static bool HideApplication(int pid)
+    {
+        IntPtr app = MsgSend(objc_getClass("NSRunningApplication"),
+            sel_registerName("runningApplicationWithProcessIdentifier:"), pid);
+        return app != IntPtr.Zero && MsgSendBool(app, sel_registerName("hide"));
     }
 
     /// <summary>Pid of the frontmost application, or 0 when unknown.</summary>

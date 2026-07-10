@@ -34,6 +34,16 @@ public class UnoPresentationEngine : IPresentationEngine
     private readonly List<SlideshowHost> _hosts = new();
     private int _profileSlot;
 
+    // Static rendering is an explicit diagnostic fallback. Native playback remains
+    // the default so transitions and animations are preserved.
+    private static bool UseStaticMacFallback => OperatingSystem.IsMacOS()
+        && Environment.GetEnvironmentVariable("AVP_UNO_STATIC_FALLBACK") == "1";
+
+    // Windowed playback remains available for diagnostics; native fullscreen is the
+    // normal macOS mode because LibreOffice 26.2 can leave its editor in a windowed show.
+    private static bool UseMacWindowedShow => OperatingSystem.IsMacOS()
+        && Environment.GetEnvironmentVariable("AVP_UNO_WINDOWED_SHOW") == "1";
+
     /// <param name="syncContext">UI thread context; events triggered by the show window
     /// (timings, clicks, ESC) are marshalled to it like the COM engine does.</param>
     /// <param name="activateMainWindow">Re-activates the operator window after each
@@ -86,6 +96,12 @@ public class UnoPresentationEngine : IPresentationEngine
                 AddSlides(item);
 
             AddSlide(new Slide(SlideType.Blank, "") { Text = "", Comment = "Blank" }, 0, new Item(), 1);
+
+            // A show is prepared for every presentation during the build, but the
+            // schedule deliberately starts on its leading Blank row. Ensure none of
+            // those native shows remains visible when Start returns.
+            HideSlideWindows();
+            OnUi(() => _activateMainWindow?.Invoke());
         }
         catch (Exception)
         {
@@ -134,6 +150,7 @@ public class UnoPresentationEngine : IPresentationEngine
         else if (S.PowerPointFormats.Contains(filetype))
         {
             SlideshowHost host = LaunchHost(filename);
+            var b = _screens.ProjectorBounds;
 
             for (int i = 0; i < host.SlideInfo.Count; i++)
             {
@@ -146,15 +163,24 @@ public class UnoPresentationEngine : IPresentationEngine
                     AnimationCount = info.ClickEffects,
                     AdvanceOnTime = info.AdvanceOnTime,
                 };
+
+                if (UseStaticMacFallback)
+                    LoadStaticFallbackImages(host, s, b.Width, b.Height, i, _slides.Count + 1);
+
                 AddSlide(s, progressEnd, scheduleItem, i + 1);
             }
 
             if (!IsRunning)
                 return;
 
-            host.Request(StartTimeout, "start",
-                ("display", _screens.ProjectorScreenNumber),
-                ("withTimings", S.UseSlideTimings)).Dispose();
+            if (UseStaticMacFallback)
+            {
+                if (S.InsertBlankAfterPres)
+                    AddSlide(new Slide(SlideType.Blank, "") { Text = "", Comment = "Blank" }, progressEnd, new Item(), 1);
+                return;
+            }
+
+            StartHost(host, S.UseSlideTimings);
 
             //the OS-level show window appears (and steals focus) slightly after the
             //start request returns; wait for it so the activation below comes last
@@ -166,18 +192,33 @@ public class UnoPresentationEngine : IPresentationEngine
             if (showHwnd is int hwnd)
                 _windows.PrepareShowWindow(hwnd);
 
-            //show windows grab focus; give it back to the operator window, then guard
-            //briefly: Impress re-asserts foreground during its fullscreen transition
-            OnUi(() => _activateMainWindow?.Invoke());
-            if (showHwnd is int show)
+            if (UseMacWindowedShow)
             {
-                var guardUntil = DateTime.UtcNow + TimeSpan.FromSeconds(2);
-                while (DateTime.UtcNow < guardUntil)
+                //a LibreOffice windowed slideshow paints lazily: while soffice is not
+                //frontmost the show window stays black until it has rendered once. The
+                //show grabbed focus when it started, so let it paint a frame before
+                //handing focus back — the projector is a separate screen, so the operator
+                //window being frontmost afterwards does not cover the painted show. No
+                //re-assert guard here: there is no fullscreen-Space transition to fight,
+                //and re-yanking focus is exactly what kept the show from ever painting.
+                Thread.Sleep(500);
+                OnUi(() => _activateMainWindow?.Invoke());
+            }
+            else
+            {
+                //show windows grab focus; give it back to the operator window, then guard
+                //briefly: Impress re-asserts foreground during its fullscreen transition
+                OnUi(() => _activateMainWindow?.Invoke());
+                if (showHwnd is int show)
                 {
-                    Thread.Sleep(200);
-                    if (!_windows.IsForeground(show))
-                        break;
-                    OnUi(() => _activateMainWindow?.Invoke());
+                    var guardUntil = DateTime.UtcNow + TimeSpan.FromSeconds(2);
+                    while (DateTime.UtcNow < guardUntil)
+                    {
+                        Thread.Sleep(200);
+                        if (!_windows.IsForeground(show))
+                            break;
+                        OnUi(() => _activateMainWindow?.Invoke());
+                    }
                 }
             }
         }
@@ -224,11 +265,69 @@ public class UnoPresentationEngine : IPresentationEngine
             "AudiovisualPresenter", "uno", "p" + _profileSlot++);
 
         var host = SlideshowHost.Launch(soffice, filename, profile, LoadTimeout, _windows,
-            _screens.ProjectorLogicalBounds);
+            !UseStaticMacFallback && UseMacWindowedShow ? _screens.ProjectorLogicalBounds : null,
+            invisible: UseStaticMacFallback);
         host.SlideChanged += Host_SlideChanged;
         host.ShowEnded += Host_ShowEnded;
         _hosts.Add(host);
         return host;
+    }
+
+    private void StartHost(SlideshowHost host, bool withTimings)
+    {
+        var args = new (string Key, object Value)[]
+        {
+            ("display", _screens.ProjectorScreenNumber),
+            ("withTimings", withTimings),
+        };
+
+        if (OperatingSystem.IsMacOS())
+        {
+            // Deliver start first, then activate soffice after Impress has entered
+            // its pending window transition. The host focuses the resulting UNO
+            // window immediately after pres.start returns.
+            host.RequestAfterSend(StartTimeout, "start", () =>
+            {
+                Thread.Sleep(250);
+                ActivatePendingShow(host);
+            }, args).Dispose();
+            return;
+        }
+
+        host.Request(StartTimeout, "start", args).Dispose();
+    }
+
+    private void ActivatePendingShow(SlideshowHost host)
+    {
+        if (host.GetShowWindowHandle() is not int token)
+            return;
+
+        var b = _screens.ProjectorBounds;
+        _windows.BringToFront(token, b.Left, b.Top);
+
+        // NSRunningApplication activation is asynchronous and macOS may reject the
+        // first request while Presenter's topmost projector window owns focus. Retry
+        // until Workspace confirms that soffice is actually frontmost.
+        var deadline = DateTime.UtcNow + TimeSpan.FromSeconds(2);
+        while (!_windows.IsForeground(token) && DateTime.UtcNow < deadline)
+        {
+            Thread.Sleep(50);
+            _windows.BringToFront(token, b.Left, b.Top);
+        }
+    }
+
+    private void LoadStaticFallbackImages(SlideshowHost host, Slide slide, int width, int height, int impressIndex, int slideIndex)
+    {
+        if (_images == null)
+            return;
+
+        string? full = ExportHostSlideImage(host, impressIndex, slideIndex, "_mac_full", width, height);
+        if (full != null)
+            slide.Image = _images.Load(full, width, height);
+
+        string? preview = ExportHostSlideImage(host, impressIndex, slideIndex, "_mac_preview", 333, 250);
+        if (preview != null)
+            slide.Preview = _images.Load(preview, 333, 250);
     }
 
     private Slide AddSlide(Slide s, double progress, Item scheduleItem, int itemIndex)
@@ -268,7 +367,7 @@ public class UnoPresentationEngine : IPresentationEngine
         int pos = slide.SlideIndex;
         var host = Host(slide);
 
-        if (slide.Type == SlideType.PowerPoint && host != null)
+        if (slide.Type == SlideType.PowerPoint && host != null && !UseStaticMacFallback)
         {
             if (slide.CurrentAnimationCount < slide.AnimationCount)
             {
@@ -314,7 +413,7 @@ public class UnoPresentationEngine : IPresentationEngine
         int pos = slide.SlideIndex;
         var host = Host(slide);
 
-        if (slide.Type == SlideType.PowerPoint && host != null)
+        if (slide.Type == SlideType.PowerPoint && host != null && !UseStaticMacFallback)
         {
             if (slide.CurrentAnimationCount > 0)
             {
@@ -353,6 +452,13 @@ public class UnoPresentationEngine : IPresentationEngine
         if (host == null)
             return;
 
+        if (UseStaticMacFallback)
+        {
+            slide.CurrentAnimationCount = 0;
+            host.LastKnownIndex = ImpressIndex(slide);
+            return;
+        }
+
         try
         {
             host.Request(CommandTimeout, "goto", ("index", ImpressIndex(slide))).Dispose();
@@ -372,7 +478,8 @@ public class UnoPresentationEngine : IPresentationEngine
         var host = Host(slide);
         if (host == null)
             return;
-        TryRequest(host, "goto", ("index", 0));
+        if (!UseStaticMacFallback)
+            TryRequest(host, "goto", ("index", 0));
         host.LastKnownIndex = 0;
         foreach (var s in _slides.Where(s => Host(s) == host))
             s.CurrentAnimationCount = 0;
@@ -381,6 +488,8 @@ public class UnoPresentationEngine : IPresentationEngine
     public void UpdateSlideTimings()
     {
         if (!IsRunning)
+            return;
+        if (UseStaticMacFallback)
             return;
         foreach (var host in _hosts)
             TryRequest(host, "setTimings", ("enabled", _settings.Current.UseSlideTimings));
@@ -444,10 +553,22 @@ public class UnoPresentationEngine : IPresentationEngine
 
     // -- window management -------------------------------------------------------------
 
-    public int? GetSlideWindowHandle(Slide slide) => Host(slide)?.GetShowWindowHandle();
+    public int? GetSlideWindowHandle(Slide slide) => UseStaticMacFallback ? null : Host(slide)?.GetShowWindowHandle();
 
     public void BringToFront(Slide slide)
     {
+        if (UseStaticMacFallback)
+            return;
+
+        var host = Host(slide);
+        if (host == null)
+            return;
+
+        // On macOS, make the slideshow (rather than the Impress editor) the active
+        // UI inside soffice before raising that application above the projector.
+        if (_windows.BringToFrontActivates)
+            TryRequest(host, "activate");
+
         int? hwnd = GetSlideWindowHandle(slide);
         if (hwnd == null)
             return;
@@ -457,6 +578,19 @@ public class UnoPresentationEngine : IPresentationEngine
             OnUi(() => _activateMainWindow?.Invoke());
     }
 
+    public void HideSlideWindows()
+    {
+        if (UseStaticMacFallback || !_windows.BringToFrontActivates)
+            return;
+
+        foreach (var host in _hosts)
+        {
+            TryRequest(host, "deactivate");
+            if (host.GetShowWindowHandle() is int token)
+                _windows.Hide(token);
+        }
+    }
+
     // -- previews and editing ------------------------------------------------------------
 
     public string? ExportSlideImage(Slide slide, int idx, string suffix, int width, int height)
@@ -464,6 +598,12 @@ public class UnoPresentationEngine : IPresentationEngine
         var host = Host(slide);
         if (host == null)
             return null;
+
+        return ExportHostSlideImage(host, ImpressIndex(slide), idx, suffix, width, height);
+    }
+
+    private string? ExportHostSlideImage(SlideshowHost host, int impressIndex, int idx, string suffix, int width, int height)
+    {
 
         //counter dodges files the UI already loaded and still holds open (same as COM)
         string temp;
@@ -483,7 +623,7 @@ public class UnoPresentationEngine : IPresentationEngine
         try
         {
             host.Request(CommandTimeout, "export",
-                ("index", ImpressIndex(slide)), ("path", temp), ("width", width), ("height", height)).Dispose();
+                ("index", impressIndex), ("path", temp), ("width", width), ("height", height)).Dispose();
             return temp;
         }
         catch (Exception)

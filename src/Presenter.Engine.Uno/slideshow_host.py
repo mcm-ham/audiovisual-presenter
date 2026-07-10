@@ -37,6 +37,7 @@ import sys
 import threading
 import time
 import traceback
+import ctypes
 
 import uno
 import unohelper
@@ -338,8 +339,15 @@ class Host:
         _debug_log("[start] pres.start returned")
 
         deadline = time.time() + 30
+        next_focus = 0
         while time.time() < deadline:
             try:
+                # Native fullscreen will not complete until the document's native
+                # NSWindow becomes key. Repeat that AppKit activation while the show
+                # is pending; this is the state change the user's click supplied.
+                if self.show_bounds is None and time.time() >= next_focus:
+                    self.run_ui(self.activate_native_start_window)
+                    next_focus = time.time() + 0.25
                 if pres.isRunning():
                     self.controller = pres.getController()
                     if self.controller is not None:
@@ -351,9 +359,25 @@ class Host:
             _debug_log("[start] gave up; isRunning=%r" % pres.isRunning())
             raise RuntimeError("slideshow did not start")
 
+        # Activate the slideshow UI itself. Activating the LibreOffice application
+        # only makes its editor window key on macOS, which can leave that editor in
+        # front of the running presentation. The controller also owns the effective
+        # topmost flag after pres.start has created the slideshow window.
+        self.activate_show()
+
         self.listener = ShowListener(self)
         self.controller.addSlideShowListener(self.listener)
         return {"slide": self.controller.getCurrentSlideIndex()}
+
+    def activate_show(self):
+        c = self.require_controller()
+        c.AlwaysOnTop = False
+        self.run_ui(c.activate)
+        c.AlwaysOnTop = False
+
+    def deactivate_show(self):
+        c = self.require_controller()
+        self.run_ui(c.deactivate)
 
     def position_show_window(self):
         """Covers the projector screen with the document window (whose client area
@@ -362,6 +386,44 @@ class Host:
         win = self.doc.CurrentController.Frame.ContainerWindow
         win.setPosSize(x, y, w, h, 15)  # 15 = PosSize.POSSIZE
         win.toFront()
+
+    def activate_native_start_window(self):
+        document_window = self.doc.CurrentController.Frame.ContainerWindow
+        document_window.toFront()
+        document_window.setFocus()
+
+        # XSystemDependentWindowPeer returns the NSView* on macOS. Running inside
+        # soffice means we can make its owning NSWindow key directly on the AppKit
+        # main thread, reproducing the window activation performed by a physical
+        # click without posting global input or requiring Accessibility permission.
+        view = int(document_window.getWindowHandle(uno.ByteSequence(b""), 5))
+        if view == 0:
+            return
+
+        objc = ctypes.CDLL("/usr/lib/libobjc.A.dylib")
+        objc.objc_getClass.argtypes = [ctypes.c_char_p]
+        objc.objc_getClass.restype = ctypes.c_void_p
+        objc.sel_registerName.argtypes = [ctypes.c_char_p]
+        objc.sel_registerName.restype = ctypes.c_void_p
+        send_ptr = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p)(
+            ("objc_msgSend", objc))
+        send_void = ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_void_p)(
+            ("objc_msgSend", objc))
+        send_void_obj = ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_void_p,
+                                         ctypes.c_void_p)(("objc_msgSend", objc))
+        send_void_bool = ctypes.CFUNCTYPE(None, ctypes.c_void_p, ctypes.c_void_p,
+                                          ctypes.c_bool)(("objc_msgSend", objc))
+        sel = lambda name: objc.sel_registerName(name.encode("ascii"))
+
+        nswindow = send_ptr(view, sel("window"))
+        nsapp = send_ptr(objc.objc_getClass(b"NSApplication"),
+                         sel("sharedApplication"))
+        if nsapp:
+            send_void_bool(nsapp, sel("activateIgnoringOtherApps:"), True)
+        if nswindow:
+            send_void_obj(nswindow, sel("makeKeyAndOrderFront:"), None)
+            send_void(nswindow, sel("orderFrontRegardless"))
+            _debug_log("[start] made native document NSWindow key")
 
     def set_timings(self, enabled):
         pages = self.doc.DrawPages
@@ -409,6 +471,12 @@ class Host:
             c = self.require_controller()
             c.gotoSlideIndex(req["index"])
             return {"slide": c.getCurrentSlideIndex()}
+        if cmd == "activate":
+            self.activate_show()
+            return {"slide": self.controller.getCurrentSlideIndex()}
+        if cmd == "deactivate":
+            self.deactivate_show()
+            return {}
         if cmd == "slide":
             return {"slide": self.require_controller().getCurrentSlideIndex()}
         if cmd == "setTimings":

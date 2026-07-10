@@ -58,6 +58,9 @@ public interface IPresentationEngine
     /// <summary>Brings the engine's window for this slide in front on the projector screen.</summary>
     void BringToFront(Slide slide);
 
+    /// <summary>Hides native slideshow windows while Presenter supplies projector output.</summary>
+    void HideSlideWindows();
+
     /// <summary>Opens the slide for editing in the authoring application, when supported.</summary>
     bool TryEditSlide(Slide slide);
 

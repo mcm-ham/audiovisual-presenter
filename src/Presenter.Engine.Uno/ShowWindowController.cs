@@ -28,6 +28,9 @@ internal interface IShowWindowController
     /// <summary>Raises the show above sibling shows on the projector screen.</summary>
     void BringToFront(int token, int left, int top);
 
+    /// <summary>Hides the native slideshow application/window.</summary>
+    void Hide(int token);
+
     /// <summary>
     /// True when <see cref="BringToFront"/> steals focus (macOS can only raise
     /// another app's window by activating it); the engine then re-activates the
@@ -90,6 +93,8 @@ internal sealed class WindowsShowWindowController : IShowWindowController
 
     public void BringToFront(int token, int left, int top) =>
         User32.SetWindowPos(token, User32.HWND_TOP, left, top, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
+
+    public void Hide(int token) { }
 }
 
 [SupportedOSPlatform("macos")]
@@ -108,6 +113,8 @@ internal sealed class MacShowWindowController : IShowWindowController
     //raising another app's window needs activation on macOS; the engine re-activates
     //the operator window afterwards (BringToFrontActivates)
     public void BringToFront(int token, int left, int top) => AppKit.ActivateApplication(token);
+
+    public void Hide(int token) => AppKit.HideApplication(token);
 }
 
 internal sealed class NullShowWindowController : IShowWindowController
@@ -117,4 +124,5 @@ internal sealed class NullShowWindowController : IShowWindowController
     public void PrepareShowWindow(int token) { }
     public bool IsForeground(int token) => false;
     public void BringToFront(int token, int left, int top) { }
+    public void Hide(int token) { }
 }

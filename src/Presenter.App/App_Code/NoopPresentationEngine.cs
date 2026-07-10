@@ -34,6 +34,7 @@ namespace Presenter.App_Code
         public int? GetSlideWindowHandle(Slide slide) => null;
         public void Reset(Slide slide) { }
         public void BringToFront(Slide slide) { }
+        public void HideSlideWindows() { }
         public bool TryEditSlide(Slide slide) => false;
     }
 }

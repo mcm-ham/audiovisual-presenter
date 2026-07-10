@@ -728,6 +728,16 @@ namespace Presenter
                     progress = null;
                 }
                 fullscreen.Topmost = false;
+
+                // Selecting row zero before the background build does not raise a
+                // SelectionChanged event when the build completes. Re-render it now
+                // so the initial Blank row always covers any authoring application
+                // involved in preparing later schedule items.
+                if (Presentation.Slides.Count > 0)
+                {
+                    Presentation.HideSlideWindows();
+                    ShowMedia(Presentation.Slides[0]);
+                }
             });
 
             ExportPreviews(0);
@@ -899,8 +909,13 @@ namespace Presenter
                     Presentation.Reset(Presentation.Slides[previdx]);
             }
 
-            if (Presentation.Slides.Count > idx && idx >= 0 && Presentation.Slides[idx].Type != SlideType.PowerPoint)
+            bool isAppRenderedPowerPoint = Presentation.Slides.Count > idx && idx >= 0
+                && Presentation.Slides[idx].Type == SlideType.PowerPoint
+                && Presentation.Slides[idx].Image is Bitmap;
+
+            if (Presentation.Slides.Count > idx && idx >= 0 && (Presentation.Slides[idx].Type != SlideType.PowerPoint || isAppRenderedPowerPoint))
             {
+                Presentation.HideSlideWindows();
                 ShowMedia(Presentation.Slides[idx]);
                 if (OperatingSystem.IsWindows())
                     User32.SetWindowPos(fullscreen.HWND, new IntPtr(User32.HWND_TOP), Config.ProjectorScreen.Bounds.X, Config.ProjectorScreen.Bounds.Y, 0, 0, User32.SWP_NOACTIVATE | User32.SWP_NOSIZE);
@@ -1232,7 +1247,7 @@ namespace Presenter
                 fullscreen.ShowBlank();
                 this.Activate();
             }
-            else if (slide.Type == SlideType.Image)
+            else if (slide.Type == SlideType.Image || slide.Type == SlideType.PowerPoint && slide.Image is Bitmap)
             {
                 SetPreview(CurrentImage, slide.Preview as Bitmap);
                 fullscreen.Show(slide.Image as Bitmap);

@@ -6,26 +6,51 @@ using Presenter.Engine.Uno;
 // Console smoke harness for the UNO engine: drives a real LibreOffice instance
 // without the WPF app, so engine changes can be verified on any OS.
 //
-//   dotnet run --project Presenter.Engine.Uno.Smoke -- [--display N] file.pptx [more files...]
+//   dotnet run --project Presenter.Engine.Uno.Smoke -- [--display N] [--fullscreen|--windowed|--static] file.pptx [more files...]
 //
 // Then commands on stdin (scriptable by piping): info, next, prev, goto <slideIndex>,
 // export <slideIndex>, sleep <seconds>, quit.
 
 int display = 1;
+bool windowed = false;
+bool statik = false;
 var files = new List<string>();
 for (int i = 0; i < args.Length; i++)
 {
     if (args[i] == "--display" && i + 1 < args.Length)
         display = int.Parse(args[++i]);
+    else if (args[i] == "--native" || args[i] == "--windowed")
+        windowed = true;
+    else if (args[i] == "--fullscreen")
+        continue;
+    else if (args[i] == "--static")
+        statik = true;
     else
         files.Add(Path.GetFullPath(args[i]));
 }
 
 if (files.Count == 0)
 {
-    Console.Error.WriteLine("usage: smoke [--display N] <file.pptx> [more files...]");
+    Console.Error.WriteLine("usage: smoke [--display N] [--fullscreen|--windowed|--static] <file.pptx> [more files...]");
     return 1;
 }
+
+string[] missing = files.Where(f => !File.Exists(f)).ToArray();
+if (missing.Length > 0)
+{
+    foreach (string f in missing)
+        Console.Error.WriteLine("FAIL: file not found: " + f);
+    return 1;
+}
+
+if (statik)
+    Environment.SetEnvironmentVariable("AVP_UNO_STATIC_FALLBACK", "1");
+else
+    Environment.SetEnvironmentVariable("AVP_UNO_STATIC_FALLBACK", "0");
+if (windowed)
+    Environment.SetEnvironmentVariable("AVP_UNO_WINDOWED_SHOW", "1");
+else
+    Environment.SetEnvironmentVariable("AVP_UNO_WINDOWED_SHOW", "0");
 
 var settings = new FixedSettings();
 var engine = new UnoPresentationEngine(settings, new FixedScreens(display),
@@ -38,6 +63,12 @@ if (!engine.IsAvailable)
     return 1;
 }
 Console.WriteLine("soffice: " + SofficeLocator.Find());
+if (OperatingSystem.IsMacOS())
+    Console.WriteLine(statik
+        ? "mode: macOS static fallback (no native LibreOffice slideshow window will appear)"
+        : windowed
+            ? "mode: native LibreOffice windowed slideshow"
+            : "mode: native LibreOffice fullscreen slideshow");
 
 int pos = 0; // 1-based index into engine.Slides of the slide we believe is showing
 engine.SlideAdded += (_, e) =>
@@ -93,13 +124,16 @@ while ((line = Console.ReadLine()) != null)
                     ? $"exported: {path} ({new FileInfo(path).Length} bytes)"
                     : "FAIL: export returned " + (path ?? "null"));
                 break;
+            case "hide":
+                engine.HideSlideWindows();
+                break;
             case "sleep":
                 Thread.Sleep(TimeSpan.FromSeconds(double.Parse(parts[1])));
                 break;
             case "quit" or "q":
                 goto done;
             default:
-                Console.WriteLine("commands: info | next | prev | goto <n> | export <n> | sleep <s> | quit");
+                Console.WriteLine("commands: info | next | prev | goto <n> | export <n> | hide | sleep <s> | quit");
                 break;
         }
     }

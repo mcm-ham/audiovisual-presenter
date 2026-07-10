@@ -64,10 +64,11 @@ internal sealed class SlideshowHost : IDisposable
     }
 
     public static SlideshowHost Launch(string soffice, string filename, string profileDir,
-        TimeSpan timeout, IShowWindowController windows, ScreenBounds? showBounds = null)
+        TimeSpan timeout, IShowWindowController windows, ScreenBounds? showBounds = null,
+        bool invisible = false)
     {
         SlideshowHost host = OperatingSystem.IsMacOS()
-            ? LaunchInProcess(soffice, filename, profileDir, timeout, windows, showBounds)
+            ? LaunchInProcess(soffice, filename, profileDir, timeout, windows, showBounds, invisible)
             : LaunchPython(soffice, filename, profileDir, windows);
 
         new Thread(host.ReadLoop) { IsBackground = true, Name = "uno-host-read" }.Start();
@@ -140,7 +141,7 @@ internal sealed class SlideshowHost : IDisposable
     /// <summary>macOS: soffice is spawned directly and runs the script in process
     /// (OnStartApp binding in the generated profile); it connects back over TCP.</summary>
     private static SlideshowHost LaunchInProcess(string soffice, string filename, string profileDir,
-        TimeSpan timeout, IShowWindowController windows, ScreenBounds? showBounds)
+        TimeSpan timeout, IShowWindowController windows, ScreenBounds? showBounds, bool invisible)
     {
         PrepareProfile(soffice, profileDir);
 
@@ -156,6 +157,8 @@ internal sealed class SlideshowHost : IDisposable
         psi.ArgumentList.Add("--norestore");
         psi.ArgumentList.Add("--nologo");
         psi.ArgumentList.Add("--nolockcheck");
+        if (invisible)
+            psi.ArgumentList.Add("--invisible");
         psi.ArgumentList.Add("--view");
         psi.ArgumentList.Add("-env:UserInstallation=" + new Uri(profileDir).AbsoluteUri);
         psi.ArgumentList.Add(filename);
@@ -322,6 +325,19 @@ internal sealed class SlideshowHost : IDisposable
 
     /// <summary>Sends a command and blocks for its response (throws on error/timeout).</summary>
     public JsonDocument Request(TimeSpan timeout, string cmd, params (string Key, object Value)[] args)
+        => RequestCore(timeout, cmd, null, args);
+
+    /// <summary>
+    /// Sends a command, invokes <paramref name="afterSend"/> once it has been flushed
+    /// to the helper, then blocks for the response. Used by macOS slideshow startup,
+    /// where soffice must only be activated after Impress has begun creating the show.
+    /// </summary>
+    public JsonDocument RequestAfterSend(TimeSpan timeout, string cmd, Action afterSend,
+        params (string Key, object Value)[] args)
+        => RequestCore(timeout, cmd, afterSend, args);
+
+    private JsonDocument RequestCore(TimeSpan timeout, string cmd, Action? afterSend,
+        params (string Key, object Value)[] args)
     {
         int id = Interlocked.Increment(ref _nextId);
         var tcs = new TaskCompletionSource<JsonDocument>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -336,6 +352,17 @@ internal sealed class SlideshowHost : IDisposable
         {
             _writer.WriteLine(JsonSerializer.Serialize(payload));
             _writer.Flush();
+        }
+
+        try
+        {
+            afterSend?.Invoke();
+        }
+        catch
+        {
+            lock (_pending)
+                _pending.Remove(id);
+            throw;
         }
 
         if (!tcs.Task.Wait(timeout))

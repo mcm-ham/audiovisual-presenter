@@ -67,6 +67,11 @@ namespace Presenter
 
         public void ShowWindow()
         {
+            // Impress can briefly recreate its macOS slideshow window at a floating
+            // level even with IsAlwaysOnTop disabled. Media output must win that
+            // z-order race every time it is selected, not only when this window was
+            // first constructed.
+            Topmost = true;
             this.Show();
         }
 
