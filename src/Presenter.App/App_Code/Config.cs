@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Windows;
-using System.Windows.Media;
+using Avalonia;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Platform;
 using Presenter.Core;
 using Presenter.Core.Services;
 using Presenter.Core.Settings;
@@ -10,13 +13,15 @@ using Presenter.Core.Settings;
 namespace Presenter.App_Code
 {
     /// <summary>
-    /// Static configuration facade preserving the API of the original App_Code/Config.cs
-    /// (so XAML bindings and code-behind port unchanged), now backed by the JSON
-    /// settings store instead of app.config.
+    /// Static configuration facade preserving the API of the WPF App_Code/Config.cs
+    /// (so the ported code-behind stays close to the original), backed by the JSON
+    /// settings store. Screen types are Avalonia's instead of WinForms'.
     /// </summary>
-    public class Config : DependencyObject
+    public class Config : INotifyPropertyChanged
     {
         public static readonly Config instance = new Config();
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private static PresenterSettings S => AppServices.SettingsStore.Current;
         private static void Save() => AppServices.SettingsStore.Save();
@@ -28,20 +33,25 @@ namespace Presenter.App_Code
         public static Collection<string> VideoFormats => new(S.VideoFormats);
         public static Collection<string> AudioFormats => new(S.AudioFormats);
 
-        public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSizeProperty", typeof(double), typeof(Config));
+        private double _fontSize = 12;
+
+        /// <summary>Instance binding property for XAML (FontSize="{Binding Source={x:Static Code:Config.instance}, Path=FontSizeBinding}").</summary>
+        public double FontSizeBinding => _fontSize;
+
         public static double FontSize
         {
-            get { return (double)instance.GetValue(FontSizeProperty); }
+            get { return instance._fontSize; }
             set
             {
-                instance.SetValue(FontSizeProperty, value);
+                instance._fontSize = value;
                 S.FontSize = value;
                 Save();
+                instance.PropertyChanged?.Invoke(instance, new PropertyChangedEventArgs(nameof(FontSizeBinding)));
             }
         }
 
         private static string _path;
-        /// <summary>Path to the directory of the library, ends in '\'</summary>
+        /// <summary>Path to the directory of the library, ends in a separator.</summary>
         public static string LibraryPath
         {
             get { return _path ??= LibraryPathResolver.Resolve(S); }
@@ -56,24 +66,25 @@ namespace Presenter.App_Code
         /// <summary>The raw configured library path (as shown in the options dialog).</summary>
         public static string LibraryPathSetting => S.LibraryPath;
 
-        public static System.Windows.Forms.Screen PrimaryScreen => System.Windows.Forms.Screen.PrimaryScreen;
+        public static Screen PrimaryScreen => ScreenService.PrimaryScreen;
 
-        private static System.Windows.Forms.Screen _screen;
-        public static System.Windows.Forms.Screen ProjectorScreen
+        private static Screen _screen;
+        public static Screen ProjectorScreen
         {
             get
             {
                 if (_screen == null)
                 {
+                    var screens = ScreenService.AllScreens;
+
                     if (!string.IsNullOrEmpty(S.ProjectorScreenDevice))
-                        _screen = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => s.DeviceName.StartsWith(S.ProjectorScreenDevice));
+                        _screen = screens.FirstOrDefault(s => ScreenService.DeviceName(s).StartsWith(S.ProjectorScreenDevice));
 
                     if (_screen == null)
                     {
-                        if (System.Windows.Forms.Screen.AllScreens.Length == 2)
-                            _screen = System.Windows.Forms.Screen.AllScreens.FirstOrDefault(s => !s.Primary);
-                        else
-                            _screen = System.Windows.Forms.Screen.PrimaryScreen;
+                        if (screens.Count == 2)
+                            _screen = screens.FirstOrDefault(s => !s.IsPrimary);
+                        _screen ??= ScreenService.PrimaryScreen;
                     }
                 }
                 return _screen;
@@ -81,7 +92,7 @@ namespace Presenter.App_Code
             set
             {
                 _screen = value;
-                S.ProjectorScreenDevice = value?.DeviceName;
+                S.ProjectorScreenDevice = value == null ? null : ScreenService.DeviceName(value);
                 Save();
             }
         }
@@ -92,23 +103,11 @@ namespace Presenter.App_Code
             set { S.UseNonPrimaryScreen = value; Save(); }
         }
 
-        public static Color BackgroundColour
-        {
-            get
-            {
-                try { return (Color)ColorConverter.ConvertFromString(S.AppColour); }
-                catch { return Colors.White; }
-            }
-        }
+        public static Color BackgroundColour =>
+            Color.TryParse(S.AppColour, out var c) ? c : Colors.White;
 
-        public static Color ScreenBlankColour
-        {
-            get
-            {
-                try { return (Color)ColorConverter.ConvertFromString(S.ScreenBlankColour); }
-                catch { return Colors.Black; }
-            }
-        }
+        public static Color ScreenBlankColour =>
+            Color.TryParse(S.ScreenBlankColour, out var c) ? c : Colors.Black;
 
         public static string TempPath
         {
@@ -120,14 +119,8 @@ namespace Presenter.App_Code
             }
         }
 
-        public static Color MessengerFontColour
-        {
-            get
-            {
-                try { return (Color)ColorConverter.ConvertFromString(S.MessengerFontColour); }
-                catch { return Colors.White; }
-            }
-        }
+        public static Color MessengerFontColour =>
+            Color.TryParse(S.MessengerFontColour, out var c) ? c : Colors.White;
 
         public static string MessengerFontColourName => S.MessengerFontColour;
 
@@ -136,7 +129,7 @@ namespace Presenter.App_Code
         public static void SaveMessengerFont(double size, FontFamily font, string colorName)
         {
             S.MessengerFontSize = size;
-            S.MessengerFontFamily = font.Source;
+            S.MessengerFontFamily = font.Name;
             S.MessengerFontColour = colorName;
             Save();
         }
@@ -166,7 +159,14 @@ namespace Presenter.App_Code
                 _ => HorizontalAlignment.Left,
             };
 
-        public static Thickness MessengerMargin => Util.Parse<Thickness?>(S.MessengerMargin) ?? new Thickness();
+        public static Thickness MessengerMargin
+        {
+            get
+            {
+                try { return Thickness.Parse(S.MessengerMargin); }
+                catch { return new Thickness(); }
+            }
+        }
 
         public static void SaveMessengerLocation(VerticalAlignment posy, HorizontalAlignment posx)
         {
@@ -230,8 +230,10 @@ namespace Presenter.App_Code
         {
             get
             {
-                return S.SlidePreviewBottom ??
-                    (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / (double)System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height < 1.5);
+                if (S.SlidePreviewBottom.HasValue)
+                    return S.SlidePreviewBottom.Value;
+                var primary = ScreenService.PrimaryScreen;
+                return primary == null || primary.Bounds.Width / (double)primary.Bounds.Height < 1.5;
             }
             set
             {

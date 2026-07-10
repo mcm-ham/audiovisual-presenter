@@ -2,49 +2,58 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- windows TFM only on Windows so the COM engine (net10.0-windows) can be referenced there;
+         plain net10.0 everywhere else. The windows TFM also defines the WINDOWS constant used
+         by the platform-gated code paths. -->
+    <TargetFramework Condition="$([MSBuild]::IsOSPlatform('Windows'))">net10.0-windows</TargetFramework>
+    <TargetFramework Condition="!$([MSBuild]::IsOSPlatform('Windows'))">net10.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <!-- System.Windows.Forms.Screen is used for monitor detection (ported from Config.cs) -->
-    <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>Presenter</AssemblyName>
     <!-- keep the original namespaces (Presenter, Presenter.App_Code, Presenter.Resources)
-         so the ported XAML and Labels.Designer.cs work unchanged -->
+         so the code-behind stays diffable against the retired WPF app in git history -->
     <RootNamespace>Presenter</RootNamespace>
-    <ApplicationIcon>Icons\Projector.ico</ApplicationIcon>
     <Version>1.0.0</Version>
+    <ApplicationIcon>Icons\Projector.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- the WinForms SDK injects these as global usings, which clashes with WPF types
-         everywhere; WinForms is only used via explicit System.Windows.Forms.* names -->
-    <Using Remove="System.Windows.Forms" />
-    <Using Remove="System.Drawing" />
+    <PackageReference Include="Avalonia" Version="11.3.18" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.18" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.18" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.18" Condition="'$(Configuration)' == 'Debug'" />
+    <!-- video/audio playback (WPF MediaElement replacement). The managed wrapper is
+         cross-platform; native libvlc comes from the NuGet on Windows and from an
+         installed VLC.app on macOS (the mac NuGet is x64-only) — see App_Code/Vlc.cs -->
+    <PackageReference Include="LibVLCSharp.Avalonia" Version="3.10.0" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23.1" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Presenter.Core\Presenter.Core.csproj" />
     <ProjectReference Include="..\Presenter.Data\Presenter.Data.csproj" />
-    <ProjectReference Include="..\Presenter.Engine.Com\Presenter.Engine.Com.csproj" />
     <ProjectReference Include="..\Presenter.Engine.Uno\Presenter.Engine.Uno.csproj" />
-    <!-- build-order only: the net48 exporter ships alongside the app for legacy DB migration -->
-    <ProjectReference Include="..\Presenter.SdfExport\Presenter.SdfExport.csproj" ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Windows Search integration in the library search box (ported from Main.xaml.cs) -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <ProjectReference Include="..\Presenter.Engine.Com\Presenter.Engine.Com.csproj" />
+    <!-- build-order only: the net48 exporter ships alongside the app for legacy DB migration -->
+    <ProjectReference Include="..\Presenter.SdfExport\Presenter.SdfExport.csproj" ReferenceOutputAssembly="false" SkipGetTargetFrameworkProperties="true" />
+    <!-- Windows Search integration in the library search box -->
     <PackageReference Include="System.Data.OleDb" Version="10.0.0" />
   </ItemGroup>
 
+  <!-- the localized labels under Resources\ (base name Presenter.Resources.Labels, carried over
+       from the WPF app) are picked up by the SDK's default Compile/EmbeddedResource globs -->
+
   <ItemGroup>
-    <Resource Include="Icons\*.png" />
-    <Resource Include="Icons\Projector.ico" />
-    <Resource Include="Icons\license.txt" />
+    <AvaloniaResource Include="Icons\*.png" />
+    <AvaloniaResource Include="Icons\Projector.ico" />
+    <AvaloniaResource Include="Icons\license.txt" />
   </ItemGroup>
 
   <!-- ship the legacy exporter (exe + SQL CE native binaries + deps) in an SdfExport subfolder -->
-  <Target Name="CopySdfExporter" AfterTargets="Build">
+  <Target Name="CopySdfExporter" AfterTargets="Build" Condition="$([MSBuild]::IsOSPlatform('Windows'))">
     <ItemGroup>
       <SdfExportFiles Include="..\Presenter.SdfExport\bin\$(Configuration)\net48\**\*.*" />
     </ItemGroup>

@@ -8,22 +8,10 @@ Main Website: [http://www.minsoft.org](http://www.minsoft.org)
 
 Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
-On Windows:
 
 ```
 dotnet build src/Presenter.slnx
 dotnet test src/Presenter.slnx
-```
-
-The app executable is `src/Presenter.App/bin/Debug/net10.0-windows/Presenter.exe`.
-
-On macOS the Windows-only projects don't build, so build the Avalonia app and
-run the test projects directly:
-
-```
-dotnet build src/Presenter.App.Avalonia
-dotnet test test/Presenter.Core.Tests
-dotnet test test/Presenter.Data.Tests
 ```
 
 To package a self-contained `Audiovisual Presenter.app`:
@@ -41,11 +29,9 @@ to run locally; distribution needs a Developer ID identity).
 - `src/Presenter.Data` — EF Core + SQLite persistence, legacy SQL CE import
 - `src/Presenter.Engine.Com` — full-fidelity playback by driving PowerPoint via COM (requires Office)
 - `src/Presenter.Engine.Uno` — animated no-Office playback: drives live LibreOffice Impress slideshows over UNO
-- `src/Presenter.App` — WPF operator UI (Windows)
-- `src/Presenter.App.Avalonia` — Avalonia operator UI (macOS; also builds on Windows)
+- `src/Presenter.App` — Avalonia operator UI (Windows and macOS)
 - `src/Presenter.SdfExport` — net48 one-time exporter for the old Database.sdf (SQL CE)
 - `test/` — xUnit test projects
-- `legacy/` — the original .NET Framework 4.5 application, kept for reference
 
 ## Playback engines
 

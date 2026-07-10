@@ -5,7 +5,7 @@ using Presenter.Resources;
 namespace Presenter.App_Code
 {
     /// <summary>
-    /// Placeholder engine used until the COM / render engines are wired up (steps 5-6).
+    /// Placeholder engine used when neither PowerPoint nor LibreOffice is available.
     /// Keeps the shell functional (schedules, library, options, reports) without playback.
     /// </summary>
     public class NoopPresentationEngine : IPresentationEngine

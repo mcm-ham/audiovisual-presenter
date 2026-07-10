@@ -5,7 +5,6 @@ using Presenter.Core.Models;
 using Presenter.Core.Settings;
 using Presenter.Data;
 using Presenter.Data.Legacy;
-using Presenter.Engine.Com;
 using Presenter.Engine.Uno;
 using Presenter.Resources;
 
@@ -45,9 +44,9 @@ namespace Presenter.App_Code
 
         /// <summary>
         /// Picks the presentation engine by preference and availability: COM drives
-        /// PowerPoint (full fidelity, needs Office), UNO drives live LibreOffice
-        /// Impress slideshows (animations play, needs LibreOffice). Falls back:
-        /// com → uno → no-playback stub. Re-invoked by the options dialog
+        /// PowerPoint (full fidelity, needs Office, Windows only), UNO drives live
+        /// LibreOffice Impress slideshows (animations play, needs LibreOffice).
+        /// Falls back: com → uno → no-playback stub. Re-invoked by the options dialog
         /// when the preference changes (context args stick from the first call at
         /// startup).
         /// </summary>
@@ -60,21 +59,26 @@ namespace Presenter.App_Code
             var labels = new EngineLabels(Labels.SlideShowVideoLabel, Labels.SlideShowAudioLabel, Labels.SlideShowImageLabel, Labels.SlideShowSlideLabel);
 
             string preferred = SettingsStore.Current.PreferredEngine;
-            var uno = new UnoPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow, new WpfSlideImageLoader());
+            var uno = new UnoPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow, new AvaloniaSlideImageLoader());
 
+#if WINDOWS
             if (preferred == "uno" && uno.IsAvailable)
                 Engine = uno;
             else if (officeAvailable)
-                Engine = new ComPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow);
+                Engine = new Presenter.Engine.Com.ComPresentationEngine(SettingsStore, screens, labels, _uiContext, _activateMainWindow);
             else if (uno.IsAvailable)
                 Engine = uno;
             else
                 Engine = new NoopPresentationEngine();
+#else
+            Engine = uno.IsAvailable ? uno : new NoopPresentationEngine();
+#endif
         }
 
         /// <summary>
         /// One-time import of the legacy SQL CE database. Looks for Database.sdf next to
-        /// the app and in the data directory; runs the bundled net48 exporter.
+        /// the app and in the data directory; runs the bundled net48 exporter (which
+        /// only exists on Windows — SQL CE never shipped for macOS, so this is a no-op there).
         /// </summary>
         public static MigrationResult MigrateLegacyDatabase()
         {

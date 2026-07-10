@@ -9,10 +9,10 @@ CONFIG=Release
 OUT="$ROOT/artifacts/macos/$RID"
 PUBLISH="$OUT/publish"
 APP="$OUT/Audiovisual Presenter.app"
-VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$ROOT/src/Presenter.App.Avalonia/Presenter.App.Avalonia.csproj")"
+VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$ROOT/src/Presenter.App/Presenter.App.csproj")"
 
 rm -rf "$OUT"
-dotnet publish "$ROOT/src/Presenter.App.Avalonia" -c "$CONFIG" -r "$RID" --self-contained -o "$PUBLISH"
+dotnet publish "$ROOT/src/Presenter.App" -c "$CONFIG" -r "$RID" --self-contained -o "$PUBLISH"
 
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp -R "$PUBLISH/." "$APP/Contents/MacOS/"
@@ -22,7 +22,7 @@ cp -R "$PUBLISH/." "$APP/Contents/MacOS/"
 ICONSET="$OUT/Projector.iconset"
 mkdir -p "$ICONSET"
 for SIZE in 16 32 64 128 256 512; do
-  sips -s format png -z $SIZE $SIZE "$ROOT/src/Presenter.App.Avalonia/Icons/Projector.ico" \
+  sips -s format png -z $SIZE $SIZE "$ROOT/src/Presenter.App/Icons/Projector.ico" \
     --out "$ICONSET/icon_${SIZE}x${SIZE}.png" >/dev/null
 done
 for SIZE in 16 32 128 256; do
@@ -44,7 +44,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleIdentifier</key>
     <string>org.minsoft.audiovisualpresenter</string>
     <key>CFBundleExecutable</key>
-    <string>Presenter.Avalonia</string>
+    <string>Presenter</string>
     <key>CFBundleIconFile</key>
     <string>Projector.icns</string>
     <key>CFBundleShortVersionString</key>

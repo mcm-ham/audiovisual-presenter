@@ -4,7 +4,7 @@ using System.Text;
 namespace Presenter.Core;
 
 /// <summary>
-/// Framework-agnostic helpers ported from App_Code/Util.cs. WPF- and COM-specific
+/// Framework-agnostic helpers ported from App_Code/Util.cs. UI- and COM-specific
 /// helpers from the original live in Presenter.App / Presenter.Engine.Com instead.
 /// </summary>
 public static class Util
