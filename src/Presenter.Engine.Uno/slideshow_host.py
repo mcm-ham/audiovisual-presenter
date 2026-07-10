@@ -345,7 +345,8 @@ class Host:
                 # Native fullscreen will not complete until the document's native
                 # NSWindow becomes key. Repeat that AppKit activation while the show
                 # is pending; this is the state change the user's click supplied.
-                if self.show_bounds is None and time.time() >= next_focus:
+                if (sys.platform == "darwin" and self.show_bounds is None
+                        and time.time() >= next_focus):
                     self.run_ui(self.activate_native_start_window)
                     next_focus = time.time() + 0.25
                 if pres.isRunning():
