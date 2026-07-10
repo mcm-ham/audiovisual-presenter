@@ -17,8 +17,13 @@
         <!-- thin vertical dividers between the toolbar's icon groups -->
         <Style Selector="StackPanel > Separator">
             <Setter Property="Width" Value="1" />
-            <Setter Property="Height" Value="40" />
-            <Setter Property="Background" Value="#D0D0D0" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Background" Value="{DynamicResource ThemeBorderBrush}" />
+        </Style>
+        <!-- section headers over the Library / Order panes -->
+        <Style Selector="TextBlock.header">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
     </Window.Styles>
     <Grid Name="Grid1">
@@ -33,13 +38,7 @@
             <RowDefinition Height="310" />
         </Grid.RowDefinitions>
 
-        <Border Grid.ColumnSpan="3" Grid.Row="0" BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                    <GradientStop Offset="0" Color="#FCFCFC" />
-                    <GradientStop Offset="1" Color="#ECECEC" />
-                </LinearGradientBrush>
-            </Border.Background>
+        <Border Grid.ColumnSpan="3" Grid.Row="0" Background="{DynamicResource ThemeToolbarBrush}" BorderBrush="{DynamicResource ThemeBorderBrush}" BorderThickness="0,0,0,1">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Spacing="4" Margin="4">
             <Button Click="Planner_Click" Classes="toolbar">
                 <StackPanel>
@@ -99,7 +98,7 @@
         </Border>
 
         <Grid Name="LibraryGrid" Grid.Row="1" Grid.RowSpan="2">
-            <TextBlock Text="{x:Static Loc:Labels.MainHeaderLibrary}" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" FontSize="20" Padding="0" />
+            <TextBlock Text="{x:Static Loc:Labels.MainHeaderLibrary}" Classes="header" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" Padding="0" />
             <TextBlock Text="{x:Static Loc:Labels.MainLabelLocation}" Height="23" HorizontalAlignment="Left" Margin="12,46,0,0" VerticalAlignment="Top" Width="63" Padding="0" />
             <ComboBox Name="LocationList" Height="28" Margin="81,46,80,0" VerticalAlignment="Top" HorizontalAlignment="Stretch" SelectionChanged="LocationList_SelectionChanged" />
             <Button Name="RefreshBtn" MinWidth="52" Margin="0,46,17,0" HorizontalAlignment="Right" VerticalAlignment="Top" Content="{x:Static Loc:Labels.MainBtnRefresh}" Click="RefreshLocations" />
@@ -127,7 +126,7 @@
 
         <Button Name="Expander1" Click="Expander1_Click" Grid.Row="1" Grid.RowSpan="2" Width="15" Height="30" Padding="0" MinWidth="0" VerticalAlignment="Center" HorizontalAlignment="Right" HorizontalContentAlignment="Center" IsVisible="False">&lt;</Button>
 
-        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1" FontSize="20" Padding="0" />
+        <TextBlock Text="{x:Static Loc:Labels.MainHeaderOrder}" Classes="header" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="1" Padding="0" />
         <TextBlock Name="ScheduleName" Grid.Column="1" Grid.Row="1" Height="28" Margin="12,50,12,0" VerticalAlignment="Top" Padding="0"/>
         <ListBox Name="ScheduleList" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" Margin="12,80,12,46" KeyUp="ScheduleList_KeyUp" DoubleTapped="ScheduleList_DoubleTapped" PointerMoved="DragDrop_PointerMoved" SelectionMode="Multiple" SelectionChanged="ScheduleList_SelectionChanged">
             <ListBox.ItemTemplate>
@@ -148,21 +147,24 @@
         </ListBox>
 
         <DockPanel Name="LivePanel" Grid.Column="1" Grid.Row="1" Margin="12,80,12,10" IsVisible="False">
-            <Border DockPanel.Dock="Top" BorderBrush="#D0D0D0" BorderThickness="0,0,0,1">
-                <Border.Background>
-                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-                        <GradientStop Offset="0" Color="#FBFBFB" />
-                        <GradientStop Offset="1" Color="#EDEDED" />
-                    </LinearGradientBrush>
-                </Border.Background>
+            <!-- header caps the list card: rounded top corners on the header, rounded
+                 bottom corners on the list, and no top border on the list so the two
+                 read as one card without a doubled seam -->
+            <Border DockPanel.Dock="Top" Background="{DynamicResource ThemePanelHeaderBrush}" BorderBrush="{DynamicResource ThemeBorderBrush}" BorderThickness="1,1,1,1" CornerRadius="6,6,0,0">
                 <Grid ColumnDefinitions="35,4*,1*,50,25" Margin="8,3,8,3">
+                    <Grid.Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="FontWeight" Value="SemiBold" />
+                            <Setter Property="Foreground" Value="{DynamicResource ThemeTextSecondaryBrush}" />
+                        </Style>
+                    </Grid.Styles>
                     <TextBlock Text="{x:Static Loc:Labels.MainLabelLiveSlide}" />
                     <TextBlock Grid.Column="1" Text="{x:Static Loc:Labels.MainLabelLiveText}" />
                     <TextBlock Grid.Column="2" Text="{x:Static Loc:Labels.MainLabelLiveNotes}" />
                     <TextBlock Grid.Column="3" Text="{x:Static Loc:Labels.MainLabelLiveJump}" />
                 </Grid>
             </Border>
-            <ListBox Name="LiveList" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" DoubleTapped="LiveList_DoubleTapped">
+            <ListBox Name="LiveList" CornerRadius="0,0,6,6" BorderThickness="1,0,1,1" SelectionChanged="LiveList_SelectionChanged" SelectionMode="Single" DoubleTapped="LiveList_DoubleTapped">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid ColumnDefinitions="35,4*,1*,50,25" Background="Transparent" PointerEntered="SlideRow_PointerEntered" PointerPressed="SlideRow_PointerPressed">
@@ -182,8 +184,8 @@
             </ListBox>
         </DockPanel>
 
-        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="2" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" IsVisible="False" Background="#828790" />
-        <GridSplitter Name="GridSplitter2" ResizeDirection="Columns" Width="2" HorizontalAlignment="Left" Margin="0,80,0,45" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" IsVisible="False" Background="#828790" />
+        <GridSplitter Name="GridSplitter1" ResizeDirection="Rows" Height="2" VerticalAlignment="Top" Margin="12,0,12,0" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" IsVisible="False" />
+        <GridSplitter Name="GridSplitter2" ResizeDirection="Columns" Width="2" HorizontalAlignment="Left" Margin="0,80,0,45" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Stretch" IsVisible="False" />
 
         <StackPanel Name="PreviewPanel" Grid.Column="1" Grid.Row="2" MaxHeight="250" Margin="12,10,0,45" VerticalAlignment="Bottom" Orientation="Horizontal" IsVisible="False">
             <Border Name="PreviewImage" BorderBrush="Black" Margin="0,0,20,0" Width="333" Height="250" />
@@ -250,7 +252,7 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="2" Margin="12">
-            <Button Name="StartBtn" Content="{x:Static Loc:Labels.MainBtnStart}" Margin="0,0,12,0" Click="Start_Click" />
+            <Button Name="StartBtn" Classes="accent" Content="{x:Static Loc:Labels.MainBtnStart}" Margin="0,0,12,0" Click="Start_Click" />
             <Button Name="StopBtn" Content="{x:Static Loc:Labels.MainBtnStop}" Margin="0,0,12,0" Click="Stop_Click" IsVisible="False" />
             <Button Name="TimerBtn" Content="{x:Static Loc:Labels.MainBtnTimer}" Margin="0,0,12,0" Click="TimerStart_Click" IsVisible="False" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimer}" ToolTip.Placement="Top" ToolTip.HorizontalOffset="16" ToolTip.VerticalOffset="-12" />
             <TextBox Name="Interval" Padding="2,0" Margin="0,0,12,0" Width="35" MinWidth="0" MinHeight="0" Height="23" VerticalAlignment="Center" TextAlignment="Center" VerticalContentAlignment="Center" IsVisible="False" TextChanged="Interval_TextChanged" ToolTip.Tip="{x:Static Loc:Labels.MainTooltipTimerSec}" ToolTip.Placement="Top" ToolTip.HorizontalOffset="16" ToolTip.VerticalOffset="-12" />
@@ -263,7 +265,7 @@
         </StackPanel>
 
         <Grid Name="RemotePanel" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="3" Width="170" VerticalAlignment="Center" Height="350" HorizontalAlignment="Center" IsVisible="False" PointerPressed="RemotePanel_PointerPressed">
-            <Rectangle Fill="White" Stroke="Black" StrokeThickness="2" />
+            <Rectangle Fill="{DynamicResource ThemeCardBrush}" Stroke="{DynamicResource ThemeBorderStrongBrush}" StrokeThickness="1" RadiusX="8" RadiusY="8" />
             <TextBlock Text="{x:Static Loc:Labels.MainDescRemote}" Padding="10" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" />
         </Grid>
     </Grid>

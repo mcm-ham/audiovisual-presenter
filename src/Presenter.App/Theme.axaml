@@ -1,0 +1,196 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- "Slate" theme: a flat, modern light theme layered over Fluent.
+         All chrome colors live in the tokens below so windows reference semantic
+         brushes (via DynamicResource) instead of hard-coded hex values.
+         Note: a bare "Button" selector matches the Button type only, NOT subclasses
+         like CalendarDayButton/ToggleButton, so the calendar and combo internals are
+         left alone. Toolbar buttons opt out of the chrome via Classes="toolbar";
+         the primary action opts into filled accent chrome via Classes="accent". -->
+    <Styles.Resources>
+        <!-- surfaces -->
+        <SolidColorBrush x:Key="ThemeWindowBrush" Color="#F5F6F8" />
+        <SolidColorBrush x:Key="ThemeToolbarBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="ThemePanelHeaderBrush" Color="#F6F7F9" />
+        <SolidColorBrush x:Key="ThemeCardBrush" Color="#FFFFFF" />
+
+        <!-- borders -->
+        <SolidColorBrush x:Key="ThemeBorderBrush" Color="#E2E5EA" />
+        <SolidColorBrush x:Key="ThemeBorderStrongBrush" Color="#C8CED6" />
+
+        <!-- text -->
+        <SolidColorBrush x:Key="ThemeTextBrush" Color="#1B2430" />
+        <SolidColorBrush x:Key="ThemeTextSecondaryBrush" Color="#5B6472" />
+
+        <!-- accent (matches the SystemAccentColor scale in App.axaml) -->
+        <SolidColorBrush x:Key="ThemeAccentBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="ThemeAccentHoverBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="ThemeAccentPressedBrush" Color="#1E40AF" />
+
+        <!-- interaction tints -->
+        <SolidColorBrush x:Key="ThemeHoverBrush" Color="#EEF3FB" />
+        <SolidColorBrush x:Key="ThemeHoverBorderBrush" Color="#9DBDF5" />
+        <SolidColorBrush x:Key="ThemePressedBrush" Color="#DCE8FD" />
+        <SolidColorBrush x:Key="ThemeSelectionBrush" Color="#DBE7FF" />
+        <SolidColorBrush x:Key="ThemeSelectionHoverBrush" Color="#CDDEFF" />
+
+        <!-- controls -->
+        <SolidColorBrush x:Key="ThemeControlBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="ThemeControlBorderBrush" Color="#C8CED6" />
+        <SolidColorBrush x:Key="ThemeDisabledBrush" Color="#F2F3F5" />
+        <SolidColorBrush x:Key="ThemeDisabledBorderBrush" Color="#E0E3E8" />
+        <SolidColorBrush x:Key="ThemeDisabledTextBrush" Color="#A6ADB8" />
+    </Styles.Resources>
+
+    <!-- soft neutral window background; the projector windows set Background in
+         code-behind (a local value), so this never bleeds onto the output screen -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{StaticResource ThemeWindowBrush}" />
+    </Style>
+
+    <Style Selector="Button">
+        <Setter Property="Background" Value="{StaticResource ThemeControlBrush}" />
+        <Setter Property="Foreground" Value="{StaticResource ThemeTextBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ThemeControlBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="MinHeight" Value="23" />
+        <Setter Property="MinWidth" Value="75" />
+        <!-- top-biased padding compensates for the macOS font descent, which
+             otherwise makes centered button text sit visually too high -->
+        <Setter Property="Padding" Value="2,2,2,0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ThemeHoverBorderBrush}" />
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemePressedBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ThemeHoverBorderBrush}" />
+    </Style>
+    <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeDisabledBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ThemeDisabledBorderBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeDisabledTextBrush}" />
+    </Style>
+
+    <!-- filled accent chrome for the window's primary action (e.g. Start).
+         These come after the base :pointerover/:pressed styles so they win. -->
+    <Style Selector="Button.accent">
+        <Setter Property="Background" Value="{StaticResource ThemeAccentBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeAccentHoverBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.accent:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeAccentPressedBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="TextElement.Foreground" Value="White" />
+    </Style>
+
+    <!-- toolbar buttons: borderless "pill" with a subtle hover, and a small gap
+         under the icon so the label doesn't crowd it. The border thickness stays
+         constant (transparent when idle) so hovering never changes the button's
+         size and therefore never resizes the toolbar band. -->
+    <Style Selector="Button.toolbar">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="8,4" />
+    </Style>
+    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeHoverBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemePressedBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.toolbar Image">
+        <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+
+    <!-- lists read as white cards on the gray window background -->
+    <Style Selector="ListBox">
+        <Setter Property="Background" Value="{StaticResource ThemeCardBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource ThemeBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="2" />
+    </Style>
+
+    <!-- compact rows (Fluent's default rows are tall) with a rounded, borderless
+         selection tint instead of the old bordered Explorer-style highlight -->
+    <Style Selector="ListBoxItem">
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="Margin" Value="1,1" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeHoverBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeTextBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeSelectionBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeTextBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeSelectionBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeTextBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource ThemeSelectionHoverBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource ThemeTextBrush}" />
+    </Style>
+
+    <Style Selector="TextBox">
+        <Setter Property="CornerRadius" Value="4" />
+        <!-- floor matches the command-button MinHeight so single-line inputs align with
+             buttons; it's a floor, not a fixed height, so it still grows with the font -->
+        <Setter Property="MinHeight" Value="23" />
+        <!-- centre the text in the taller box instead of letting it sit at the top -->
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="4,2" />
+    </Style>
+
+    <Style Selector="ComboBox">
+        <Setter Property="CornerRadius" Value="4" />
+        <!-- floor matches the command-button MinHeight so dropdowns align with buttons;
+             a floor (not a fixed height) still grows with the font -->
+        <Setter Property="MinHeight" Value="23" />
+        <Setter Property="Padding" Value="6,2" />
+    </Style>
+
+    <Style Selector="CheckBox">
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+
+    <Style Selector="GridSplitter">
+        <Setter Property="Background" Value="{StaticResource ThemeBorderStrongBrush}" />
+    </Style>
+
+    <!-- The Fluent calendar renders large; it's scaled down proportionally with a
+         LayoutTransform at the use site (OpenDialog) rather than by resizing the day
+         buttons, which would leave the CalendarItem container oversized around them.
+         The header/prev/next are Buttons, so keep them borderless rather than
+         inheriting the command-button chrome above. -->
+    <Style Selector="Calendar Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="2" />
+    </Style>
+</Styles>
